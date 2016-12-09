@@ -15,7 +15,7 @@ $container['validator'] = function () {
 ```
 
 ## Usage
-```
+```php
 use Respect\Validation\Validator as V;
 
 // This will return the validator instance
@@ -30,3 +30,6 @@ if ($validator->isValid()) {
     $errors = $validator->getErrors();
 }
 ```
+
+## TODO
+- Custom error messages
