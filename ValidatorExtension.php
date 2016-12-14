@@ -2,6 +2,12 @@
 
 namespace Awurth\Slim\Validation;
 
+/**
+ * ValidatorExtension
+ *
+ * @author  Alexis Wurth <alexis.wurth57@gmail.com>
+ * @package Awurth\Slim\Validation
+ */
 class ValidatorExtension extends \Twig_Extension
 {
     /**
