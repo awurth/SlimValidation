@@ -19,15 +19,21 @@ class Validator
      *
      * @param Request $request
      * @param array $rules
+     * @param array $messages
      * @return $this
      */
-    public function validate(Request $request, array $rules)
+    public function validate(Request $request, array $rules, array $messages = [])
     {
+
         foreach ($rules as $param => $rule) {
             try {
                 $rule->assert($request->getParam($param));
             } catch (NestedValidationException $e) {
-                $this->errors[$param] = $e->getMessages();
+                $rulesNames = [];
+                foreach ($rule->getRules() as $r)
+                    $rulesNames[] = lcfirst((new \ReflectionClass($r))->getShortName());
+
+                $this->errors[$param] = array_filter(array_merge($e->findMessages($rulesNames), $e->findMessages($messages)));
             }
         }
 
@@ -86,7 +92,7 @@ class Validator
      */
     public function getErrorsOf($param)
     {
-        return isset($this->errors[$param]) ? $this->errors[$param] : array();
+        return isset($this->errors[$param]) ? $this->errors[$param] : [];
     }
 
     /**
@@ -108,7 +114,12 @@ class Validator
      */
     public function getFirst($param)
     {
-        return isset($this->errors[$param][0]) ? $this->errors[$param][0] : '';
+        if (isset($this->errors[$param])) {
+            $first = array_slice($this->errors[$param], 0, 1);
+            return array_shift($first);
+        }
+
+        return '';
     }
 
     /**
