@@ -5,6 +5,12 @@ namespace Awurth\Slim\Validation;
 use Psr\Http\Message\RequestInterface as Request;
 use Respect\Validation\Exceptions\NestedValidationException;
 
+/**
+ * Validator
+ *
+ * @author  Alexis Wurth <alexis.wurth57@gmail.com>
+ * @package Awurth\Slim\Validation
+ */
 class Validator
 {
     /**
@@ -24,7 +30,6 @@ class Validator
      */
     public function validate(Request $request, array $rules, array $messages = [])
     {
-
         foreach ($rules as $param => $rule) {
             try {
                 $rule->assert($request->getParam($param));
