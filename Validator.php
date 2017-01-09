@@ -18,7 +18,14 @@ class Validator
      *
      * @var array
      */
-    private $errors;
+    protected $errors;
+
+    /**
+     * The validated data
+     *
+     * @var array
+     */
+    protected $data;
 
     /**
      * Validate request params with the given rules
@@ -32,7 +39,9 @@ class Validator
     {
         foreach ($rules as $param => $rule) {
             try {
-                $rule->assert($request->getParam($param));
+                $value = $request->getParam($param);
+                $this->data[$param] = $value;
+                $rule->assert($value);
             } catch (NestedValidationException $e) {
                 $rulesNames = [];
                 foreach ($rule->getRules() as $r)
@@ -125,6 +134,27 @@ class Validator
         }
 
         return '';
+    }
+
+    /**
+     * Get the value of a parameter in validated data
+     *
+     * @param string $param
+     * @return string
+     */
+    public function getValue($param)
+    {
+        return isset($this->data[$param]) ? $this->data[$param] : '';
+    }
+
+    /**
+     * Get validated data
+     *
+     * @return array
+     */
+    public function getData()
+    {
+        return $this->data;
     }
 
     /**

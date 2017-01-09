@@ -30,10 +30,11 @@ class ValidatorExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction('error', array($this, 'getError')),
-            new \Twig_SimpleFunction('errors', array($this, 'getErrors')),
-            new \Twig_SimpleFunction('has_error', array($this, 'hasError')),
-            new \Twig_SimpleFunction('has_errors', array($this, 'hasErrors'))
+            new \Twig_SimpleFunction('error', [$this, 'getError']),
+            new \Twig_SimpleFunction('errors', [$this, 'getErrors']),
+            new \Twig_SimpleFunction('has_error', [$this, 'hasError']),
+            new \Twig_SimpleFunction('has_errors', [$this, 'hasErrors']),
+            new \Twig_SimpleFunction('val', [$this, 'getValue'])
         ];
     }
 
@@ -78,5 +79,16 @@ class ValidatorExtension extends \Twig_Extension
     public function hasErrors()
     {
         return !$this->validator->isValid();
+    }
+
+    /**
+     * Get the value of a parameter in validated data
+     *
+     * @param string $param
+     * @return string
+     */
+    public function getValue($param)
+    {
+        return $this->validator->getValue($param);
     }
 }
