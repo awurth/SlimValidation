@@ -96,10 +96,10 @@ public function register(Request $request, Response $response)
     <input type="text" name="email" value="{{ val('email') }}">
     {% if has_error('email') %}<span>{{ error('email') }}</span>{% endif %}
     
-    <input type="text" name="password" value="{{ val('password') }}">
+    <input type="text" name="password">
     {% if has_error('password') %}<span>{{ error('password') }}</span>{% endif %}
     
-    <input type="text" name="confirm-password" value="{{ val('confirm-password') }}">
+    <input type="text" name="confirm-password">
     {% if has_error('confirm-password') %}<span>{{ error('confirm-password') }}</span>{% endif %}
 </form>
 ```
