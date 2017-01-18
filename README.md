@@ -54,7 +54,10 @@ $container->validation->validate($request, [
 {# Use error() function to get the first error of a parameter #}
 {{ error('param') }}
 
-{# Use errors() function to get all errors of a parameter #}
+{# Use errors() function to get all errors #}
+{{ errors() }}
+
+{# Use errors() function with the name of a parameter to get all errors of a parameter #}
 {{ errors('param') }}
 
 {# Use val() function to get the value of a parameter #}

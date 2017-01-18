@@ -55,9 +55,9 @@ class ValidatorExtension extends \Twig_Extension
      * @param string $param
      * @return array
      */
-    public function getErrors($param)
+    public function getErrors($param = null)
     {
-        return $this->validator->getErrorsOf($param);
+        return $param ? $this->validator->getErrorsOf($param) : $this->validator->getErrors();
     }
 
     /**
