@@ -44,8 +44,9 @@ class Validator
                 $rule->assert($value);
             } catch (NestedValidationException $e) {
                 $rulesNames = [];
-                foreach ($rule->getRules() as $r)
+                foreach ($rule->getRules() as $r) {
                     $rulesNames[] = lcfirst((new \ReflectionClass($r))->getShortName());
+                }
 
                 $this->errors[$param] = array_filter(array_merge($e->findMessages($rulesNames), $e->findMessages($messages)));
             }
@@ -154,6 +155,30 @@ class Validator
     public function getValue($param)
     {
         return isset($this->data[$param]) ? $this->data[$param] : '';
+    }
+
+    /**
+     * Set the value of parameters
+     *
+     * @param array $data
+     * @return $this
+     */
+    public function setValues(array $data)
+    {
+        $this->data = array_merge($this->data, $data);
+        return $this;
+    }
+
+    /**
+     * Set validator data
+     *
+     * @param array $data
+     * @return $this
+     */
+    public function setData(array $data)
+    {
+        $this->data = $data;
+        return $this;
     }
 
     /**
