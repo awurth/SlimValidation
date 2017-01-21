@@ -59,10 +59,12 @@ class Validator
      *
      * @param string $param
      * @param string $message
+     * @return $this
      */
     public function addError($param, $message)
     {
         $this->errors[$param][] = $message;
+        return $this;
     }
 
     /**
@@ -70,12 +72,15 @@ class Validator
      *
      * @param string $param
      * @param array $messages
+     * @return $this
      */
     public function addErrors($param, array $messages)
     {
         foreach ($messages as $message) {
             $this->errors[$param][] = $message;
         }
+
+        return $this;
     }
 
     /**
@@ -92,10 +97,12 @@ class Validator
      * Set all errors
      *
      * @param array $errors
+     * @return $this
      */
     public function setErrors(array $errors)
     {
         $this->errors = $errors;
+        return $this;
     }
 
     /**
@@ -114,10 +121,12 @@ class Validator
      *
      * @param string $param
      * @param array $errors
+     * @return $this
      */
     public function setErrorsOf($param, array $errors)
     {
         $this->errors[$param] = $errors;
+        return $this;
     }
 
     /**
