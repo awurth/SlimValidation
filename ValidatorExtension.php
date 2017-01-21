@@ -17,9 +17,28 @@ class ValidatorExtension extends \Twig_Extension
      */
     private $validator;
 
-    public function __construct(Validator $validator)
+    /**
+     * Array of names for Twig functions
+     *
+     * @var array
+     */
+    private $functionsNames;
+
+    /**
+     * Constructor
+     *
+     * @param Validator $validator The validator instance
+     * @param array $functionsNames An array of names for Twig functions
+     */
+    public function __construct(Validator $validator, $functionsNames = [])
     {
         $this->validator = $validator;
+
+        $this->functionsNames['error'] = !empty($functionsNames['error']) ? $functionsNames['error'] : 'error';
+        $this->functionsNames['errors'] = !empty($functionsNames['errors']) ? $functionsNames['errors'] : 'errors';
+        $this->functionsNames['has_error'] = !empty($functionsNames['has_error']) ? $functionsNames['has_error'] : 'has_error';
+        $this->functionsNames['has_errors'] = !empty($functionsNames['has_errors']) ? $functionsNames['has_errors'] : 'has_errors';
+        $this->functionsNames['val'] = !empty($functionsNames['val']) ? $functionsNames['val'] : 'val';
     }
 
     public function getName()
@@ -30,11 +49,11 @@ class ValidatorExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction('error', [$this, 'getError']),
-            new \Twig_SimpleFunction('errors', [$this, 'getErrors']),
-            new \Twig_SimpleFunction('has_error', [$this, 'hasError']),
-            new \Twig_SimpleFunction('has_errors', [$this, 'hasErrors']),
-            new \Twig_SimpleFunction('val', [$this, 'getValue'])
+            new \Twig_SimpleFunction($this->functionsNames['error'], [$this, 'getError']),
+            new \Twig_SimpleFunction($this->functionsNames['errors'], [$this, 'getErrors']),
+            new \Twig_SimpleFunction($this->functionsNames['has_error'], [$this, 'hasError']),
+            new \Twig_SimpleFunction($this->functionsNames['has_errors'], [$this, 'hasErrors']),
+            new \Twig_SimpleFunction($this->functionsNames['val'], [$this, 'getValue'])
         ];
     }
 
