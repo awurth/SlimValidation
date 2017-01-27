@@ -33,7 +33,7 @@ if ($validator->isValid()) {
 
 ### Custom messages
 ```php
-$container->validation->validate($request, [
+$container->validator->validate($request, [
     'get_or_post_parameter_name' => V::length(6, 25)->alnum('_')->noWhitespace(),
     // ...
 ], [
