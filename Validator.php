@@ -4,6 +4,9 @@ namespace Awurth\Slim\Validation;
 
 use Psr\Http\Message\RequestInterface as Request;
 use Respect\Validation\Exceptions\NestedValidationException;
+use Respect\Validation\Validator as V;
+use InvalidArgumentException;
+use ReflectionClass;
 
 /**
  * Validator
@@ -33,22 +36,44 @@ class Validator
      * @param Request $request
      * @param array $rules
      * @param array $messages
-     * @return $this
+     * @return Validator
      */
     public function validate(Request $request, array $rules, array $messages = [])
     {
-        foreach ($rules as $param => $rule) {
+        foreach ($rules as $param => $options) {
+            $value = $request->getParam($param);
+            $this->data[$param] = $value;
+            $isRule = $options instanceof V;
+
             try {
-                $value = $request->getParam($param);
-                $this->data[$param] = $value;
-                $rule->assert($value);
+                if ($isRule) {
+                    $options->assert($value);
+                } else {
+                    if (!isset($options['rules']) || !($options['rules'] instanceof V)) {
+                        throw new InvalidArgumentException('Validation rules are missing');
+                    }
+
+                    $options['rules']->assert($value);
+                }
             } catch (NestedValidationException $e) {
+                $paramRules = $isRule ? $options->getRules() : $options['rules']->getRules();
+
                 $rulesNames = [];
-                foreach ($rule->getRules() as $r) {
-                    $rulesNames[] = lcfirst((new \ReflectionClass($r))->getShortName());
+                foreach ($paramRules as $rule) {
+                    $rulesNames[] = lcfirst((new ReflectionClass($rule))->getShortName());
                 }
 
-                $this->errors[$param] = array_filter(array_merge($e->findMessages($rulesNames), $e->findMessages($messages)));
+                if (!$isRule && isset($options['messages'])) {
+                    $errorMessages = array_merge(
+                        $e->findMessages($rulesNames),
+                        $e->findMessages($messages),
+                        $e->findMessages($options['messages'])
+                    );
+                } else {
+                    $errorMessages = array_merge($e->findMessages($rulesNames), $e->findMessages($messages));
+                }
+
+                $this->errors[$param] = array_filter($errorMessages);
             }
         }
 
@@ -60,7 +85,7 @@ class Validator
      *
      * @param string $param
      * @param string $message
-     * @return $this
+     * @return Validator
      */
     public function addError($param, $message)
     {
@@ -73,7 +98,7 @@ class Validator
      *
      * @param string $param
      * @param array $messages
-     * @return $this
+     * @return Validator
      */
     public function addErrors($param, array $messages)
     {
@@ -98,7 +123,7 @@ class Validator
      * Set all errors
      *
      * @param array $errors
-     * @return $this
+     * @return Validator
      */
     public function setErrors(array $errors)
     {
@@ -122,7 +147,7 @@ class Validator
      *
      * @param string $param
      * @param array $errors
-     * @return $this
+     * @return Validator
      */
     public function setErrorsOf($param, array $errors)
     {
@@ -161,7 +186,7 @@ class Validator
      * Set the value of parameters
      *
      * @param array $data
-     * @return $this
+     * @return Validator
      */
     public function setValues(array $data)
     {
@@ -173,7 +198,7 @@ class Validator
      * Set validator data
      *
      * @param array $data
-     * @return $this
+     * @return Validator
      */
     public function setData(array $data)
     {
