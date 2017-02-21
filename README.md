@@ -2,20 +2,20 @@
 A validator for Slim micro-framework
 
 ## Installation
-```bash
+``` bash
 $ composer require awurth/slim-validation
 ```
 
 ## Configuration
 You can add the validator to the app container to access it easily through your application
-```php
+``` php
 $container['validator'] = function () {
     return new \Awurth\Slim\Validation\Validator();
 };
 ```
 
 ## Usage
-```php
+``` php
 use Respect\Validation\Validator as V;
 
 // This will return the validator instance
@@ -32,7 +32,26 @@ if ($validator->isValid()) {
 ```
 
 ### Custom messages
-```php
+You can define messages for a single parameter or global messages for a validation rule, or both.
+Individual messages override global messages.
+
+#### Individual messages
+``` php
+$container->validator->validate($request, [
+    'get_or_post_parameter_name' => [
+        'rules' => V::length(6, 25)->alnum('_')->noWhitespace(),
+        'messages' => [
+            'length' => 'Custom message',
+            'alnum' => 'Custom message',
+            // ...
+        ]
+    ],
+    // ...
+]);
+```
+
+#### Global messages
+``` php
 $container->validator->validate($request, [
     'get_or_post_parameter_name' => V::length(6, 25)->alnum('_')->noWhitespace(),
     // ...
@@ -44,7 +63,7 @@ $container->validator->validate($request, [
 ```
 
 ## Twig extension
-```twig
+``` twig
 {# Use has_errors() function to know if a form contains errors #}
 {{ has_errors() }}
 
@@ -65,8 +84,8 @@ $container->validator->validate($request, [
 ```
 
 ## Example
-```php
-{# AuthController.php #}
+``` php
+// AuthController.php
 
 public function register(Request $request, Response $response)
 {
@@ -75,7 +94,7 @@ public function register(Request $request, Response $response)
             'username' => V::length(6, 25)->alnum('_')->noWhitespace(),
             'email' => V::notBlank()->email(),
             'password' => V::length(6, 25),
-            'confirm-password' => V::equals($request->getParam('password'))
+            'confirm_password' => V::equals($request->getParam('password'))
         ]);
         
         if ($this->validator->isValid()) {
@@ -89,7 +108,7 @@ public function register(Request $request, Response $response)
 }
 ```
 
-```twig
+``` twig
 {# register.twig #}
 
 <form action="url" method="POST">
@@ -102,7 +121,7 @@ public function register(Request $request, Response $response)
     <input type="text" name="password">
     {% if has_error('password') %}<span>{{ error('password') }}</span>{% endif %}
     
-    <input type="text" name="confirm-password">
-    {% if has_error('confirm-password') %}<span>{{ error('confirm-password') }}</span>{% endif %}
+    <input type="text" name="confirm_password">
+    {% if has_error('confirm_password') %}<span>{{ error('confirm_password') }}</span>{% endif %}
 </form>
 ```
