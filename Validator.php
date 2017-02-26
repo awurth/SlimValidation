@@ -80,10 +80,10 @@ class Validator
                 }
 
                 // If the 'message' key exists, set it as only message for this param
-                if (isset($options['message']) && is_string($options['message'])) {
-                    $this->errors[$param] = $options['message'];
+                if (!$isRule && isset($options['message']) && is_string($options['message'])) {
+                    $this->errors[$param] = [$options['message']];
                     return $this;
-                } elseif (!$isRule && isset($options['messages'])) { // If the 'messages' key exists, override global messages
+                } else { // If the 'messages' key exists, override global messages
                     $params = [
                         $e->findMessages($rulesNames)
                     ];
