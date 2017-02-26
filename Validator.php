@@ -36,7 +36,7 @@ class Validator
      * @param Request $request
      * @param array $rules
      * @param array $messages
-     * @return Validator
+     * @return $this
      */
     public function validate(Request $request, array $rules, array $messages = [])
     {
@@ -85,7 +85,7 @@ class Validator
      *
      * @param string $param
      * @param string $message
-     * @return Validator
+     * @return $this
      */
     public function addError($param, $message)
     {
@@ -98,7 +98,7 @@ class Validator
      *
      * @param string $param
      * @param array $messages
-     * @return Validator
+     * @return $this
      */
     public function addErrors($param, array $messages)
     {
@@ -123,7 +123,7 @@ class Validator
      * Set all errors
      *
      * @param array $errors
-     * @return Validator
+     * @return $this
      */
     public function setErrors(array $errors)
     {
@@ -147,7 +147,7 @@ class Validator
      *
      * @param string $param
      * @param array $errors
-     * @return Validator
+     * @return $this
      */
     public function setErrorsOf($param, array $errors)
     {
@@ -186,7 +186,7 @@ class Validator
      * Set the value of parameters
      *
      * @param array $data
-     * @return Validator
+     * @return $this
      */
     public function setValues(array $data)
     {
@@ -198,7 +198,7 @@ class Validator
      * Set validator data
      *
      * @param array $data
-     * @return Validator
+     * @return $this
      */
     public function setData(array $data)
     {
