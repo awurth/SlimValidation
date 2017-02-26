@@ -2,13 +2,16 @@
 
 namespace Awurth\Slim\Validation;
 
+use Twig_Extension;
+use Twig_SimpleFunction;
+
 /**
  * ValidatorExtension
  *
  * @author  Alexis Wurth <alexis.wurth57@gmail.com>
  * @package Awurth\Slim\Validation
  */
-class ValidatorExtension extends \Twig_Extension
+class ValidatorExtension extends Twig_Extension
 {
     /**
      * Validator service
@@ -49,11 +52,11 @@ class ValidatorExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction($this->functionsNames['error'], [$this, 'getError']),
-            new \Twig_SimpleFunction($this->functionsNames['errors'], [$this, 'getErrors']),
-            new \Twig_SimpleFunction($this->functionsNames['has_error'], [$this, 'hasError']),
-            new \Twig_SimpleFunction($this->functionsNames['has_errors'], [$this, 'hasErrors']),
-            new \Twig_SimpleFunction($this->functionsNames['val'], [$this, 'getValue'])
+            new Twig_SimpleFunction($this->functionsNames['error'], [$this, 'getError']),
+            new Twig_SimpleFunction($this->functionsNames['errors'], [$this, 'getErrors']),
+            new Twig_SimpleFunction($this->functionsNames['has_error'], [$this, 'hasError']),
+            new Twig_SimpleFunction($this->functionsNames['has_errors'], [$this, 'hasErrors']),
+            new Twig_SimpleFunction($this->functionsNames['val'], [$this, 'getValue'])
         ];
     }
 
