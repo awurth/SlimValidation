@@ -39,6 +39,7 @@ class ValidatorExtension extends Twig_Extension
 
         $this->functionsNames['error'] = !empty($functionsNames['error']) ? $functionsNames['error'] : 'error';
         $this->functionsNames['errors'] = !empty($functionsNames['errors']) ? $functionsNames['errors'] : 'errors';
+        $this->functionsNames['rule_error'] = !empty($functionsNames['rule_error']) ? $functionsNames['rule_error'] : 'rule_error';
         $this->functionsNames['has_error'] = !empty($functionsNames['has_error']) ? $functionsNames['has_error'] : 'has_error';
         $this->functionsNames['has_errors'] = !empty($functionsNames['has_errors']) ? $functionsNames['has_errors'] : 'has_errors';
         $this->functionsNames['val'] = !empty($functionsNames['val']) ? $functionsNames['val'] : 'val';
@@ -54,6 +55,7 @@ class ValidatorExtension extends Twig_Extension
         return [
             new Twig_SimpleFunction($this->functionsNames['error'], [$this, 'getError']),
             new Twig_SimpleFunction($this->functionsNames['errors'], [$this, 'getErrors']),
+            new Twig_SimpleFunction($this->functionsNames['rule_error'], [$this, 'getRuleError']),
             new Twig_SimpleFunction($this->functionsNames['has_error'], [$this, 'hasError']),
             new Twig_SimpleFunction($this->functionsNames['has_errors'], [$this, 'hasErrors']),
             new Twig_SimpleFunction($this->functionsNames['val'], [$this, 'getValue'])
@@ -64,33 +66,41 @@ class ValidatorExtension extends Twig_Extension
      * Get the first validation error of param
      *
      * @param string $param
+     *
      * @return string
      */
     public function getError($param)
     {
-        return $this->validator->getFirst($param);
+        return $this->validator->getFirstError($param);
     }
 
     /**
      * Get the validation errors of param
      *
      * @param string $param
+     *
      * @return array
      */
-    public function getErrors($param = null)
+    public function getErrors($param = '')
     {
-        return $param ? $this->validator->getErrorsOf($param) : $this->validator->getErrors();
+        return $param ? $this->validator->getParamErrors($param) : $this->validator->getErrors();
+    }
+
+    public function getRuleError($param, $rule)
+    {
+        return $this->validator->getParamRuleError($param, $rule);
     }
 
     /**
      * Return true if there are validation errors for param
      *
      * @param string $param
+     *
      * @return bool
      */
     public function hasError($param)
     {
-        return !empty($this->validator->getErrorsOf($param));
+        return !empty($this->validator->getParamErrors($param));
     }
 
     /**
@@ -107,6 +117,7 @@ class ValidatorExtension extends Twig_Extension
      * Get the value of a parameter in validated data
      *
      * @param string $param
+     *
      * @return string
      */
     public function getValue($param)

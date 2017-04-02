@@ -31,6 +31,8 @@ class Validator
     protected $data;
 
     /**
+     * Default error messages for the given rules
+     *
      * @var array
      */
     protected $defaultMessages;
@@ -61,6 +63,7 @@ class Validator
      * @param Request $request
      * @param array $rules
      * @param array $messages
+     *
      * @return $this
      */
     public function validate(Request $request, array $rules, array $messages = [])
@@ -128,6 +131,7 @@ class Validator
      *
      * @param string $param
      * @param string $message
+     *
      * @return $this
      */
     public function addError($param, $message)
@@ -141,6 +145,7 @@ class Validator
      *
      * @param string $param
      * @param array $messages
+     *
      * @return $this
      */
     public function addErrors($param, array $messages)
@@ -166,6 +171,7 @@ class Validator
      * Set all errors
      *
      * @param array $errors
+     *
      * @return $this
      */
     public function setErrors(array $errors)
@@ -178,11 +184,25 @@ class Validator
      * Get errors of param
      *
      * @param string $param
+     *
      * @return array
      */
-    public function getErrorsOf($param)
+    public function getParamErrors($param)
     {
         return isset($this->errors[$param]) ? $this->errors[$param] : [];
+    }
+
+    /**
+     * Get error of a rule for a param
+     *
+     * @param string $param
+     * @param string $rule
+     *
+     * @return string
+     */
+    public function getParamRuleError($param, $rule)
+    {
+        return isset($this->errors[$param][$rule]) ? $this->errors[$param][$rule] : '';
     }
 
     /**
@@ -190,9 +210,10 @@ class Validator
      *
      * @param string $param
      * @param array $errors
+     *
      * @return $this
      */
-    public function setErrorsOf($param, array $errors)
+    public function setParamErrors($param, array $errors)
     {
         $this->errors[$param] = $errors;
         return $this;
@@ -202,9 +223,10 @@ class Validator
      * Get first error of param
      *
      * @param string $param
+     *
      * @return string
      */
-    public function getFirst($param)
+    public function getFirstError($param)
     {
         if (isset($this->errors[$param])) {
             $first = array_slice($this->errors[$param], 0, 1);
@@ -218,6 +240,7 @@ class Validator
      * Get the value of a parameter in validated data
      *
      * @param string $param
+     *
      * @return string
      */
     public function getValue($param)
@@ -229,6 +252,7 @@ class Validator
      * Set the value of parameters
      *
      * @param array $data
+     *
      * @return $this
      */
     public function setValues(array $data)
@@ -241,6 +265,7 @@ class Validator
      * Set validator data
      *
      * @param array $data
+     * 
      * @return $this
      */
     public function setData(array $data)
