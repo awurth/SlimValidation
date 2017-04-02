@@ -36,12 +36,22 @@ class Validator
     protected $defaultMessages;
 
     /**
+     * If true, errors will be stored in an associative array
+     * where the key is the name of the validation rule
+     *
+     * @var bool
+     */
+    protected $storeErrorsWithRules;
+
+    /**
      * Create new Validator
      *
+     * @param bool $storeErrorsWithRules
      * @param array $defaultMessages
      */
-    public function __construct(array $defaultMessages = [])
+    public function __construct($storeErrorsWithRules = true, array $defaultMessages = [])
     {
+        $this->storeErrorsWithRules = $storeErrorsWithRules;
         $this->defaultMessages = $defaultMessages;
     }
 
@@ -103,7 +113,9 @@ class Validator
                         $params[] = $e->findMessages($options['messages']);
                     }
 
-                    $this->errors[$param] = array_filter(call_user_func_array('array_merge', $params));
+                    $errors = array_filter(call_user_func_array('array_merge', $params));
+
+                    $this->errors[$param] = $this->storeErrorsWithRules ? $errors : array_values($errors);
                 }
             }
         }
