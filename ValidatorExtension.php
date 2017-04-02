@@ -1,6 +1,6 @@
 <?php
 
-namespace Awurth\Slim\Validation;
+namespace Awurth\SlimValidation;
 
 use Twig_Extension;
 use Twig_SimpleFunction;
@@ -9,7 +9,7 @@ use Twig_SimpleFunction;
  * ValidatorExtension
  *
  * @author  Alexis Wurth <alexis.wurth57@gmail.com>
- * @package Awurth\Slim\Validation
+ * @package Awurth\SlimValidation
  */
 class ValidatorExtension extends Twig_Extension
 {

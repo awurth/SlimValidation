@@ -1,6 +1,6 @@
 <?php
 
-namespace Awurth\Slim\Validation;
+namespace Awurth\SlimValidation;
 
 use Psr\Http\Message\RequestInterface as Request;
 use Respect\Validation\Exceptions\NestedValidationException;
@@ -12,7 +12,7 @@ use ReflectionClass;
  * Validator
  *
  * @author  Alexis Wurth <alexis.wurth57@gmail.com>
- * @package Awurth\Slim\Validation
+ * @package Awurth\SlimValidation
  */
 class Validator
 {
@@ -265,7 +265,7 @@ class Validator
      * Set validator data
      *
      * @param array $data
-     * 
+     *
      * @return $this
      */
     public function setData(array $data)
