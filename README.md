@@ -1,5 +1,5 @@
 # awurth/slim-validation
-A validator for Slim micro-framework
+A validator for Slim micro-framework, using [respect/validation](https://github.com/Respect/Validation)
 
 ## Installation
 ``` bash
@@ -63,6 +63,12 @@ $container->validator->validate($request, [
 ```
 
 ## Twig extension
+To use the extension, you must install twig first
+``` bash
+$ composer require slim/twig-view
+```
+
+### Functions
 ``` twig
 {# Use has_errors() function to know if a form contains errors #}
 {{ has_errors() }}
@@ -84,9 +90,8 @@ $container->validator->validate($request, [
 ```
 
 ## Example
+##### AuthController.php
 ``` php
-// AuthController.php
-
 public function register(Request $request, Response $response)
 {
     if ($request->isPost()) {
@@ -108,9 +113,8 @@ public function register(Request $request, Response $response)
 }
 ```
 
+##### register.twig
 ``` twig
-{# register.twig #}
-
 <form action="url" method="POST">
     <input type="text" name="username" value="{{ val('username') }}">
     {% if has_error('username') %}<span>{{ error('username') }}</span>{% endif %}
