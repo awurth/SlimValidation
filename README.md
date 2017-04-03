@@ -10,7 +10,7 @@ $ composer require awurth/slim-validation
 You can add the validator to the app container to access it easily through your application
 ``` php
 $container['validator'] = function () {
-    return new \Awurth\Slim\Validation\Validator();
+    return new Awurth\SlimValidation\Validator();
 };
 ```
 
