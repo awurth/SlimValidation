@@ -6,6 +6,7 @@ use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use ReflectionClass;
 use Respect\Validation\Exceptions\NestedValidationException;
+use Respect\Validation\Rules\AbstractComposite;
 use Respect\Validation\Validator as V;
 
 /**
@@ -93,41 +94,13 @@ class Validator
                     $options['rules']->assert($value);
                 }
             } catch (NestedValidationException $e) {
-                $paramRules = $isRule ? $options->getRules() : $options['rules']->getRules();
-
-                // Get the names of all rules used for this param
-                $rulesNames = [];
-                foreach ($paramRules as $rule) {
-                    $rulesNames[] = lcfirst((new ReflectionClass($rule))->getShortName());
-                }
-
                 // If the 'message' key exists, set it as only message for this param
                 if (!$isRule && isset($options['message']) && is_string($options['message'])) {
                     $this->errors[$param] = [$options['message']];
                     return $this;
-                } else { // If the 'messages' key exists, override global messages
-                    $params = [
-                        $e->findMessages($rulesNames)
-                    ];
-
-                    // If default messages are defined
-                    if (!empty($this->defaultMessages)) {
-                        $params[] = $e->findMessages($this->defaultMessages);
-                    }
-
-                    // If global messages are defined
-                    if (!empty($messages)) {
-                        $params[] = $e->findMessages($messages);
-                    }
-
-                    // If individual messages are defined
-                    if (!$isRule && isset($options['messages'])) {
-                        $params[] = $e->findMessages($options['messages']);
-                    }
-
-                    $errors = array_filter(call_user_func_array('array_merge', $params));
-
-                    $this->errors[$param] = $this->storeErrorsWithRules ? $errors : array_values($errors);
+                } else {
+                    // If the 'messages' key exists, override global messages
+                    $this->setMessages($e, $param, $options, $isRule);
                 }
             }
         }
@@ -210,7 +183,7 @@ class Validator
      *
      * @param string $param
      *
-     * @return string[]
+     * @return array
      */
     public function getParamErrors($param)
     {
@@ -228,32 +201,6 @@ class Validator
     public function getParamRuleError($param, $rule)
     {
         return isset($this->errors[$param][$rule]) ? $this->errors[$param][$rule] : '';
-    }
-
-    /**
-     * Fetch request parameter value from body or query string (in that order).
-     *
-     * @param  Request $request
-     * @param  string  $key The parameter key.
-     * @param  string  $default The default value.
-     *
-     * @return mixed The parameter value.
-     */
-    public function getRequestParam(Request $request, $key, $default = null)
-    {
-        $postParams = $request->getParsedBody();
-        $getParams = $request->getQueryParams();
-
-        $result = $default;
-        if (is_array($postParams) && isset($postParams[$key])) {
-            $result = $postParams[$key];
-        } elseif (is_object($postParams) && property_exists($postParams, $key)) {
-            $result = $postParams->$key;
-        } elseif (isset($getParams[$key])) {
-            $result = $getParams[$key];
-        }
-
-        return $result;
     }
 
     /**
@@ -299,7 +246,7 @@ class Validator
      * Sets the errors of a parameter.
      *
      * @param string $param
-     * @param string[] $errors
+     * @param array $errors
      *
      * @return $this
      */
@@ -322,5 +269,73 @@ class Validator
         $this->data = array_merge($this->data, $data);
 
         return $this;
+    }
+
+    /**
+     * Fetch request parameter value from body or query string (in that order).
+     *
+     * @param  Request $request
+     * @param  string  $key The parameter key.
+     * @param  string  $default The default value.
+     *
+     * @return mixed The parameter value.
+     */
+    protected function getRequestParam(Request $request, $key, $default = null)
+    {
+        $postParams = $request->getParsedBody();
+        $getParams = $request->getQueryParams();
+
+        $result = $default;
+        if (is_array($postParams) && isset($postParams[$key])) {
+            $result = $postParams[$key];
+        } elseif (is_object($postParams) && property_exists($postParams, $key)) {
+            $result = $postParams->$key;
+        } elseif (isset($getParams[$key])) {
+            $result = $getParams[$key];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Sets error messages after validation
+     *
+     * @param NestedValidationException $e
+     * @param string $param
+     * @param AbstractComposite|array $options
+     * @param bool $isRule
+     */
+    protected function setMessages(NestedValidationException $e, $param, $options, $isRule)
+    {
+        $paramRules = $isRule ? $options->getRules() : $options['rules']->getRules();
+
+        // Get the names of all rules used for this param
+        $rulesNames = [];
+        foreach ($paramRules as $rule) {
+            $rulesNames[] = lcfirst((new ReflectionClass($rule))->getShortName());
+        }
+
+        $params = [
+            $e->findMessages($rulesNames)
+        ];
+
+        // If default messages are defined
+        if (!empty($this->defaultMessages)) {
+            $params[] = $e->findMessages($this->defaultMessages);
+        }
+
+        // If global messages are defined
+        if (!empty($messages)) {
+            $params[] = $e->findMessages($messages);
+        }
+
+        // If individual messages are defined
+        if (!$isRule && isset($options['messages'])) {
+            $params[] = $e->findMessages($options['messages']);
+        }
+
+        $errors = array_filter(call_user_func_array('array_merge', $params));
+
+        $this->errors[$param] = $this->storeErrorsWithRules ? $errors : array_values($errors);
     }
 }
