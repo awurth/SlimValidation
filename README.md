@@ -1,8 +1,8 @@
-# awurth/slim-validation
+# Slim Validation
 
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/bdf52753-f379-41c6-85cf-d1d1379b4aa7/mini.png)](https://insight.sensiolabs.com/projects/bdf52753-f379-41c6-85cf-d1d1379b4aa7) [![Latest Stable Version](https://poser.pugx.org/awurth/slim-validation/v/stable)](https://packagist.org/packages/awurth/slim-validation) [![Total Downloads](https://poser.pugx.org/awurth/slim-validation/downloads)](https://packagist.org/packages/awurth/slim-validation) [![License](https://poser.pugx.org/awurth/slim-validation/license)](https://packagist.org/packages/awurth/slim-validation)
 
-A validator for Slim micro-framework, using [respect/validation](https://github.com/Respect/Validation)
+A validator for the Slim PHP Micro-Framework, using [Respect Validation](https://github.com/Respect/Validation)
 
 ## Installation
 ``` bash

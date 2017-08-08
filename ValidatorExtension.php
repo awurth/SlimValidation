@@ -6,29 +6,28 @@ use Twig_Extension;
 use Twig_SimpleFunction;
 
 /**
- * ValidatorExtension
+ * ValidatorExtension.
  *
- * @author  Alexis Wurth <alexis.wurth57@gmail.com>
- * @package Awurth\SlimValidation
+ * @author Alexis Wurth <alexis.wurth57@gmail.com>
  */
 class ValidatorExtension extends Twig_Extension
 {
     /**
-     * Validator service
+     * Validator service.
      *
      * @var Validator
      */
     private $validator;
 
     /**
-     * Array of names for Twig functions
+     * Array of names for Twig functions.
      *
      * @var array
      */
     private $functionsNames;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Validator $validator The validator instance
      * @param array $functionsNames An array of names for Twig functions
@@ -45,11 +44,17 @@ class ValidatorExtension extends Twig_Extension
         $this->functionsNames['val'] = !empty($functionsNames['val']) ? $functionsNames['val'] : 'val';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getName()
     {
         return 'validator';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getFunctions()
     {
         return [
@@ -63,7 +68,7 @@ class ValidatorExtension extends Twig_Extension
     }
 
     /**
-     * Get the first validation error of param
+     * Gets the first validation error of a parameter.
      *
      * @param string $param
      *
@@ -75,7 +80,7 @@ class ValidatorExtension extends Twig_Extension
     }
 
     /**
-     * Get the validation errors of param
+     * Gets the validation errors of a parameter.
      *
      * @param string $param
      *
@@ -86,13 +91,21 @@ class ValidatorExtension extends Twig_Extension
         return $param ? $this->validator->getParamErrors($param) : $this->validator->getErrors();
     }
 
+    /**
+     * Gets the error of a rule for a parameter.
+     *
+     * @param string $param
+     * @param string $rule
+     *
+     * @return string
+     */
     public function getRuleError($param, $rule)
     {
         return $this->validator->getParamRuleError($param, $rule);
     }
 
     /**
-     * Return true if there are validation errors for param
+     * Tells if there are validation errors for a parameter.
      *
      * @param string $param
      *
@@ -104,7 +117,7 @@ class ValidatorExtension extends Twig_Extension
     }
 
     /**
-     * Return true if there are validation errors
+     * Tells if there are validation errors.
      *
      * @return bool
      */
@@ -114,7 +127,7 @@ class ValidatorExtension extends Twig_Extension
     }
 
     /**
-     * Get the value of a parameter in validated data
+     * Gets the value of a parameter in validated data.
      *
      * @param string $param
      *

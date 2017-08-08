@@ -2,51 +2,50 @@
 
 namespace Awurth\SlimValidation;
 
+use InvalidArgumentException;
 use Psr\Http\Message\RequestInterface as Request;
+use ReflectionClass;
 use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Validator as V;
-use InvalidArgumentException;
-use ReflectionClass;
 
 /**
- * Validator
+ * Validator.
  *
- * @author  Alexis Wurth <alexis.wurth57@gmail.com>
- * @package Awurth\SlimValidation
+ * @author Alexis Wurth <alexis.wurth57@gmail.com>
  */
 class Validator
 {
     /**
-     * List of validation errors
+     * The list of validation errors.
      *
      * @var array
      */
     protected $errors;
 
     /**
-     * The validated data
+     * The validated data.
      *
      * @var array
      */
     protected $data;
 
     /**
-     * Default error messages for the given rules
+     * The default error messages for the given rules.
      *
      * @var array
      */
     protected $defaultMessages;
 
     /**
-     * If true, errors will be stored in an associative array
-     * where the key is the name of the validation rule
+     * Tells if errors should be stored in an associative array
+     * where the key is the name of the validation rule.
      *
      * @var bool
      */
     protected $storeErrorsWithRules;
 
     /**
-     * Create new Validator
+     * Constructor.
      *
      * @param bool $storeErrorsWithRules
      * @param array $defaultMessages
@@ -58,7 +57,7 @@ class Validator
     }
 
     /**
-     * Validate request params with the given rules
+     * Validates request parameters with the given rules.
      *
      * @param Request $request
      * @param array $rules
@@ -127,7 +126,7 @@ class Validator
     }
 
     /**
-     * Add an error for param
+     * Adds an error for a parameter.
      *
      * @param string $param
      * @param string $message
@@ -137,14 +136,15 @@ class Validator
     public function addError($param, $message)
     {
         $this->errors[$param][] = $message;
+
         return $this;
     }
 
     /**
-     * Add errors for param
+     * Adds errors for a parameter.
      *
      * @param string $param
-     * @param array $messages
+     * @param string[] $messages
      *
      * @return $this
      */
@@ -158,7 +158,7 @@ class Validator
     }
 
     /**
-     * Get all errors
+     * Gets all errors.
      *
      * @return array
      */
@@ -168,7 +168,7 @@ class Validator
     }
 
     /**
-     * Set all errors
+     * Sets all errors.
      *
      * @param array $errors
      *
@@ -181,11 +181,11 @@ class Validator
     }
 
     /**
-     * Get errors of param
+     * Gets errors of a parameter.
      *
      * @param string $param
      *
-     * @return array
+     * @return string[]
      */
     public function getParamErrors($param)
     {
@@ -193,7 +193,7 @@ class Validator
     }
 
     /**
-     * Get error of a rule for a param
+     * Gets the error of a validation rule for a parameter.
      *
      * @param string $param
      * @param string $rule
@@ -206,21 +206,22 @@ class Validator
     }
 
     /**
-     * Set errors of param
+     * Sets the errors of a parameter.
      *
      * @param string $param
-     * @param array $errors
+     * @param string[] $errors
      *
      * @return $this
      */
     public function setParamErrors($param, array $errors)
     {
         $this->errors[$param] = $errors;
+
         return $this;
     }
 
     /**
-     * Get first error of param
+     * Gets the first error of a parameter.
      *
      * @param string $param
      *
@@ -230,6 +231,7 @@ class Validator
     {
         if (isset($this->errors[$param])) {
             $first = array_slice($this->errors[$param], 0, 1);
+
             return array_shift($first);
         }
 
@@ -237,7 +239,7 @@ class Validator
     }
 
     /**
-     * Get the value of a parameter in validated data
+     * Gets the value of a parameter in validated data.
      *
      * @param string $param
      *
@@ -249,7 +251,7 @@ class Validator
     }
 
     /**
-     * Set the value of parameters
+     * Sets the value of parameters.
      *
      * @param array $data
      *
@@ -258,11 +260,12 @@ class Validator
     public function setValues(array $data)
     {
         $this->data = array_merge($this->data, $data);
+
         return $this;
     }
 
     /**
-     * Set validator data
+     * Sets the validator data.
      *
      * @param array $data
      *
@@ -271,11 +274,12 @@ class Validator
     public function setData(array $data)
     {
         $this->data = $data;
+
         return $this;
     }
 
     /**
-     * Get validated data
+     * Gets the validated data.
      *
      * @return array
      */
@@ -285,7 +289,7 @@ class Validator
     }
 
     /**
-     * Return true if there is no error
+     * Tells if there is no error.
      *
      * @return bool
      */
