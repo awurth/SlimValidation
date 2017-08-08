@@ -3,7 +3,7 @@
 namespace Awurth\SlimValidation;
 
 use InvalidArgumentException;
-use Psr\Http\Message\RequestInterface as Request;
+use Psr\Http\Message\ServerRequestInterface as Request;
 use ReflectionClass;
 use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Validator as V;
@@ -15,13 +15,6 @@ use Respect\Validation\Validator as V;
  */
 class Validator
 {
-    /**
-     * The list of validation errors.
-     *
-     * @var array
-     */
-    protected $errors;
-
     /**
      * The validated data.
      *
@@ -35,6 +28,13 @@ class Validator
      * @var array
      */
     protected $defaultMessages;
+
+    /**
+     * The list of validation errors.
+     *
+     * @var array
+     */
+    protected $errors;
 
     /**
      * Tells if errors should be stored in an associative array
@@ -57,6 +57,16 @@ class Validator
     }
 
     /**
+     * Tells if there is no error.
+     *
+     * @return bool
+     */
+    public function isValid()
+    {
+        return empty($this->errors);
+    }
+
+    /**
      * Validates request parameters with the given rules.
      *
      * @param Request $request
@@ -68,7 +78,7 @@ class Validator
     public function validate(Request $request, array $rules, array $messages = [])
     {
         foreach ($rules as $param => $options) {
-            $value = $request->getParam($param);
+            $value = $this->getRequestParam($request, $param);
             $this->data[$param] = $value;
             $isRule = $options instanceof V;
 
@@ -158,6 +168,16 @@ class Validator
     }
 
     /**
+     * Gets the validated data.
+     *
+     * @return array
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
+
+    /**
      * Gets all errors.
      *
      * @return array
@@ -168,16 +188,21 @@ class Validator
     }
 
     /**
-     * Sets all errors.
+     * Gets the first error of a parameter.
      *
-     * @param array $errors
+     * @param string $param
      *
-     * @return $this
+     * @return string
      */
-    public function setErrors(array $errors)
+    public function getFirstError($param)
     {
-        $this->errors = $errors;
-        return $this;
+        if (isset($this->errors[$param])) {
+            $first = array_slice($this->errors[$param], 0, 1);
+
+            return array_shift($first);
+        }
+
+        return '';
     }
 
     /**
@@ -206,36 +231,29 @@ class Validator
     }
 
     /**
-     * Sets the errors of a parameter.
+     * Fetch request parameter value from body or query string (in that order).
      *
-     * @param string $param
-     * @param string[] $errors
+     * @param  Request $request
+     * @param  string  $key The parameter key.
+     * @param  string  $default The default value.
      *
-     * @return $this
+     * @return mixed The parameter value.
      */
-    public function setParamErrors($param, array $errors)
+    public function getRequestParam(Request $request, $key, $default = null)
     {
-        $this->errors[$param] = $errors;
+        $postParams = $request->getParsedBody();
+        $getParams = $request->getQueryParams();
 
-        return $this;
-    }
-
-    /**
-     * Gets the first error of a parameter.
-     *
-     * @param string $param
-     *
-     * @return string
-     */
-    public function getFirstError($param)
-    {
-        if (isset($this->errors[$param])) {
-            $first = array_slice($this->errors[$param], 0, 1);
-
-            return array_shift($first);
+        $result = $default;
+        if (is_array($postParams) && isset($postParams[$key])) {
+            $result = $postParams[$key];
+        } elseif (is_object($postParams) && property_exists($postParams, $key)) {
+            $result = $postParams->$key;
+        } elseif (isset($getParams[$key])) {
+            $result = $getParams[$key];
         }
 
-        return '';
+        return $result;
     }
 
     /**
@@ -248,20 +266,6 @@ class Validator
     public function getValue($param)
     {
         return isset($this->data[$param]) ? $this->data[$param] : '';
-    }
-
-    /**
-     * Sets the value of parameters.
-     *
-     * @param array $data
-     *
-     * @return $this
-     */
-    public function setValues(array $data)
-    {
-        $this->data = array_merge($this->data, $data);
-
-        return $this;
     }
 
     /**
@@ -279,22 +283,44 @@ class Validator
     }
 
     /**
-     * Gets the validated data.
+     * Sets all errors.
      *
-     * @return array
+     * @param array $errors
+     *
+     * @return $this
      */
-    public function getData()
+    public function setErrors(array $errors)
     {
-        return $this->data;
+        $this->errors = $errors;
+        return $this;
     }
 
     /**
-     * Tells if there is no error.
+     * Sets the errors of a parameter.
      *
-     * @return bool
+     * @param string $param
+     * @param string[] $errors
+     *
+     * @return $this
      */
-    public function isValid()
+    public function setParamErrors($param, array $errors)
     {
-        return empty($this->errors);
+        $this->errors[$param] = $errors;
+
+        return $this;
+    }
+
+    /**
+     * Sets the value of parameters.
+     *
+     * @param array $data
+     *
+     * @return $this
+     */
+    public function setValues(array $data)
+    {
+        $this->data = array_merge($this->data, $data);
+
+        return $this;
     }
 }
