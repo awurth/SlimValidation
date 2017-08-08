@@ -1,4 +1,7 @@
 # awurth/slim-validation
+
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/bdf52753-f379-41c6-85cf-d1d1379b4aa7/mini.png)](https://insight.sensiolabs.com/projects/bdf52753-f379-41c6-85cf-d1d1379b4aa7)
+
 A validator for Slim micro-framework, using [respect/validation](https://github.com/Respect/Validation)
 
 ## Installation
