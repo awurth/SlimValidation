@@ -81,10 +81,9 @@ class Validator
         foreach ($rules as $param => $options) {
             $value = $this->getRequestParam($request, $param);
             $this->data[$param] = $value;
-            $isRule = $options instanceof V;
 
             try {
-                if ($isRule) {
+                if ($options instanceof V) {
                     $options->assert($value);
                 } else {
                     if (!isset($options['rules']) || !($options['rules'] instanceof V)) {
@@ -95,12 +94,12 @@ class Validator
                 }
             } catch (NestedValidationException $e) {
                 // If the 'message' key exists, set it as only message for this param
-                if (!$isRule && isset($options['message']) && is_string($options['message'])) {
+                if (is_array($options) && isset($options['message']) && is_string($options['message'])) {
                     $this->errors[$param] = [$options['message']];
                     return $this;
                 } else {
                     // If the 'messages' key exists, override global messages
-                    $this->setMessages($e, $param, $options, $isRule);
+                    $this->setMessages($e, $param, $options, $messages);
                 }
             }
         }
@@ -298,16 +297,16 @@ class Validator
     }
 
     /**
-     * Sets error messages after validation
+     * Sets error messages after validation.
      *
      * @param NestedValidationException $e
      * @param string $param
      * @param AbstractComposite|array $options
-     * @param bool $isRule
+     * @param array $messages
      */
-    protected function setMessages(NestedValidationException $e, $param, $options, $isRule)
+    protected function setMessages(NestedValidationException $e, $param, $options, array $messages)
     {
-        $paramRules = $isRule ? $options->getRules() : $options['rules']->getRules();
+        $paramRules = $options instanceof V ? $options->getRules() : $options['rules']->getRules();
 
         // Get the names of all rules used for this param
         $rulesNames = [];
@@ -330,7 +329,7 @@ class Validator
         }
 
         // If individual messages are defined
-        if (!$isRule && isset($options['messages'])) {
+        if (is_array($options) && isset($options['messages'])) {
             $params[] = $e->findMessages($options['messages']);
         }
 
