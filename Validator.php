@@ -96,7 +96,6 @@ class Validator
                 // If the 'message' key exists, set it as only message for this param
                 if (is_array($options) && isset($options['message']) && is_string($options['message'])) {
                     $this->errors[$param] = [$options['message']];
-                    return $this;
                 } else {
                     // If the 'messages' key exists, override global messages
                     $this->setMessages($e, $param, $options, $messages);
