@@ -242,6 +242,35 @@ class Validator
     }
 
     /**
+     * Sets the default error message for a validation rule.
+     *
+     * @param string $rule
+     * @param string $message
+     *
+     * @return $this
+     */
+    public function setDefaultMessage($rule, $message)
+    {
+        $this->defaultMessages[$rule] = $message;
+
+        return $this;
+    }
+
+    /**
+     * Sets default error messages.
+     *
+     * @param array $messages
+     *
+     * @return $this
+     */
+    public function setDefaultMessages(array $messages)
+    {
+        $this->defaultMessages = $messages;
+
+        return $this;
+    }
+
+    /**
      * Sets all errors.
      *
      * @param array $errors
