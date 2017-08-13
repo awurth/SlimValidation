@@ -141,6 +141,8 @@ class Validator
     /**
      * Gets the validated data.
      *
+     * @deprecated since version 2.1, will be removed in 3.0. Use getValues() instead.
+     *
      * @return array
      */
     public function getData()
@@ -211,6 +213,16 @@ class Validator
     public function getValue($param)
     {
         return isset($this->data[$param]) ? $this->data[$param] : '';
+    }
+
+    /**
+     * Gets the validated data.
+     *
+     * @return array
+     */
+    public function getValues()
+    {
+        return $this->data;
     }
 
     /**
