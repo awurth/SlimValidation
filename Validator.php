@@ -124,6 +124,8 @@ class Validator
     /**
      * Adds errors for a parameter.
      *
+     * @deprecated since version 2.1, will be removed in 3.0.
+     *
      * @param string $param
      * @param string[] $messages
      *
@@ -249,6 +251,7 @@ class Validator
     public function setErrors(array $errors)
     {
         $this->errors = $errors;
+
         return $this;
     }
 
