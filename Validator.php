@@ -7,7 +7,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use ReflectionClass;
 use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Rules\AbstractComposite;
-use Respect\Validation\Validator as V;
+use Respect\Validation\Validator as RespectValidator;
 
 /**
  * Validator.
@@ -84,10 +84,10 @@ class Validator
             $value = $this->getRequestParam($request, $param);
 
             try {
-                if ($options instanceof V) {
+                if ($options instanceof RespectValidator) {
                     $options->assert($value);
                 } else {
-                    if (!isset($options['rules']) || !($options['rules'] instanceof V)) {
+                    if (!is_array($options) || !isset($options['rules']) || !($options['rules'] instanceof RespectValidator)) {
                         throw new InvalidArgumentException('Validation rules are missing');
                     }
 
@@ -95,7 +95,11 @@ class Validator
                 }
             } catch (NestedValidationException $e) {
                 // If the 'message' key exists, set it as only message for this param
-                if (is_array($options) && isset($options['message']) && is_string($options['message'])) {
+                if (is_array($options) && isset($options['message'])) {
+                    if (!is_string($options['message'])) {
+                        throw new InvalidArgumentException(sprintf('Expected custom message to be of type string, %s given', gettype($options['message'])));
+                    }
+
                     $this->errors[$param] = [$options['message']];
                 } else {
                     // If the 'messages' key exists, override global messages
@@ -376,7 +380,7 @@ class Validator
      */
     protected function setMessages(NestedValidationException $e, $param, $options, array $messages)
     {
-        $paramRules = $options instanceof V ? $options->getRules() : $options['rules']->getRules();
+        $paramRules = $options instanceof RespectValidator ? $options->getRules() : $options['rules']->getRules();
 
         // Get the names of all rules used for this param
         $rulesNames = [];
@@ -401,7 +405,7 @@ class Validator
         // If individual messages are defined
         if (is_array($options) && isset($options['messages'])) {
             if (!is_array($options['messages'])) {
-                throw new InvalidArgumentException(sprintf('Custom individual messages must be of type array, %s given', gettype($options['messages'])));
+                throw new InvalidArgumentException(sprintf('Expected custom individual messages to be of type array, %s given', gettype($options['messages'])));
             }
 
             $params[] = $e->findMessages($options['messages']);
