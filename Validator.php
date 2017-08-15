@@ -55,6 +55,8 @@ class Validator
     {
         $this->storeErrorsWithRules = $storeErrorsWithRules;
         $this->defaultMessages = $defaultMessages;
+        $this->errors = [];
+        $this->data = [];
     }
 
     /**
