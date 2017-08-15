@@ -82,7 +82,6 @@ class Validator
     {
         foreach ($rules as $param => $options) {
             $value = $this->getRequestParam($request, $param);
-            $this->data[$param] = $value;
 
             try {
                 if ($options instanceof V) {
@@ -103,6 +102,8 @@ class Validator
                     $this->setMessages($e, $param, $options, $messages);
                 }
             }
+
+            $this->data[$param] = $value;
         }
 
         return $this;
