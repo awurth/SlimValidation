@@ -208,6 +208,16 @@ class Validator
     }
 
     /**
+     * Tells whether errors should be stored in an associative array or an indexed array.
+     *
+     * @return bool
+     */
+    public function getStoreErrorsWithRules()
+    {
+        return $this->storeErrorsWithRules;
+    }
+
+    /**
      * Gets the value of a parameter in validated data.
      *
      * @param string $param
@@ -297,6 +307,20 @@ class Validator
     public function setParamErrors($param, array $errors)
     {
         $this->errors[$param] = $errors;
+
+        return $this;
+    }
+
+    /**
+     * Sets errors storage mode.
+     *
+     * @param bool $bool
+     *
+     * @return $this
+     */
+    public function setStoreErrorsWithRules($bool)
+    {
+        $this->storeErrorsWithRules = (bool) $bool;
 
         return $this;
     }
