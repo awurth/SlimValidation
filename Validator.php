@@ -399,6 +399,10 @@ class Validator
 
         // If individual messages are defined
         if (is_array($options) && isset($options['messages'])) {
+            if (!is_array($options['messages'])) {
+                throw new InvalidArgumentException(sprintf('Custom individual messages must be of type array, %s given', gettype($options['messages'])));
+            }
+
             $params[] = $e->findMessages($options['messages']);
         }
 
