@@ -160,6 +160,16 @@ class Validator
     }
 
     /**
+     * Gets all default messages.
+     *
+     * @return array
+     */
+    public function getDefaultMessages()
+    {
+        return $this->defaultMessages;
+    }
+
+    /**
      * Gets all errors.
      *
      * @return array
