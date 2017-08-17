@@ -129,37 +129,6 @@ class Validator
     }
 
     /**
-     * Adds errors for a parameter.
-     *
-     * @deprecated since version 2.1, will be removed in 3.0.
-     *
-     * @param string $param
-     * @param string[] $messages
-     *
-     * @return $this
-     */
-    public function addErrors($param, array $messages)
-    {
-        foreach ($messages as $message) {
-            $this->errors[$param][] = $message;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Gets the validated data.
-     *
-     * @deprecated since version 2.1, will be removed in 3.0. Use getValues() instead.
-     *
-     * @return array
-     */
-    public function getData()
-    {
-        return $this->data;
-    }
-
-    /**
      * Gets all default messages.
      *
      * @return array
@@ -252,20 +221,6 @@ class Validator
     public function getValues()
     {
         return $this->data;
-    }
-
-    /**
-     * Sets the validator data.
-     *
-     * @param array $data
-     *
-     * @return $this
-     */
-    public function setData(array $data)
-    {
-        $this->data = $data;
-
-        return $this;
     }
 
     /**
