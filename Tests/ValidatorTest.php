@@ -291,4 +291,134 @@ class ValidatorTest extends TestCase
             ]
         ], $this->validator->getErrors());
     }
+
+    public function testGetFirstError()
+    {
+        $this->assertEquals('', $this->validator->getFirstError('username'));
+
+        $this->validator->setErrors([
+            'param' => [
+                'notBlank' => 'Required'
+            ],
+            'username' => [
+                'alnum' => 'Only letters and numbers are allowed',
+                'length' => 'Too short!'
+            ]
+        ]);
+
+        $this->assertEquals('Only letters and numbers are allowed', $this->validator->getFirstError('username'));
+
+        $this->validator->setErrors([
+            'param' => [
+                'Required'
+            ],
+            'username' => [
+                'This field is required',
+                'Only letters and numbers are allowed'
+            ]
+        ]);
+
+        $this->assertEquals('This field is required', $this->validator->getFirstError('username'));
+    }
+
+    public function testGetParamErrors()
+    {
+        $this->assertEquals([], $this->validator->getParamErrors('username'));
+
+        $this->validator->setErrors([
+            'param' => [
+                'Required'
+            ],
+            'username' => [
+                'This field is required',
+                'Only letters and numbers are allowed'
+            ]
+        ]);
+
+        $this->assertEquals([
+            'This field is required',
+            'Only letters and numbers are allowed'
+        ], $this->validator->getParamErrors('username'));
+    }
+
+    public function testGetParamRuleError()
+    {
+        $this->assertEquals('', $this->validator->getParamRuleError('username', 'length'));
+
+        $this->validator->setErrors([
+            'username' => [
+                'alnum' => 'Only letters and numbers are allowed',
+                'length' => 'Too short!'
+            ]
+        ]);
+
+        $this->assertEquals('Too short!', $this->validator->getParamRuleError('username', 'length'));
+    }
+
+    public function testSetData()
+    {
+        $this->assertEquals([], $this->validator->getData());
+
+        $this->validator->setData([
+            'username' => 'awurth',
+            'password' => 'pass'
+        ]);
+
+        $this->assertEquals([
+            'username' => 'awurth',
+            'password' => 'pass'
+        ], $this->validator->getData());
+    }
+
+    public function testSetValues()
+    {
+        $this->assertEquals([], $this->validator->getValues());
+
+        $this->validator->setValues([
+            'username' => 'awurth',
+            'password' => 'pass'
+        ]);
+
+        $this->assertEquals([
+            'username' => 'awurth',
+            'password' => 'pass'
+        ], $this->validator->getValues());
+    }
+
+    public function testSetDefaultMessage()
+    {
+        $this->assertEquals([], $this->validator->getDefaultMessages());
+
+        $this->validator->setDefaultMessage('length', 'Too short!');
+
+        $this->assertEquals([
+            'length' => 'Too short!'
+        ], $this->validator->getDefaultMessages());
+    }
+
+    public function testSetParamErrors()
+    {
+        $this->assertEquals([], $this->validator->getErrors());
+
+        $this->validator->setParamErrors('username', [
+            'notBlank' => 'Required',
+            'length' => 'Too short!'
+        ]);
+
+        $this->assertEquals([
+            'username' => [
+                'notBlank' => 'Required',
+                'length' => 'Too short!'
+            ]
+        ], $this->validator->getErrors());
+    }
+
+    public function testSetStoreErrorsWithRules()
+    {
+        $this->assertTrue($this->validator->getStoreErrorsWithRules());
+
+        $this->validator->setStoreErrorsWithRules(false);
+
+        $this->assertFalse($this->validator->getStoreErrorsWithRules());
+    }
 }
