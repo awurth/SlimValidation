@@ -3,7 +3,7 @@
 namespace Awurth\SlimValidation;
 
 use Twig_Extension;
-use Twig_SimpleFunction;
+use Twig_Function;
 
 /**
  * ValidatorExtension.
@@ -50,21 +50,13 @@ class ValidatorExtension extends Twig_Extension
     public function getFunctions()
     {
         return [
-            new Twig_SimpleFunction($this->functionsNames['error'], [$this, 'getError']),
-            new Twig_SimpleFunction($this->functionsNames['errors'], [$this, 'getErrors']),
-            new Twig_SimpleFunction($this->functionsNames['rule_error'], [$this, 'getRuleError']),
-            new Twig_SimpleFunction($this->functionsNames['has_error'], [$this, 'hasError']),
-            new Twig_SimpleFunction($this->functionsNames['has_errors'], [$this, 'hasErrors']),
-            new Twig_SimpleFunction($this->functionsNames['val'], [$this, 'getValue'])
+            new Twig_Function($this->functionsNames['error'], [$this, 'getError']),
+            new Twig_Function($this->functionsNames['errors'], [$this, 'getErrors']),
+            new Twig_Function($this->functionsNames['rule_error'], [$this, 'getRuleError']),
+            new Twig_Function($this->functionsNames['has_error'], [$this, 'hasError']),
+            new Twig_Function($this->functionsNames['has_errors'], [$this, 'hasErrors']),
+            new Twig_Function($this->functionsNames['val'], [$this, 'getValue'])
         ];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return 'validator';
     }
 
     /**
