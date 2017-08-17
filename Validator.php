@@ -117,6 +117,16 @@ class Validator
     }
 
     /**
+     * Gets the error count.
+     *
+     * @return int
+     */
+    public function count()
+    {
+        return count($this->errors);
+    }
+
+    /**
      * Adds an error for a parameter.
      *
      * @param string $param
