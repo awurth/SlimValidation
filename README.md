@@ -1,6 +1,6 @@
 # Slim Validation
 
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/bdf52753-f379-41c6-85cf-d1d1379b4aa7/mini.png)](https://insight.sensiolabs.com/projects/bdf52753-f379-41c6-85cf-d1d1379b4aa7) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/awurth/slim-validation/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/awurth/slim-validation/?branch=master) [![Latest Stable Version](https://poser.pugx.org/awurth/slim-validation/v/stable)](https://packagist.org/packages/awurth/slim-validation) [![Total Downloads](https://poser.pugx.org/awurth/slim-validation/downloads)](https://packagist.org/packages/awurth/slim-validation) [![License](https://poser.pugx.org/awurth/slim-validation/license)](https://packagist.org/packages/awurth/slim-validation)
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/bdf52753-f379-41c6-85cf-d1d1379b4aa7/mini.png)](https://insight.sensiolabs.com/projects/bdf52753-f379-41c6-85cf-d1d1379b4aa7) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/awurth/slim-validation/badges/quality-score.png?b=2.x)](https://scrutinizer-ci.com/g/awurth/slim-validation/?branch=2.x) [![Build Status](https://travis-ci.org/awurth/slim-validation.svg?branch=2.x)](https://travis-ci.org/awurth/slim-validation) [![Total Downloads](https://poser.pugx.org/awurth/slim-validation/downloads)](https://packagist.org/packages/awurth/slim-validation) [![License](https://poser.pugx.org/awurth/slim-validation/license)](https://packagist.org/packages/awurth/slim-validation)
 
 A validator for the Slim PHP Micro-Framework, using [Respect Validation](https://github.com/Respect/Validation)
 
@@ -9,7 +9,42 @@ A validator for the Slim PHP Micro-Framework, using [Respect Validation](https:/
 $ composer require awurth/slim-validation
 ```
 
-## Configuration
+### Configuration
+To initialize the validator, create a new instance of `Awurth\SlimValidation\Validator`
+``` php
+Validator::__construct([ bool $storeErrorsWithRules = true [, array $defaultMessages = [] ]])
+```
+
+##### $storeErrorsWithRules
+* If set to `true`, errors will be stored in an associative array with the validation rules names as the key
+``` php
+$errors = [
+    'username' => [
+        'length' => 'The username must have a length between 8 and 16',
+        'alnum' => 'The username must contain only letters (a-z) and digits (0-9)'
+    ]
+];
+```
+* If set to `false`, errors will be stored in an array of strings
+``` php
+$errors = [
+    'username' => [
+        'The username must have a length between 8 and 16',
+        'The username must contain only letters (a-z) and digits (0-9)'
+    ]
+];
+```
+
+##### $defaultMessages
+An array of messages to overwrite the default [Respect Validation](https://github.com/Respect/Validation) messages
+``` php
+$defaultMessages = [
+    'length' => 'This field must have a length between {{minValue}} and {{maxValue}} characters',
+    'notBlank' => 'This field is required'
+];
+```
+
+### Add the validator as a service
 You can add the validator to the app container to access it easily through your application
 ``` php
 $container['validator'] = function () {
@@ -21,8 +56,8 @@ $container['validator'] = function () {
 ``` php
 use Respect\Validation\Validator as V;
 
-// This will return the validator instance
-$validator = $container->validation->validate($request, [
+// The validate method returns the validator instance
+$validator = $container->validator->validate($request, [
     'get_or_post_parameter_name' => V::length(6, 25)->alnum('_')->noWhitespace(),
     // ...
 ]);
@@ -35,10 +70,30 @@ if ($validator->isValid()) {
 ```
 
 ### Custom messages
-You can define messages for a single parameter or global messages for a validation rule, or both.
-Individual messages override global messages.
+Slim Validation allows you to set custom messages for validation errors. There are 4 types of custom messages
 
-#### Individual messages
+##### Default rules messages
+The ones defined in the `Validator` constructor.
+##### Global rules messages
+Messages that overwrite **Respect Validation** and **default rules messages** when calling the `validate` method.
+##### Individual rules messages
+Messages for a single request parameter. Overwrites all above messages.
+##### Single parameter messages
+Defines a single error message for a request parameter, ignoring the validation rules. Overwrites all messages.
+
+#### Global rules messages
+``` php
+$container->validator->validate($request, [
+    'get_or_post_parameter_name' => V::length(6, 25)->alnum('_')->noWhitespace(),
+    // ...
+], [
+    'length' => 'Custom message',
+    'alnum' => 'Custom message',
+    // ...
+]);
+```
+
+#### Individual rules messages
 ``` php
 $container->validator->validate($request, [
     'get_or_post_parameter_name' => [
@@ -53,22 +108,39 @@ $container->validator->validate($request, [
 ]);
 ```
 
-#### Global messages
+#### Single parameter messages
 ``` php
 $container->validator->validate($request, [
-    'get_or_post_parameter_name' => V::length(6, 25)->alnum('_')->noWhitespace(),
-    // ...
-], [
-    'length' => 'Custom message',
-    'alnum' => 'Custom message',
+    'get_or_post_parameter_name' => [
+        'rules' => V::length(6, 25)->alnum('_')->noWhitespace(),
+        'message' => 'This field must have a length between 6 and 25 characters and contain only letters and digits'
+    ],
     // ...
 ]);
 ```
 
 ## Twig extension
+This package comes with a Twig extension to display error messages and submitted values in your Twig templates. You can skip this step if you don't want to use it.
+
 To use the extension, you must install twig first
 ``` bash
 $ composer require slim/twig-view
+```
+
+### Configuration
+``` php
+$container['view'] = function ($container) {
+    // Twig configuration
+    $view = new Slim\Views\Twig(...);
+    // ...
+
+    // Add the validator extension
+    $view->addExtension(
+        new Awurth\SlimValidation\ValidatorExtension($container['validator'])
+    );
+
+    return $view;
+};
 ```
 
 ### Functions

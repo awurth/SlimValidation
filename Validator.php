@@ -7,7 +7,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use ReflectionClass;
 use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Rules\AbstractComposite;
-use Respect\Validation\Validator as V;
+use Respect\Validation\Validator as RespectValidator;
 
 /**
  * Validator.
@@ -55,6 +55,8 @@ class Validator
     {
         $this->storeErrorsWithRules = $storeErrorsWithRules;
         $this->defaultMessages = $defaultMessages;
+        $this->errors = [];
+        $this->data = [];
     }
 
     /**
@@ -80,13 +82,12 @@ class Validator
     {
         foreach ($rules as $param => $options) {
             $value = $this->getRequestParam($request, $param);
-            $this->data[$param] = $value;
 
             try {
-                if ($options instanceof V) {
+                if ($options instanceof RespectValidator) {
                     $options->assert($value);
                 } else {
-                    if (!isset($options['rules']) || !($options['rules'] instanceof V)) {
+                    if (!is_array($options) || !isset($options['rules']) || !($options['rules'] instanceof RespectValidator)) {
                         throw new InvalidArgumentException('Validation rules are missing');
                     }
 
@@ -94,14 +95,19 @@ class Validator
                 }
             } catch (NestedValidationException $e) {
                 // If the 'message' key exists, set it as only message for this param
-                if (is_array($options) && isset($options['message']) && is_string($options['message'])) {
+                if (is_array($options) && isset($options['message'])) {
+                    if (!is_string($options['message'])) {
+                        throw new InvalidArgumentException(sprintf('Expected custom message to be of type string, %s given', gettype($options['message'])));
+                    }
+
                     $this->errors[$param] = [$options['message']];
-                    return $this;
                 } else {
                     // If the 'messages' key exists, override global messages
                     $this->setMessages($e, $param, $options, $messages);
                 }
             }
+
+            $this->data[$param] = $value;
         }
 
         return $this;
@@ -125,6 +131,8 @@ class Validator
     /**
      * Adds errors for a parameter.
      *
+     * @deprecated since version 2.1, will be removed in 3.0.
+     *
      * @param string $param
      * @param string[] $messages
      *
@@ -142,11 +150,23 @@ class Validator
     /**
      * Gets the validated data.
      *
+     * @deprecated since version 2.1, will be removed in 3.0. Use getValues() instead.
+     *
      * @return array
      */
     public function getData()
     {
         return $this->data;
+    }
+
+    /**
+     * Gets all default messages.
+     *
+     * @return array
+     */
+    public function getDefaultMessages()
+    {
+        return $this->defaultMessages;
     }
 
     /**
@@ -203,6 +223,16 @@ class Validator
     }
 
     /**
+     * Tells whether errors should be stored in an associative array or an indexed array.
+     *
+     * @return bool
+     */
+    public function getStoreErrorsWithRules()
+    {
+        return $this->storeErrorsWithRules;
+    }
+
+    /**
      * Gets the value of a parameter in validated data.
      *
      * @param string $param
@@ -212,6 +242,16 @@ class Validator
     public function getValue($param)
     {
         return isset($this->data[$param]) ? $this->data[$param] : '';
+    }
+
+    /**
+     * Gets the validated data.
+     *
+     * @return array
+     */
+    public function getValues()
+    {
+        return $this->data;
     }
 
     /**
@@ -229,6 +269,35 @@ class Validator
     }
 
     /**
+     * Sets the default error message for a validation rule.
+     *
+     * @param string $rule
+     * @param string $message
+     *
+     * @return $this
+     */
+    public function setDefaultMessage($rule, $message)
+    {
+        $this->defaultMessages[$rule] = $message;
+
+        return $this;
+    }
+
+    /**
+     * Sets default error messages.
+     *
+     * @param array $messages
+     *
+     * @return $this
+     */
+    public function setDefaultMessages(array $messages)
+    {
+        $this->defaultMessages = $messages;
+
+        return $this;
+    }
+
+    /**
      * Sets all errors.
      *
      * @param array $errors
@@ -238,6 +307,7 @@ class Validator
     public function setErrors(array $errors)
     {
         $this->errors = $errors;
+
         return $this;
     }
 
@@ -252,6 +322,20 @@ class Validator
     public function setParamErrors($param, array $errors)
     {
         $this->errors[$param] = $errors;
+
+        return $this;
+    }
+
+    /**
+     * Sets errors storage mode.
+     *
+     * @param bool $bool
+     *
+     * @return $this
+     */
+    public function setStoreErrorsWithRules($bool)
+    {
+        $this->storeErrorsWithRules = (bool) $bool;
 
         return $this;
     }
@@ -306,7 +390,7 @@ class Validator
      */
     protected function setMessages(NestedValidationException $e, $param, $options, array $messages)
     {
-        $paramRules = $options instanceof V ? $options->getRules() : $options['rules']->getRules();
+        $paramRules = $options instanceof RespectValidator ? $options->getRules() : $options['rules']->getRules();
 
         // Get the names of all rules used for this param
         $rulesNames = [];
@@ -330,6 +414,10 @@ class Validator
 
         // If individual messages are defined
         if (is_array($options) && isset($options['messages'])) {
+            if (!is_array($options['messages'])) {
+                throw new InvalidArgumentException(sprintf('Expected custom individual messages to be of type array, %s given', gettype($options['messages'])));
+            }
+
             $params[] = $e->findMessages($options['messages']);
         }
 
