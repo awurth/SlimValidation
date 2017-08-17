@@ -16,6 +16,9 @@ use Respect\Validation\Validator as RespectValidator;
  */
 class Validator
 {
+    const MODE_ASSOCIATIVE = 1;
+    const MODE_INDEXED = 2;
+
     /**
      * The validated data.
      *
@@ -39,21 +42,21 @@ class Validator
 
     /**
      * Tells if errors should be stored in an associative array
-     * where the key is the name of the validation rule.
+     * or in an indexed array.
      *
-     * @var bool
+     * @var int
      */
-    protected $storeErrorsWithRules;
+    protected $errorStorageMode;
 
     /**
      * Constructor.
      *
-     * @param bool $storeErrorsWithRules
+     * @param int $errorStorageMode
      * @param array $defaultMessages
      */
-    public function __construct($storeErrorsWithRules = true, array $defaultMessages = [])
+    public function __construct(int $errorStorageMode = self::MODE_ASSOCIATIVE, array $defaultMessages = [])
     {
-        $this->storeErrorsWithRules = $storeErrorsWithRules;
+        $this->errorStorageMode = $errorStorageMode;
         $this->defaultMessages = $defaultMessages;
         $this->errors = [];
         $this->data = [];
@@ -192,16 +195,6 @@ class Validator
     }
 
     /**
-     * Tells whether errors should be stored in an associative array or an indexed array.
-     *
-     * @return bool
-     */
-    public function getStoreErrorsWithRules()
-    {
-        return $this->storeErrorsWithRules;
-    }
-
-    /**
      * Gets the value of a parameter in validated data.
      *
      * @param string $param
@@ -221,6 +214,16 @@ class Validator
     public function getValues()
     {
         return $this->data;
+    }
+
+    /**
+     * Gets the error storage mode.
+     *
+     * @return int
+     */
+    public function getErrorStorageMode()
+    {
+        return $this->errorStorageMode;
     }
 
     /**
@@ -267,6 +270,20 @@ class Validator
     }
 
     /**
+     * Sets the error storage mode.
+     *
+     * @param int $errorStorageMode
+     *
+     * @return $this
+     */
+    public function setErrorStorageMode(int $errorStorageMode)
+    {
+        $this->errorStorageMode = $errorStorageMode;
+
+        return $this;
+    }
+
+    /**
      * Sets the errors of a parameter.
      *
      * @param string $param
@@ -277,20 +294,6 @@ class Validator
     public function setParamErrors($param, array $errors)
     {
         $this->errors[$param] = $errors;
-
-        return $this;
-    }
-
-    /**
-     * Sets errors storage mode.
-     *
-     * @param bool $bool
-     *
-     * @return $this
-     */
-    public function setStoreErrorsWithRules($bool)
-    {
-        $this->storeErrorsWithRules = (bool) $bool;
 
         return $this;
     }
@@ -378,6 +381,6 @@ class Validator
 
         $errors = array_filter(call_user_func_array('array_merge', $params));
 
-        $this->errors[$param] = $this->storeErrorsWithRules ? $errors : array_values($errors);
+        $this->errors[$param] = $this->errorStorageMode === self::MODE_ASSOCIATIVE ? $errors : array_values($errors);
     }
 }
