@@ -24,7 +24,7 @@ class Validator
      *
      * @var array
      */
-    protected $data;
+    protected $values;
 
     /**
      * The default error messages for the given rules.
@@ -59,7 +59,7 @@ class Validator
         $this->errorStorageMode = $errorStorageMode;
         $this->defaultMessages = $defaultMessages;
         $this->errors = [];
-        $this->data = [];
+        $this->values = [];
     }
 
     /**
@@ -110,7 +110,7 @@ class Validator
                 }
             }
 
-            $this->data[$param] = $value;
+            $this->values[$param] = $value;
         }
 
         return $this;
@@ -195,7 +195,7 @@ class Validator
     }
 
     /**
-     * Gets the value of a parameter in validated data.
+     * Gets the value of a request parameter in validated data.
      *
      * @param string $param
      *
@@ -203,7 +203,7 @@ class Validator
      */
     public function getValue($param)
     {
-        return isset($this->data[$param]) ? $this->data[$param] : '';
+        return isset($this->values[$param]) ? $this->values[$param] : '';
     }
 
     /**
@@ -213,7 +213,7 @@ class Validator
      */
     public function getValues()
     {
-        return $this->data;
+        return $this->values;
     }
 
     /**
@@ -299,15 +299,30 @@ class Validator
     }
 
     /**
-     * Sets the value of parameters.
+     * Sets the value of a request parameter.
      *
-     * @param array $data
+     * @param string $param
+     * @param mixed $value
      *
      * @return $this
      */
-    public function setValues(array $data)
+    public function setValue($param, $value)
     {
-        $this->data = array_merge($this->data, $data);
+        $this->values[$param] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Sets the values of request parameters.
+     *
+     * @param array $values
+     *
+     * @return $this
+     */
+    public function setValues(array $values)
+    {
+        $this->values = $values;
 
         return $this;
     }
