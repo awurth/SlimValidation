@@ -5,6 +5,7 @@ namespace Awurth\SlimValidation;
 use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use ReflectionClass;
+use ReflectionProperty;
 use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Rules\AbstractComposite;
 use Respect\Validation\Validator as RespectValidator;
@@ -75,18 +76,48 @@ class Validator
     /**
      * Validates an array with the given rules.
      *
-     * @param array $array
-     * @param array $rules
-     * @param array $messages
+     * @param array      $array
+     * @param array      $rules
+     * @param array      $messages
+     * @param string|int $group
      *
      * @return self
      */
-    public function array(array $array, array $rules, array $messages = [])
+    public function array(array $array, array $rules, array $messages = [], $group = null)
     {
-        foreach ($rules as $key => $options) {
-            $value = isset($array[$key]) ?? null;
+        if (null !== $group && (!is_string($group) || !is_int($group))) {
+            throw new InvalidArgumentException('The group must be either a string or an integer');
+        }
 
-            $this->value($value, $key, $options, $messages);
+        foreach ($rules as $key => $options) {
+            $value = $array[$key] ?? null;
+
+            $this->value($value, $key, $options, $messages, $group);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Validates an objects properties with the given rules.
+     *
+     * @param object     $object
+     * @param array      $rules
+     * @param array      $messages
+     * @param string|int $group
+     *
+     * @return self
+     */
+    public function object(object $object, array $rules, array $messages = [], $group = null)
+    {
+        if (null !== $group && (!is_string($group) || !is_int($group))) {
+            throw new InvalidArgumentException('The group must be either a string or an integer');
+        }
+
+        foreach ($rules as $property => $options) {
+            $value = $this->getPropertyValue($object, $property);
+
+            $this->value($value, $property, $options, $messages, $group);
         }
 
         return $this;
@@ -95,18 +126,50 @@ class Validator
     /**
      * Validates request parameters with the given rules.
      *
-     * @param Request $request
-     * @param array $rules
-     * @param array $messages
+     * @param Request    $request
+     * @param array      $rules
+     * @param array      $messages
+     * @param string|int $group
      *
      * @return self
      */
-    public function request(Request $request, array $rules, array $messages = [])
+    public function request(Request $request, array $rules, array $messages = [], $group = null)
     {
+        if (null !== $group && (!is_string($group) || !is_int($group))) {
+            throw new InvalidArgumentException('The group must be either a string or an integer');
+        }
+
         foreach ($rules as $param => $options) {
             $value = $this->getRequestParam($request, $param);
 
-            $this->value($value, $param, $options, $messages);
+            $this->value($value, $param, $options, $messages, $group);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Validates request parameters, an array or an objects properties.
+     *
+     * @param Request|object|array $input
+     * @param array                $rules
+     * @param array                $messages
+     * @param string|int           $group
+     *
+     * @return self
+     */
+    public function validate($input, array $rules, array $messages = [], $group = null)
+    {
+        if (!is_object($input) && !is_array($input)) {
+            throw new InvalidArgumentException('The input must be either an object or an array');
+        }
+
+        if ($input instanceof Request) {
+            return $this->request($input, $rules, $messages, $group);
+        } elseif (is_array($input)) {
+            return $this->array($input, $rules, $messages, $group);
+        } elseif (is_object($input)) {
+            return $this->object($input, $rules, $messages, $group);
         }
 
         return $this;
@@ -115,40 +178,53 @@ class Validator
     /**
      * Validates a single value with the given rules.
      *
-     * @param mixed $value
-     * @param string $key
-     * @param RespectValidator|array $options
-     * @param array $messages
+     * @param mixed                  $value
+     * @param string                 $key
+     * @param RespectValidator|array $rules
+     * @param array                  $messages
+     * @param string|int             $group
      *
      * @return self
      */
-    public function value($value, $key, $options, array $messages = [])
+    public function value($value, $key, $rules, array $messages = [], $group = null)
     {
+        if (null !== $group && (!is_string($group) || !is_int($group))) {
+            throw new InvalidArgumentException('The group must be either a string or an integer');
+        }
+
         try {
-            if ($options instanceof RespectValidator) {
-                $options->assert($value);
+            if ($rules instanceof RespectValidator) {
+                $rules->assert($value);
             } else {
-                if (!is_array($options) || !isset($options['rules']) || !($options['rules'] instanceof RespectValidator)) {
+                if (!is_array($rules) || !isset($rules['rules']) || !($rules['rules'] instanceof RespectValidator)) {
                     throw new InvalidArgumentException('Validation rules are missing');
                 }
 
-                $options['rules']->assert($value);
+                $rules['rules']->assert($value);
             }
         } catch (NestedValidationException $e) {
             // If the 'message' key exists, set it as only message for this param
-            if (is_array($options) && isset($options['message'])) {
-                if (!is_string($options['message'])) {
-                    throw new InvalidArgumentException(sprintf('Expected custom message to be of type string, %s given', gettype($options['message'])));
+            if (is_array($rules) && isset($rules['message'])) {
+                if (!is_string($rules['message'])) {
+                    throw new InvalidArgumentException(sprintf('Expected custom message to be of type string, %s given', gettype($rules['message'])));
                 }
 
-                $this->errors[$key] = [$options['message']];
+                if (null !== $group) {
+                    $this->errors[$group][$key] = [$rules['message']];
+                } else {
+                    $this->errors[$key] = [$rules['message']];
+                }
             } else {
                 // If the 'messages' key exists, override global messages
-                $this->setMessages($e, $key, $options, $messages);
+                $this->setMessages($e, $key, $rules, $messages, $group);
             }
         }
 
-        $this->values[$key] = $value;
+        if (null !== $group) {
+            $this->values[$group][$key] = $value;
+        } else {
+            $this->values[$key] = $value;
+        }
 
         return $this;
     }
@@ -168,12 +244,17 @@ class Validator
      *
      * @param string $param
      * @param string $message
+     * @param string $group
      *
      * @return self
      */
-    public function addError($param, $message)
+    public function addError($param, $message, $group = null)
     {
-        $this->errors[$param][] = $message;
+        if (null !== $group) {
+            $this->errors[$group][$param][] = $message;
+        } else {
+            $this->errors[$param][] = $message;
+        }
 
         return $this;
     }
@@ -202,12 +283,19 @@ class Validator
      * Gets the first error of a parameter.
      *
      * @param string $param
+     * @param string $group
      *
      * @return string
      */
-    public function getFirstError($param)
+    public function getFirstError($param, $group = null)
     {
-        if (isset($this->errors[$param])) {
+        if (null !== $group) {
+            if (isset($this->errors[$group][$param])) {
+                $first = array_slice($this->errors[$group][$param], 0, 1);
+
+                return array_shift($first);
+            }
+        } elseif (isset($this->errors[$param])) {
             $first = array_slice($this->errors[$param], 0, 1);
 
             return array_shift($first);
@@ -220,12 +308,17 @@ class Validator
      * Gets errors of a parameter.
      *
      * @param string $param
+     * @param string $group
      *
      * @return array
      */
-    public function getParamErrors($param)
+    public function getParamErrors($param, $group = null)
     {
-        return isset($this->errors[$param]) ? $this->errors[$param] : [];
+        if (null !== $group) {
+            return $this->errors[$group][$param] ?? [];
+        }
+
+        return $this->errors[$param] ?? [];
     }
 
     /**
@@ -233,24 +326,34 @@ class Validator
      *
      * @param string $param
      * @param string $rule
+     * @param string $group
      *
      * @return string
      */
-    public function getParamRuleError($param, $rule)
+    public function getParamRuleError($param, $rule, $group = null)
     {
-        return isset($this->errors[$param][$rule]) ? $this->errors[$param][$rule] : '';
+        if (null !== $group) {
+            return $this->errors[$group][$param][$rule] ?? '';
+        }
+
+        return $this->errors[$param][$rule] ?? '';
     }
 
     /**
      * Gets the value of a request parameter in validated data.
      *
      * @param string $param
+     * @param string $group
      *
      * @return string
      */
-    public function getValue($param)
+    public function getValue($param, $group = null)
     {
-        return isset($this->values[$param]) ? $this->values[$param] : '';
+        if (null !== $group) {
+            return $this->values[$group][$param] ?? '';
+        }
+
+        return $this->values[$param] ?? '';
     }
 
     /**
@@ -334,13 +437,18 @@ class Validator
      * Sets the errors of a parameter.
      *
      * @param string $param
-     * @param array $errors
+     * @param array  $errors
+     * @param string $group
      *
      * @return self
      */
-    public function setParamErrors($param, array $errors)
+    public function setParamErrors($param, array $errors, $group = null)
     {
-        $this->errors[$param] = $errors;
+        if (null !== $group) {
+            $this->errors[$group][$param] = $errors;
+        } else {
+            $this->errors[$param] = $errors;
+        }
 
         return $this;
     }
@@ -349,13 +457,18 @@ class Validator
      * Sets the value of a request parameter.
      *
      * @param string $param
-     * @param mixed $value
+     * @param mixed  $value
+     * @param string $group
      *
      * @return self
      */
-    public function setValue($param, $value)
+    public function setValue($param, $value, $group = null)
     {
-        $this->values[$param] = $value;
+        if (null !== $group) {
+            $this->values[$group][$param] = $value;
+        } else {
+            $this->values[$param] = $value;
+        }
 
         return $this;
     }
@@ -372,6 +485,27 @@ class Validator
         $this->values = $values;
 
         return $this;
+    }
+
+    /**
+     * Gets the value of a property of an object.
+     *
+     * @param object $object
+     * @param string $propertyName
+     * @param mixed  $default
+     *
+     * @return mixed
+     */
+    protected function getPropertyValue(object $object, string $propertyName, $default = null)
+    {
+        if (!property_exists($object, $propertyName)) {
+            return $default;
+        }
+
+        $reflectionProperty = new ReflectionProperty($object, $propertyName);
+        $reflectionProperty->setAccessible(true);
+
+        return $reflectionProperty->getValue($object);
     }
 
     /**
@@ -404,11 +538,12 @@ class Validator
      * Sets error messages after validation.
      *
      * @param NestedValidationException $e
-     * @param string $param
-     * @param AbstractComposite|array $options
-     * @param array $messages
+     * @param string                    $param
+     * @param AbstractComposite|array   $options
+     * @param array                     $messages
+     * @param string|int                $group
      */
-    protected function setMessages(NestedValidationException $e, $param, $options, array $messages)
+    protected function setMessages(NestedValidationException $e, $param, $options, array $messages = [], $group = null)
     {
         $paramRules = $options instanceof RespectValidator ? $options->getRules() : $options['rules']->getRules();
 
@@ -443,6 +578,10 @@ class Validator
 
         $errors = array_filter(call_user_func_array('array_merge', $params));
 
-        $this->errors[$param] = $this->errorStorageMode === self::MODE_ASSOCIATIVE ? $errors : array_values($errors);
+        if (null !== $group) {
+            $this->errors[$group][$param] = $this->errorStorageMode === self::MODE_ASSOCIATIVE ? $errors : array_values($errors);
+        } else {
+            $this->errors[$param] = $this->errorStorageMode === self::MODE_ASSOCIATIVE ? $errors : array_values($errors);
+        }
     }
 }
