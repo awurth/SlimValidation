@@ -18,6 +18,9 @@ class ValidatorExtensionTest extends TestCase
      */
     protected $validatorExtension;
 
+    /**
+     * {@inheritdoc}
+     */
     public function setUp()
     {
         $this->validator = new Validator();
@@ -51,9 +54,9 @@ class ValidatorExtensionTest extends TestCase
         $this->assertEquals(['Bad username'], $this->validatorExtension->getErrors('username'));
     }
 
-    public function testGetRuleError()
+    public function testGetErrorWithRule()
     {
-        $this->assertEquals('', $this->validatorExtension->getRuleError('username', 'notBlank'));
+        $this->assertEquals('', $this->validatorExtension->getError('username', 'notBlank'));
 
         $this->validator->setErrors([
             'username' => [
@@ -62,7 +65,7 @@ class ValidatorExtensionTest extends TestCase
             ]
         ]);
 
-        $this->assertEquals('Required', $this->validatorExtension->getRuleError('username', 'notBlank'));
+        $this->assertEquals('Required', $this->validatorExtension->getError('username', 'notBlank'));
     }
 
     public function testGetValue()

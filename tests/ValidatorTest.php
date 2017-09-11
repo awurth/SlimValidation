@@ -21,6 +21,9 @@ class ValidatorTest extends TestCase
      */
     protected $request;
 
+    /**
+     * {@inheritdoc}
+     */
     public function setUp()
     {
         $this->request = Request::createFromEnvironment(Environment::mock([
@@ -91,7 +94,7 @@ class ValidatorTest extends TestCase
 
     public function testValidateWithIndexedErrors()
     {
-        $this->validator->setStoreErrorsWithRules(false);
+        $this->validator->setErrorStorageMode(Validator::MODE_INDEXED);
         $this->validator->validate($this->request, [
             'username' => V::length(8)
         ]);
@@ -149,9 +152,7 @@ class ValidatorTest extends TestCase
 
     public function testValidateWithCustomDefaultAndGlobalMessages()
     {
-        $this->validator->setDefaultMessages([
-            'length' => 'Too short!'
-        ]);
+        $this->validator->setDefaultMessage('length', 'Too short!');
 
         $this->validator->validate($this->request, [
             'username' => V::length(8),
@@ -264,7 +265,7 @@ class ValidatorTest extends TestCase
 
     public function testIsValidWithoutErrors()
     {
-        $this->validator->setErrors([]);
+        $this->validator->removeErrors();
 
         $this->assertTrue($this->validator->isValid());
     }
@@ -276,18 +277,6 @@ class ValidatorTest extends TestCase
         $this->assertEquals([
             'param' => [
                 'message'
-            ]
-        ], $this->validator->getErrors());
-    }
-
-    public function testAddErrors()
-    {
-        $this->validator->addErrors('param', ['message1', 'message2']);
-
-        $this->assertEquals([
-            'param' => [
-                'message1',
-                'message2'
             ]
         ], $this->validator->getErrors());
     }
@@ -321,9 +310,9 @@ class ValidatorTest extends TestCase
         $this->assertEquals('This field is required', $this->validator->getFirstError('username'));
     }
 
-    public function testGetParamErrors()
+    public function testGetErrors()
     {
-        $this->assertEquals([], $this->validator->getParamErrors('username'));
+        $this->assertEquals([], $this->validator->getErrors('username'));
 
         $this->validator->setErrors([
             'param' => [
@@ -338,12 +327,12 @@ class ValidatorTest extends TestCase
         $this->assertEquals([
             'This field is required',
             'Only letters and numbers are allowed'
-        ], $this->validator->getParamErrors('username'));
+        ], $this->validator->getErrors('username'));
     }
 
-    public function testGetParamRuleError()
+    public function testGetError()
     {
-        $this->assertEquals('', $this->validator->getParamRuleError('username', 'length'));
+        $this->assertEquals('', $this->validator->getError('username', 'length'));
 
         $this->validator->setErrors([
             'username' => [
@@ -352,22 +341,7 @@ class ValidatorTest extends TestCase
             ]
         ]);
 
-        $this->assertEquals('Too short!', $this->validator->getParamRuleError('username', 'length'));
-    }
-
-    public function testSetData()
-    {
-        $this->assertEquals([], $this->validator->getData());
-
-        $this->validator->setData([
-            'username' => 'awurth',
-            'password' => 'pass'
-        ]);
-
-        $this->assertEquals([
-            'username' => 'awurth',
-            'password' => 'pass'
-        ], $this->validator->getData());
+        $this->assertEquals('Too short!', $this->validator->getError('username', 'length'));
     }
 
     public function testSetValues()
@@ -396,14 +370,14 @@ class ValidatorTest extends TestCase
         ], $this->validator->getDefaultMessages());
     }
 
-    public function testSetParamErrors()
+    public function testSetErrors()
     {
         $this->assertEquals([], $this->validator->getErrors());
 
-        $this->validator->setParamErrors('username', [
+        $this->validator->setErrors([
             'notBlank' => 'Required',
             'length' => 'Too short!'
-        ]);
+        ], 'username');
 
         $this->assertEquals([
             'username' => [
@@ -413,12 +387,12 @@ class ValidatorTest extends TestCase
         ], $this->validator->getErrors());
     }
 
-    public function testSetStoreErrorsWithRules()
+    public function testSetErrorStorageMode()
     {
-        $this->assertTrue($this->validator->getStoreErrorsWithRules());
+        $this->assertEquals(Validator::MODE_ASSOCIATIVE, $this->validator->getErrorStorageMode());
 
-        $this->validator->setStoreErrorsWithRules(false);
+        $this->validator->setErrorStorageMode(Validator::MODE_INDEXED);
 
-        $this->assertFalse($this->validator->getStoreErrorsWithRules());
+        $this->assertEquals(Validator::MODE_INDEXED, $this->validator->getErrorStorageMode());
     }
 }
