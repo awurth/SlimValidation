@@ -85,10 +85,6 @@ class Validator
      */
     public function array(array $array, array $rules, array $messages = [], $group = null)
     {
-        if (null !== $group && (!is_string($group) || !is_int($group))) {
-            throw new InvalidArgumentException('The group must be either a string or an integer');
-        }
-
         foreach ($rules as $key => $options) {
             $value = $array[$key] ?? null;
 
@@ -110,10 +106,6 @@ class Validator
      */
     public function object(object $object, array $rules, array $messages = [], $group = null)
     {
-        if (null !== $group && (!is_string($group) || !is_int($group))) {
-            throw new InvalidArgumentException('The group must be either a string or an integer');
-        }
-
         foreach ($rules as $property => $options) {
             $value = $this->getPropertyValue($object, $property);
 
@@ -135,10 +127,6 @@ class Validator
      */
     public function request(Request $request, array $rules, array $messages = [], $group = null)
     {
-        if (null !== $group && (!is_string($group) || !is_int($group))) {
-            throw new InvalidArgumentException('The group must be either a string or an integer');
-        }
-
         foreach ($rules as $param => $options) {
             $value = $this->getRequestParam($request, $param);
 
@@ -188,10 +176,6 @@ class Validator
      */
     public function value($value, $key, $rules, array $messages = [], $group = null)
     {
-        if (null !== $group && (!is_string($group) || !is_int($group))) {
-            throw new InvalidArgumentException('The group must be either a string or an integer');
-        }
-
         try {
             if ($rules instanceof RespectValidator) {
                 $rules->assert($value);
