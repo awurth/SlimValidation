@@ -2,15 +2,15 @@
 
 namespace Awurth\SlimValidation;
 
-use Twig_Extension;
-use Twig_Function;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFunction;
 
 /**
  * ValidatorExtension.
  *
  * @author Alexis Wurth <alexis.wurth57@gmail.com>
  */
-class ValidatorExtension extends Twig_Extension
+class ValidatorExtension extends AbstractExtension
 {
     /**
      * Array of names for Twig functions.
@@ -50,12 +50,12 @@ class ValidatorExtension extends Twig_Extension
     public function getFunctions()
     {
         return [
-            new Twig_Function($this->functionsNames['error'], [$this, 'getError']),
-            new Twig_Function($this->functionsNames['errors'], [$this, 'getErrors']),
-            new Twig_Function($this->functionsNames['rule_error'], [$this, 'getRuleError']),
-            new Twig_Function($this->functionsNames['has_error'], [$this, 'hasError']),
-            new Twig_Function($this->functionsNames['has_errors'], [$this, 'hasErrors']),
-            new Twig_Function($this->functionsNames['val'], [$this, 'getValue'])
+            new TwigFunction($this->functionsNames['error'], [$this, 'getError']),
+            new TwigFunction($this->functionsNames['errors'], [$this, 'getErrors']),
+            new TwigFunction($this->functionsNames['rule_error'], [$this, 'getRuleError']),
+            new TwigFunction($this->functionsNames['has_error'], [$this, 'hasError']),
+            new TwigFunction($this->functionsNames['has_errors'], [$this, 'hasErrors']),
+            new TwigFunction($this->functionsNames['val'], [$this, 'getValue'])
         ];
     }
 
