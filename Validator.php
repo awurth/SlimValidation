@@ -99,7 +99,7 @@ class Validator
      * @param array $rules
      * @param array $messages
      *
-     * @return $this
+     * @return self
      */
     public function validate(Request $request, array $rules, array $messages = [])
     {
@@ -193,7 +193,7 @@ class Validator
      * @param string $param
      * @param string $message
      *
-     * @return $this
+     * @return self
      */
     public function addError($param, $message)
     {
@@ -303,7 +303,7 @@ class Validator
      * @param string $rule
      * @param string $message
      *
-     * @return $this
+     * @return self
      */
     public function setDefaultMessage($rule, $message)
     {
@@ -317,7 +317,7 @@ class Validator
      *
      * @param array $messages
      *
-     * @return $this
+     * @return self
      */
     public function setDefaultMessages(array $messages)
     {
@@ -331,7 +331,7 @@ class Validator
      *
      * @param array $errors
      *
-     * @return $this
+     * @return self
      */
     public function setErrors(array $errors)
     {
@@ -345,7 +345,7 @@ class Validator
      *
      * @param int $errorStorageMode
      *
-     * @return $this
+     * @return self
      */
     public function setErrorStorageMode(int $errorStorageMode)
     {
@@ -360,7 +360,7 @@ class Validator
      * @param string $param
      * @param array $errors
      *
-     * @return $this
+     * @return self
      */
     public function setParamErrors($param, array $errors)
     {
@@ -375,7 +375,7 @@ class Validator
      * @param string $param
      * @param mixed $value
      *
-     * @return $this
+     * @return self
      */
     public function setValue($param, $value)
     {
@@ -389,7 +389,7 @@ class Validator
      *
      * @param array $values
      *
-     * @return $this
+     * @return self
      */
     public function setValues(array $values)
     {
