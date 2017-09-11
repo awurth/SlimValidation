@@ -36,12 +36,12 @@ class ValidatorExtension extends AbstractExtension
     {
         $this->validator = $validator;
 
-        $this->functionsNames['error'] = !empty($functionsNames['error']) ? $functionsNames['error'] : 'error';
-        $this->functionsNames['errors'] = !empty($functionsNames['errors']) ? $functionsNames['errors'] : 'errors';
-        $this->functionsNames['rule_error'] = !empty($functionsNames['rule_error']) ? $functionsNames['rule_error'] : 'rule_error';
-        $this->functionsNames['has_error'] = !empty($functionsNames['has_error']) ? $functionsNames['has_error'] : 'has_error';
-        $this->functionsNames['has_errors'] = !empty($functionsNames['has_errors']) ? $functionsNames['has_errors'] : 'has_errors';
-        $this->functionsNames['val'] = !empty($functionsNames['val']) ? $functionsNames['val'] : 'val';
+        $this->functionsNames['error'] = $functionsNames['error'] ?? 'error';
+        $this->functionsNames['errors'] = $functionsNames['errors'] ?? 'errors';
+        $this->functionsNames['rule_error'] = $functionsNames['rule_error'] ?? 'rule_error';
+        $this->functionsNames['has_error'] = $functionsNames['has_error'] ?? 'has_error';
+        $this->functionsNames['has_errors'] = $functionsNames['has_errors'] ?? 'has_errors';
+        $this->functionsNames['val'] = $functionsNames['val'] ?? 'val';
     }
 
     /**
@@ -63,24 +63,26 @@ class ValidatorExtension extends AbstractExtension
      * Gets the first validation error of a parameter.
      *
      * @param string $param
+     * @param string $group
      *
      * @return string
      */
-    public function getError($param)
+    public function getError($param, $group = null)
     {
-        return $this->validator->getFirstError($param);
+        return $this->validator->getFirstError($param, $group);
     }
 
     /**
      * Gets the validation errors of a parameter.
      *
      * @param string $param
+     * @param string $group
      *
      * @return array
      */
-    public function getErrors($param = '')
+    public function getErrors($param = '', $group = null)
     {
-        return $param ? $this->validator->getParamErrors($param) : $this->validator->getErrors();
+        return $param ? $this->validator->getParamErrors($param, $group) : $this->validator->getErrors();
     }
 
     /**
@@ -88,36 +90,39 @@ class ValidatorExtension extends AbstractExtension
      *
      * @param string $param
      * @param string $rule
+     * @param string $group
      *
      * @return string
      */
-    public function getRuleError($param, $rule)
+    public function getRuleError($param, $rule, $group = null)
     {
-        return $this->validator->getParamRuleError($param, $rule);
+        return $this->validator->getParamRuleError($param, $rule, $group);
     }
 
     /**
      * Gets the value of a parameter in validated data.
      *
      * @param string $param
+     * @param string $group
      *
      * @return string
      */
-    public function getValue($param)
+    public function getValue($param, $group = null)
     {
-        return $this->validator->getValue($param);
+        return $this->validator->getValue($param, $group);
     }
 
     /**
      * Tells if there are validation errors for a parameter.
      *
      * @param string $param
+     * @param string $group
      *
      * @return bool
      */
-    public function hasError($param)
+    public function hasError($param, $group = null)
     {
-        return !empty($this->validator->getParamErrors($param));
+        return !empty($this->validator->getParamErrors($param, $group));
     }
 
     /**
