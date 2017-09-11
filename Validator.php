@@ -193,11 +193,7 @@ class Validator
                     throw new InvalidArgumentException(sprintf('Expected custom message to be of type string, %s given', gettype($rules['message'])));
                 }
 
-                if (null !== $group) {
-                    $this->errors[$group][$key] = [$rules['message']];
-                } else {
-                    $this->errors[$key] = [$rules['message']];
-                }
+                $this->setErrors([$rules['message']], $key, $group);
             } else {
                 // If the 'messages' key exists, override global messages
                 $this->setMessages($e, $key, $rules, $messages, $group);
@@ -220,20 +216,20 @@ class Validator
     }
 
     /**
-     * Adds an error for a parameter.
+     * Adds a validation error.
      *
-     * @param string $param
+     * @param string $key
      * @param string $message
      * @param string $group
      *
      * @return self
      */
-    public function addError($param, $message, $group = null)
+    public function addError($key, $message, $group = null)
     {
         if (null !== $group) {
-            $this->errors[$group][$param][] = $message;
+            $this->errors[$group][$key][] = $message;
         } else {
-            $this->errors[$param][] = $message;
+            $this->errors[$key][] = $message;
         }
 
         return $this;
@@ -264,41 +260,41 @@ class Validator
     /**
      * Gets one error.
      *
-     * @param string $param
      * @param string $key
+     * @param string $index
      * @param string $group
      *
      * @return string
      */
-    public function getError($param, $key = null, $group = null)
+    public function getError($key, $index = null, $group = null)
     {
-        if (null === $key) {
-            return $this->getFirstError($param, $group);
+        if (null === $index) {
+            return $this->getFirstError($key, $group);
         }
 
         if (null !== $group) {
-            return $this->errors[$group][$param][$key] ?? '';
+            return $this->errors[$group][$key][$index] ?? '';
         }
 
-        return $this->errors[$param][$key] ?? '';
+        return $this->errors[$key][$index] ?? '';
     }
 
     /**
      * Gets multiple errors.
      *
-     * @param string $param
+     * @param string $key
      * @param string $group
      *
      * @return string[]
      */
-    public function getErrors($param = null, $group = null)
+    public function getErrors($key = null, $group = null)
     {
-        if (null !== $param) {
+        if (null !== $key) {
             if (null !== $group) {
-                return $this->errors[$group][$param] ?? [];
+                return $this->errors[$group][$key] ?? [];
             }
 
-            return $this->errors[$param] ?? [];
+            return $this->errors[$key] ?? [];
         }
 
         return $this->errors;
@@ -307,23 +303,23 @@ class Validator
     /**
      * Gets the first error of a parameter.
      *
-     * @param string $param
+     * @param string $key
      * @param string $group
      *
      * @return string
      */
-    public function getFirstError($param, $group = null)
+    public function getFirstError($key, $group = null)
     {
         if (null !== $group) {
-            if (isset($this->errors[$group][$param])) {
-                $first = array_slice($this->errors[$group][$param], 0, 1);
+            if (isset($this->errors[$group][$key])) {
+                $first = array_slice($this->errors[$group][$key], 0, 1);
 
                 return array_shift($first);
             }
         }
 
-        if (isset($this->errors[$param])) {
-            $first = array_slice($this->errors[$param], 0, 1);
+        if (isset($this->errors[$key])) {
+            $first = array_slice($this->errors[$key], 0, 1);
 
             return array_shift($first);
         }
@@ -332,20 +328,20 @@ class Validator
     }
 
     /**
-     * Gets the value of a request parameter in validated data.
+     * Gets the value from the validated data.
      *
-     * @param string $param
+     * @param string $key
      * @param string $group
      *
      * @return string
      */
-    public function getValue($param, $group = null)
+    public function getValue($key, $group = null)
     {
         if (null !== $group) {
-            return $this->values[$group][$param] ?? '';
+            return $this->values[$group][$key] ?? '';
         }
 
-        return $this->values[$param] ?? '';
+        return $this->values[$key] ?? '';
     }
 
     /**
@@ -371,24 +367,24 @@ class Validator
     /**
      * Removes validation errors.
      *
-     * @param string $param
+     * @param string $key
      * @param string $group
      *
      * @return self
      */
-    public function removeErrors($param = null, $group = null)
+    public function removeErrors($key = null, $group = null)
     {
         if (null !== $group) {
-            if (null !== $param) {
-                if (isset($this->errors[$group][$param])) {
-                    $this->errors[$group][$param] = [];
+            if (null !== $key) {
+                if (isset($this->errors[$group][$key])) {
+                    $this->errors[$group][$key] = [];
                 }
             } elseif (isset($this->errors[$group])) {
                 $this->errors[$group] = [];
             }
-        } elseif (null !== $param) {
-            if (isset($this->errors[$param])) {
-                $this->errors[$param] = [];
+        } elseif (null !== $key) {
+            if (isset($this->errors[$key])) {
+                $this->errors[$key] = [];
             }
         }
 
@@ -425,15 +421,27 @@ class Validator
     }
 
     /**
-     * Sets all errors.
+     * Sets validation errors.
      *
      * @param string[] $errors
+     * @param string   $key
+     * @param string   $group
      *
      * @return self
      */
-    public function setErrors(array $errors)
+    public function setErrors(array $errors, $key = null, $group = null)
     {
-        $this->errors = $errors;
+        if (null !== $group) {
+            if (null !== $key) {
+                $this->errors[$group][$key] = $errors;
+            } else {
+                $this->errors[$group] = $errors;
+            }
+        } elseif (null !== $key) {
+            $this->errors[$key] = $errors;
+        } else {
+            $this->errors = $errors;
+        }
 
         return $this;
     }
@@ -453,40 +461,20 @@ class Validator
     }
 
     /**
-     * Sets the errors of a parameter.
+     * Sets the value of a parameter.
      *
-     * @param string   $param
-     * @param string[] $errors
-     * @param string   $group
-     *
-     * @return self
-     */
-    public function setParamErrors($param, array $errors, $group = null)
-    {
-        if (null !== $group) {
-            $this->errors[$group][$param] = $errors;
-        } else {
-            $this->errors[$param] = $errors;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Sets the value of a request parameter.
-     *
-     * @param string $param
+     * @param string $key
      * @param mixed  $value
      * @param string $group
      *
      * @return self
      */
-    public function setValue($param, $value, $group = null)
+    public function setValue($key, $value, $group = null)
     {
         if (null !== $group) {
-            $this->values[$group][$param] = $value;
+            $this->values[$group][$key] = $value;
         } else {
-            $this->values[$param] = $value;
+            $this->values[$key] = $value;
         }
 
         return $this;
@@ -561,33 +549,33 @@ class Validator
      * Sets error messages after validation.
      *
      * @param NestedValidationException $e
-     * @param string                    $param
+     * @param string                    $key
      * @param AbstractComposite|array   $options
      * @param array                     $messages
      * @param string                    $group
      */
-    protected function setMessages(NestedValidationException $e, $param, $options, array $messages = [], $group = null)
+    protected function setMessages(NestedValidationException $e, $key, $options, array $messages = [], $group = null)
     {
-        $paramRules = $options instanceof RespectValidator ? $options->getRules() : $options['rules']->getRules();
+        $rules = $options instanceof RespectValidator ? $options->getRules() : $options['rules']->getRules();
 
         // Get the names of all rules used for this param
         $rulesNames = [];
-        foreach ($paramRules as $rule) {
+        foreach ($rules as $rule) {
             $rulesNames[] = lcfirst((new ReflectionClass($rule))->getShortName());
         }
 
-        $params = [
+        $errors = [
             $e->findMessages($rulesNames)
         ];
 
         // If default messages are defined
         if (!empty($this->defaultMessages)) {
-            $params[] = $e->findMessages($this->defaultMessages);
+            $errors[] = $e->findMessages($this->defaultMessages);
         }
 
         // If global messages are defined
         if (!empty($messages)) {
-            $params[] = $e->findMessages($messages);
+            $errors[] = $e->findMessages($messages);
         }
 
         // If individual messages are defined
@@ -596,15 +584,11 @@ class Validator
                 throw new InvalidArgumentException(sprintf('Expected custom individual messages to be of type array, %s given', gettype($options['messages'])));
             }
 
-            $params[] = $e->findMessages($options['messages']);
+            $errors[] = $e->findMessages($options['messages']);
         }
 
-        $errors = array_filter(call_user_func_array('array_merge', $params));
+        $errors = array_filter(call_user_func_array('array_merge', $errors));
 
-        if (null !== $group) {
-            $this->errors[$group][$param] = $this->errorStorageMode === self::MODE_ASSOCIATIVE ? $errors : array_values($errors);
-        } else {
-            $this->errors[$param] = $this->errorStorageMode === self::MODE_ASSOCIATIVE ? $errors : array_values($errors);
-        }
+        $this->setErrors($this->errorStorageMode === self::MODE_ASSOCIATIVE ? $errors : array_values($errors), $key, $group);
     }
 }
