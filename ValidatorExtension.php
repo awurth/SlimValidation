@@ -38,7 +38,6 @@ class ValidatorExtension extends AbstractExtension
 
         $this->functionsNames['error'] = $functionsNames['error'] ?? 'error';
         $this->functionsNames['errors'] = $functionsNames['errors'] ?? 'errors';
-        $this->functionsNames['rule_error'] = $functionsNames['rule_error'] ?? 'rule_error';
         $this->functionsNames['has_error'] = $functionsNames['has_error'] ?? 'has_error';
         $this->functionsNames['has_errors'] = $functionsNames['has_errors'] ?? 'has_errors';
         $this->functionsNames['val'] = $functionsNames['val'] ?? 'val';
@@ -52,7 +51,6 @@ class ValidatorExtension extends AbstractExtension
         return [
             new TwigFunction($this->functionsNames['error'], [$this, 'getError']),
             new TwigFunction($this->functionsNames['errors'], [$this, 'getErrors']),
-            new TwigFunction($this->functionsNames['rule_error'], [$this, 'getRuleError']),
             new TwigFunction($this->functionsNames['has_error'], [$this, 'hasError']),
             new TwigFunction($this->functionsNames['has_errors'], [$this, 'hasErrors']),
             new TwigFunction($this->functionsNames['val'], [$this, 'getValue'])
@@ -63,13 +61,14 @@ class ValidatorExtension extends AbstractExtension
      * Gets the first validation error of a parameter.
      *
      * @param string $param
+     * @param string $key
      * @param string $group
      *
      * @return string
      */
-    public function getError($param, $group = null)
+    public function getError($param, $key = null, $group = null)
     {
-        return $this->validator->getFirstError($param, $group);
+        return $this->validator->getError($param, $key, $group);
     }
 
     /**
@@ -78,25 +77,11 @@ class ValidatorExtension extends AbstractExtension
      * @param string $param
      * @param string $group
      *
-     * @return array
+     * @return string[]
      */
-    public function getErrors($param = '', $group = null)
+    public function getErrors($param = null, $group = null)
     {
-        return $param ? $this->validator->getParamErrors($param, $group) : $this->validator->getErrors();
-    }
-
-    /**
-     * Gets the error of a rule for a parameter.
-     *
-     * @param string $param
-     * @param string $rule
-     * @param string $group
-     *
-     * @return string
-     */
-    public function getRuleError($param, $rule, $group = null)
-    {
-        return $this->validator->getParamRuleError($param, $rule, $group);
+        return $this->validator->getErrors($param, $group);
     }
 
     /**
@@ -122,7 +107,7 @@ class ValidatorExtension extends AbstractExtension
      */
     public function hasError($param, $group = null)
     {
-        return !empty($this->validator->getParamErrors($param, $group));
+        return !empty($this->validator->getErrors($param, $group));
     }
 
     /**

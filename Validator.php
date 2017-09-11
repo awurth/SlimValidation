@@ -30,19 +30,19 @@ class Validator
     /**
      * The default error messages for the given rules.
      *
-     * @var array
+     * @var string[]
      */
     protected $defaultMessages;
 
     /**
      * The list of validation errors.
      *
-     * @var array
+     * @var string[]
      */
     protected $errors;
 
     /**
-     * Tells if errors should be stored in an associative array
+     * Tells whether errors should be stored in an associative array
      * or in an indexed array.
      *
      * @var int
@@ -52,8 +52,8 @@ class Validator
     /**
      * Constructor.
      *
-     * @param int $errorStorageMode
-     * @param array $defaultMessages
+     * @param int      $errorStorageMode
+     * @param string[] $defaultMessages
      */
     public function __construct(int $errorStorageMode = self::MODE_ASSOCIATIVE, array $defaultMessages = [])
     {
@@ -76,10 +76,10 @@ class Validator
     /**
      * Validates an array with the given rules.
      *
-     * @param array      $array
-     * @param array      $rules
-     * @param array      $messages
-     * @param string|int $group
+     * @param array  $array
+     * @param array  $rules
+     * @param array  $messages
+     * @param string $group
      *
      * @return self
      */
@@ -118,10 +118,10 @@ class Validator
     /**
      * Validates request parameters with the given rules.
      *
-     * @param Request    $request
-     * @param array      $rules
-     * @param array      $messages
-     * @param string|int $group
+     * @param Request $request
+     * @param array   $rules
+     * @param array   $messages
+     * @param string  $group
      *
      * @return self
      */
@@ -142,7 +142,7 @@ class Validator
      * @param Request|object|array $input
      * @param array                $rules
      * @param array                $messages
-     * @param string|int           $group
+     * @param string               $group
      *
      * @return self
      */
@@ -170,7 +170,7 @@ class Validator
      * @param string                 $key
      * @param RespectValidator|array $rules
      * @param array                  $messages
-     * @param string|int             $group
+     * @param string                 $group
      *
      * @return self
      */
@@ -204,11 +204,7 @@ class Validator
             }
         }
 
-        if (null !== $group) {
-            $this->values[$group][$key] = $value;
-        } else {
-            $this->values[$key] = $value;
-        }
+        $this->setValue($key, $value, $group);
 
         return $this;
     }
@@ -244,9 +240,21 @@ class Validator
     }
 
     /**
+     * Gets one default messages.
+     *
+     * @param string $key
+     *
+     * @return string
+     */
+    public function getDefaultMessage($key)
+    {
+        return $this->defaultMessages[$key] ?? '';
+    }
+
+    /**
      * Gets all default messages.
      *
-     * @return array
+     * @return string[]
      */
     public function getDefaultMessages()
     {
@@ -254,12 +262,45 @@ class Validator
     }
 
     /**
-     * Gets all errors.
+     * Gets one error.
      *
-     * @return array
+     * @param string $param
+     * @param string $key
+     * @param string $group
+     *
+     * @return string
      */
-    public function getErrors()
+    public function getError($param, $key = null, $group = null)
     {
+        if (null === $key) {
+            return $this->getFirstError($param, $group);
+        }
+
+        if (null !== $group) {
+            return $this->errors[$group][$param][$key] ?? '';
+        }
+
+        return $this->errors[$param][$key] ?? '';
+    }
+
+    /**
+     * Gets multiple errors.
+     *
+     * @param string $param
+     * @param string $group
+     *
+     * @return string[]
+     */
+    public function getErrors($param = null, $group = null)
+    {
+        if (null !== $param) {
+            if (null !== $group) {
+                return $this->errors[$group][$param] ?? [];
+            }
+
+            return $this->errors[$param] ?? [];
+        }
+
         return $this->errors;
     }
 
@@ -279,48 +320,15 @@ class Validator
 
                 return array_shift($first);
             }
-        } elseif (isset($this->errors[$param])) {
+        }
+
+        if (isset($this->errors[$param])) {
             $first = array_slice($this->errors[$param], 0, 1);
 
             return array_shift($first);
         }
 
         return '';
-    }
-
-    /**
-     * Gets errors of a parameter.
-     *
-     * @param string $param
-     * @param string $group
-     *
-     * @return array
-     */
-    public function getParamErrors($param, $group = null)
-    {
-        if (null !== $group) {
-            return $this->errors[$group][$param] ?? [];
-        }
-
-        return $this->errors[$param] ?? [];
-    }
-
-    /**
-     * Gets the error of a validation rule for a parameter.
-     *
-     * @param string $param
-     * @param string $rule
-     * @param string $group
-     *
-     * @return string
-     */
-    public function getParamRuleError($param, $rule, $group = null)
-    {
-        if (null !== $group) {
-            return $this->errors[$group][$param][$rule] ?? '';
-        }
-
-        return $this->errors[$param][$rule] ?? '';
     }
 
     /**
@@ -361,6 +369,33 @@ class Validator
     }
 
     /**
+     * Removes validation errors.
+     *
+     * @param string $param
+     * @param string $group
+     *
+     * @return self
+     */
+    public function removeErrors($param = null, $group = null)
+    {
+        if (null !== $group) {
+            if (null !== $param) {
+                if (isset($this->errors[$group][$param])) {
+                    $this->errors[$group][$param] = [];
+                }
+            } elseif (isset($this->errors[$group])) {
+                $this->errors[$group] = [];
+            }
+        } elseif (null !== $param) {
+            if (isset($this->errors[$param])) {
+                $this->errors[$param] = [];
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * Sets the default error message for a validation rule.
      *
      * @param string $rule
@@ -378,7 +413,7 @@ class Validator
     /**
      * Sets default error messages.
      *
-     * @param array $messages
+     * @param string[] $messages
      *
      * @return self
      */
@@ -392,7 +427,7 @@ class Validator
     /**
      * Sets all errors.
      *
-     * @param array $errors
+     * @param string[] $errors
      *
      * @return self
      */
@@ -420,9 +455,9 @@ class Validator
     /**
      * Sets the errors of a parameter.
      *
-     * @param string $param
-     * @param array  $errors
-     * @param string $group
+     * @param string   $param
+     * @param string[] $errors
+     * @param string   $group
      *
      * @return self
      */
@@ -529,7 +564,7 @@ class Validator
      * @param string                    $param
      * @param AbstractComposite|array   $options
      * @param array                     $messages
-     * @param string|int                $group
+     * @param string                    $group
      */
     protected function setMessages(NestedValidationException $e, $param, $options, array $messages = [], $group = null)
     {
