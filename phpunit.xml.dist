@@ -8,7 +8,7 @@
 
     <testsuites>
         <testsuite name="Slim Validation Test Suite">
-            <directory>Tests/</directory>
+            <directory>tests/</directory>
         </testsuite>
     </testsuites>
 
