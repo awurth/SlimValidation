@@ -496,8 +496,12 @@ class Validator
      *
      * @return mixed
      */
-    protected function getPropertyValue(object $object, string $propertyName, $default = null)
+    protected function getPropertyValue($object, string $propertyName, $default = null)
     {
+        if (!is_object($object)) {
+            throw new InvalidArgumentException('The first argument should be an object');
+        }
+
         if (!property_exists($object, $propertyName)) {
             return $default;
         }
