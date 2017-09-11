@@ -73,6 +73,26 @@ class Validator
     }
 
     /**
+     * Validates an array with the given rules.
+     *
+     * @param array $array
+     * @param array $rules
+     * @param array $messages
+     *
+     * @return self
+     */
+    public function array(array $array, array $rules, array $messages = [])
+    {
+        foreach ($rules as $key => $options) {
+            $value = isset($array[$key]) ?? null;
+
+            $this->value($value, $key, $options, $messages);
+        }
+
+        return $this;
+    }
+
+    /**
      * Validates request parameters with the given rules.
      *
      * @param Request $request
@@ -112,6 +132,47 @@ class Validator
 
             $this->values[$param] = $value;
         }
+
+        return $this;
+    }
+
+    /**
+     * Validates a single value with the given rules.
+     *
+     * @param mixed $value
+     * @param string $key
+     * @param RespectValidator|array $options
+     * @param array $messages
+     *
+     * @return self
+     */
+    public function value($value, $key, $options, array $messages = [])
+    {
+        try {
+            if ($options instanceof RespectValidator) {
+                $options->assert($value);
+            } else {
+                if (!is_array($options) || !isset($options['rules']) || !($options['rules'] instanceof RespectValidator)) {
+                    throw new InvalidArgumentException('Validation rules are missing');
+                }
+
+                $options['rules']->assert($value);
+            }
+        } catch (NestedValidationException $e) {
+            // If the 'message' key exists, set it as only message for this param
+            if (is_array($options) && isset($options['message'])) {
+                if (!is_string($options['message'])) {
+                    throw new InvalidArgumentException(sprintf('Expected custom message to be of type string, %s given', gettype($options['message'])));
+                }
+
+                $this->errors[$key] = [$options['message']];
+            } else {
+                // If the 'messages' key exists, override global messages
+                $this->setMessages($e, $key, $options, $messages);
+            }
+        }
+
+        $this->values[$key] = $value;
 
         return $this;
     }
