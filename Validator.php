@@ -104,8 +104,12 @@ class Validator
      *
      * @return self
      */
-    public function object(object $object, array $rules, array $messages = [], $group = null)
+    public function object($object, array $rules, array $messages = [], $group = null)
     {
+        if (!is_object($object)) {
+            throw new InvalidArgumentException('The first argument should be an object');
+        }
+
         foreach ($rules as $property => $options) {
             $value = $this->getPropertyValue($object, $property);
 
