@@ -101,36 +101,12 @@ class Validator
      *
      * @return self
      */
-    public function validate(Request $request, array $rules, array $messages = [])
+    public function request(Request $request, array $rules, array $messages = [])
     {
         foreach ($rules as $param => $options) {
             $value = $this->getRequestParam($request, $param);
 
-            try {
-                if ($options instanceof RespectValidator) {
-                    $options->assert($value);
-                } else {
-                    if (!is_array($options) || !isset($options['rules']) || !($options['rules'] instanceof RespectValidator)) {
-                        throw new InvalidArgumentException('Validation rules are missing');
-                    }
-
-                    $options['rules']->assert($value);
-                }
-            } catch (NestedValidationException $e) {
-                // If the 'message' key exists, set it as only message for this param
-                if (is_array($options) && isset($options['message'])) {
-                    if (!is_string($options['message'])) {
-                        throw new InvalidArgumentException(sprintf('Expected custom message to be of type string, %s given', gettype($options['message'])));
-                    }
-
-                    $this->errors[$param] = [$options['message']];
-                } else {
-                    // If the 'messages' key exists, override global messages
-                    $this->setMessages($e, $param, $options, $messages);
-                }
-            }
-
-            $this->values[$param] = $value;
+            $this->value($value, $param, $options, $messages);
         }
 
         return $this;
