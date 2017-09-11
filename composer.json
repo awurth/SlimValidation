@@ -31,6 +31,9 @@
         "slim/slim": "^3.8",
         "slim/twig-view": "^2.2"
     },
+    "config": {
+        "sort-packages": true
+    },
     "suggest": {
         "slim/twig-view": "Needed to be able to use the twig extension"
     }
