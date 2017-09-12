@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the awurth/slim-validation package.
+ *
+ * (c) Alexis Wurth <alexis.wurth57@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Awurth\SlimValidation;
 
 use Twig\Extension\AbstractExtension;
@@ -60,58 +69,58 @@ class ValidatorExtension extends AbstractExtension
     /**
      * Gets the first validation error of a parameter.
      *
-     * @param string $param
+     * @param string $key
+     * @param string $index
+     * @param string $group
+     *
+     * @return string
+     */
+    public function getError($key, $index = null, $group = null)
+    {
+        return $this->validator->getError($key, $index, $group);
+    }
+
+    /**
+     * Gets validation errors.
+     *
+     * @param string $key
+     * @param string $group
+     *
+     * @return string[]
+     */
+    public function getErrors($key = null, $group = null)
+    {
+        return $this->validator->getErrors($key, $group);
+    }
+
+    /**
+     * Gets a value from the validated data.
+     *
      * @param string $key
      * @param string $group
      *
      * @return string
      */
-    public function getError($param, $key = null, $group = null)
+    public function getValue($key, $group = null)
     {
-        return $this->validator->getError($param, $key, $group);
+        return $this->validator->getValue($key, $group);
     }
 
     /**
-     * Gets the validation errors of a parameter.
+     * Tells whether there are validation errors for a parameter.
      *
-     * @param string $param
-     * @param string $group
-     *
-     * @return string[]
-     */
-    public function getErrors($param = null, $group = null)
-    {
-        return $this->validator->getErrors($param, $group);
-    }
-
-    /**
-     * Gets the value of a parameter in validated data.
-     *
-     * @param string $param
-     * @param string $group
-     *
-     * @return string
-     */
-    public function getValue($param, $group = null)
-    {
-        return $this->validator->getValue($param, $group);
-    }
-
-    /**
-     * Tells if there are validation errors for a parameter.
-     *
-     * @param string $param
+     * @param string $key
      * @param string $group
      *
      * @return bool
      */
-    public function hasError($param, $group = null)
+    public function hasError($key, $group = null)
     {
-        return !empty($this->validator->getErrors($param, $group));
+        return !empty($this->validator->getErrors($key, $group));
     }
 
     /**
-     * Tells if there are validation errors.
+     * Tells whether there are validation errors.
      *
      * @return bool
      */

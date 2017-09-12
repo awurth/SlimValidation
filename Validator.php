@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the awurth/slim-validation package.
+ *
+ * (c) Alexis Wurth <alexis.wurth57@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Awurth\SlimValidation;
 
 use InvalidArgumentException;
@@ -7,8 +16,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use ReflectionClass;
 use ReflectionProperty;
 use Respect\Validation\Exceptions\NestedValidationException;
-use Respect\Validation\Rules\AbstractComposite;
-use Respect\Validation\Validator as RespectValidator;
+use Respect\Validation\Rules\AllOf;
 
 /**
  * Validator.
@@ -17,16 +25,6 @@ use Respect\Validation\Validator as RespectValidator;
  */
 class Validator
 {
-    const MODE_ASSOCIATIVE = 1;
-    const MODE_INDEXED = 2;
-
-    /**
-     * The validated data.
-     *
-     * @var array
-     */
-    protected $values;
-
     /**
      * The default error messages for the given rules.
      *
@@ -43,21 +41,28 @@ class Validator
 
     /**
      * Tells whether errors should be stored in an associative array
-     * or in an indexed array.
+     * with validation rules as the key, or in an indexed array.
      *
-     * @var int
+     * @var bool
      */
-    protected $errorStorageMode;
+    protected $showValidationRules;
+
+    /**
+     * The validated data.
+     *
+     * @var array
+     */
+    protected $values;
 
     /**
      * Constructor.
      *
-     * @param int      $errorStorageMode
+     * @param bool     $showValidationRules
      * @param string[] $defaultMessages
      */
-    public function __construct(int $errorStorageMode = self::MODE_ASSOCIATIVE, array $defaultMessages = [])
+    public function __construct(bool $showValidationRules = true, array $defaultMessages = [])
     {
-        $this->errorStorageMode = $errorStorageMode;
+        $this->showValidationRules = $showValidationRules;
         $this->defaultMessages = $defaultMessages;
         $this->errors = [];
         $this->values = [];
@@ -76,19 +81,19 @@ class Validator
     /**
      * Validates an array with the given rules.
      *
-     * @param array  $array
-     * @param array  $rules
-     * @param array  $messages
-     * @param string $group
+     * @param array    $array
+     * @param array    $rules
+     * @param string   $group
+     * @param string[] $messages
      *
      * @return self
      */
-    public function array(array $array, array $rules, array $messages = [], $group = null)
+    public function array(array $array, array $rules, $group = null, array $messages = [])
     {
         foreach ($rules as $key => $options) {
             $value = $array[$key] ?? null;
 
-            $this->value($value, $key, $options, $messages, $group);
+            $this->value($value, $options, $key, $group, $messages);
         }
 
         return $this;
@@ -97,14 +102,14 @@ class Validator
     /**
      * Validates an objects properties with the given rules.
      *
-     * @param object     $object
-     * @param array      $rules
-     * @param array      $messages
-     * @param string|int $group
+     * @param object   $object
+     * @param array    $rules
+     * @param string   $group
+     * @param string[] $messages
      *
      * @return self
      */
-    public function object($object, array $rules, array $messages = [], $group = null)
+    public function object($object, array $rules, $group = null, array $messages = [])
     {
         if (!is_object($object)) {
             throw new InvalidArgumentException('The first argument should be an object');
@@ -113,7 +118,7 @@ class Validator
         foreach ($rules as $property => $options) {
             $value = $this->getPropertyValue($object, $property);
 
-            $this->value($value, $property, $options, $messages, $group);
+            $this->value($value, $options, $property, $group, $messages);
         }
 
         return $this;
@@ -122,19 +127,19 @@ class Validator
     /**
      * Validates request parameters with the given rules.
      *
-     * @param Request $request
-     * @param array   $rules
-     * @param array   $messages
-     * @param string  $group
+     * @param Request  $request
+     * @param array    $rules
+     * @param string   $group
+     * @param string[] $messages
      *
      * @return self
      */
-    public function request(Request $request, array $rules, array $messages = [], $group = null)
+    public function request(Request $request, array $rules, $group = null, array $messages = [])
     {
         foreach ($rules as $param => $options) {
             $value = $this->getRequestParam($request, $param);
 
-            $this->value($value, $param, $options, $messages, $group);
+            $this->value($value, $options, $param, $group, $messages);
         }
 
         return $this;
@@ -145,23 +150,23 @@ class Validator
      *
      * @param Request|object|array $input
      * @param array                $rules
-     * @param array                $messages
      * @param string               $group
+     * @param string[]             $messages
      *
      * @return self
      */
-    public function validate($input, array $rules, array $messages = [], $group = null)
+    public function validate($input, array $rules, $group = null, array $messages = [])
     {
         if (!is_object($input) && !is_array($input)) {
             throw new InvalidArgumentException('The input must be either an object or an array');
         }
 
         if ($input instanceof Request) {
-            return $this->request($input, $rules, $messages, $group);
+            return $this->request($input, $rules, $group, $messages);
         } elseif (is_array($input)) {
-            return $this->array($input, $rules, $messages, $group);
+            return $this->array($input, $rules, $group, $messages);
         } elseif (is_object($input)) {
-            return $this->object($input, $rules, $messages, $group);
+            return $this->object($input, $rules, $group, $messages);
         }
 
         return $this;
@@ -170,21 +175,21 @@ class Validator
     /**
      * Validates a single value with the given rules.
      *
-     * @param mixed                  $value
-     * @param string                 $key
-     * @param RespectValidator|array $rules
-     * @param array                  $messages
-     * @param string                 $group
+     * @param mixed       $value
+     * @param AllOf|array $rules
+     * @param string      $key
+     * @param string      $group
+     * @param string[]    $messages
      *
      * @return self
      */
-    public function value($value, $key, $rules, array $messages = [], $group = null)
+    public function value($value, $rules, $key, $group = null, array $messages = [])
     {
         try {
-            if ($rules instanceof RespectValidator) {
+            if ($rules instanceof AllOf) {
                 $rules->assert($value);
             } else {
-                if (!is_array($rules) || !isset($rules['rules']) || !($rules['rules'] instanceof RespectValidator)) {
+                if (!is_array($rules) || !isset($rules['rules']) || !($rules['rules'] instanceof AllOf)) {
                     throw new InvalidArgumentException('Validation rules are missing');
                 }
 
@@ -200,7 +205,7 @@ class Validator
                 $this->setErrors([$rules['message']], $key, $group);
             } else {
                 // If the 'messages' key exists, override global messages
-                $this->setMessages($e, $key, $rules, $messages, $group);
+                $this->setMessages($e, $rules, $key, $group, $messages);
             }
         }
 
@@ -332,7 +337,7 @@ class Validator
     }
 
     /**
-     * Gets the value from the validated data.
+     * Gets a value from the validated data.
      *
      * @param string $key
      * @param string $group
@@ -359,13 +364,13 @@ class Validator
     }
 
     /**
-     * Gets the error storage mode.
+     * Gets the errors storage mode.
      *
-     * @return int
+     * @return bool
      */
-    public function getErrorStorageMode()
+    public function getShowValidationRules()
     {
-        return $this->errorStorageMode;
+        return $this->showValidationRules;
     }
 
     /**
@@ -451,15 +456,15 @@ class Validator
     }
 
     /**
-     * Sets the error storage mode.
+     * Sets the errors storage mode.
      *
-     * @param int $errorStorageMode
+     * @param bool $showValidationRules
      *
      * @return self
      */
-    public function setErrorStorageMode(int $errorStorageMode)
+    public function setShowValidationRules(bool $showValidationRules)
     {
-        $this->errorStorageMode = $errorStorageMode;
+        $this->showValidationRules = $showValidationRules;
 
         return $this;
     }
@@ -553,14 +558,14 @@ class Validator
      * Sets error messages after validation.
      *
      * @param NestedValidationException $e
+     * @param AllOf|array               $options
      * @param string                    $key
-     * @param AbstractComposite|array   $options
-     * @param array                     $messages
      * @param string                    $group
+     * @param string[]                  $messages
      */
-    protected function setMessages(NestedValidationException $e, $key, $options, array $messages = [], $group = null)
+    protected function setMessages(NestedValidationException $e, $options, $key, $group = null, array $messages = [])
     {
-        $rules = $options instanceof RespectValidator ? $options->getRules() : $options['rules']->getRules();
+        $rules = $options instanceof AllOf ? $options->getRules() : $options['rules']->getRules();
 
         // Get the names of all rules used for this param
         $rulesNames = [];
@@ -593,6 +598,6 @@ class Validator
 
         $errors = array_filter(call_user_func_array('array_merge', $errors));
 
-        $this->setErrors($this->errorStorageMode === self::MODE_ASSOCIATIVE ? $errors : array_values($errors), $key, $group);
+        $this->setErrors($this->showValidationRules ? $errors : array_values($errors), $key, $group);
     }
 }
