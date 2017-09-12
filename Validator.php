@@ -564,7 +564,7 @@ class Validator
             $this->setErrors([$options['message']], $key, $group);
         } else {
             // If the 'messages' key exists, override global messages
-            $this->setMessages($e, $options, $key, $group, $messages);
+            $this->storeErrors($e, $options, $key, $group, $messages);
         }
     }
 
@@ -577,7 +577,7 @@ class Validator
      * @param string                    $group
      * @param string[]                  $messages
      */
-    protected function setMessages(NestedValidationException $e, $options, $key, $group = null, array $messages = [])
+    protected function storeErrors(NestedValidationException $e, $options, $key, $group = null, array $messages = [])
     {
         $rules = $options instanceof AllOf ? $options->getRules() : $options['rules']->getRules();
 
@@ -602,11 +602,7 @@ class Validator
         }
 
         // If individual messages are defined
-        if (is_array($options) && isset($options['messages'])) {
-            if (!is_array($options['messages'])) {
-                throw new InvalidArgumentException(sprintf('Expected custom individual messages to be of type array, %s given', gettype($options['messages'])));
-            }
-
+        if (is_array($options) && !empty($options['messages'])) {
             $errors[] = $e->findMessages($options['messages']);
         }
 
