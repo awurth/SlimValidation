@@ -94,7 +94,7 @@ class ValidatorTest extends TestCase
 
     public function testValidateWithIndexedErrors()
     {
-        $this->validator->setErrorStorageMode(Validator::MODE_INDEXED);
+        $this->validator->setShowValidationRules(false);
         $this->validator->validate($this->request, [
             'username' => V::length(8)
         ]);
@@ -134,7 +134,7 @@ class ValidatorTest extends TestCase
         $this->validator->validate($this->request, [
             'username' => V::length(8),
             'password' => V::length(8)
-        ], [
+        ], null, [
             'length' => 'Too short!'
         ]);
 
@@ -157,7 +157,7 @@ class ValidatorTest extends TestCase
         $this->validator->validate($this->request, [
             'username' => V::length(8),
             'password' => V::length(8)->alpha()
-        ], [
+        ], null, [
             'alpha' => 'Only letters are allowed'
         ]);
 
@@ -172,20 +172,6 @@ class ValidatorTest extends TestCase
                 'alpha' => 'Only letters are allowed'
             ]
         ], $this->validator->getErrors());
-    }
-
-    /**
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Expected custom individual messages to be of type array, string given
-     */
-    public function testValidateWithWrongCustomIndividualMessagesType()
-    {
-        $this->validator->validate($this->request, [
-            'username' => [
-                'rules' => V::length(8),
-                'messages' => ''
-            ]
-        ]);
     }
 
     public function testValidateWithCustomIndividualMessage()
@@ -389,10 +375,10 @@ class ValidatorTest extends TestCase
 
     public function testSetErrorStorageMode()
     {
-        $this->assertEquals(Validator::MODE_ASSOCIATIVE, $this->validator->getErrorStorageMode());
+        $this->assertTrue($this->validator->getShowValidationRules());
 
-        $this->validator->setErrorStorageMode(Validator::MODE_INDEXED);
+        $this->validator->setShowValidationRules(false);
 
-        $this->assertEquals(Validator::MODE_INDEXED, $this->validator->getErrorStorageMode());
+        $this->assertFalse($this->validator->getShowValidationRules());
     }
 }
