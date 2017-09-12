@@ -196,17 +196,7 @@ class Validator
                 $rules['rules']->assert($value);
             }
         } catch (NestedValidationException $e) {
-            // If the 'message' key exists, set it as only message for this param
-            if (is_array($rules) && isset($rules['message'])) {
-                if (!is_string($rules['message'])) {
-                    throw new InvalidArgumentException(sprintf('Expected custom message to be of type string, %s given', gettype($rules['message'])));
-                }
-
-                $this->setErrors([$rules['message']], $key, $group);
-            } else {
-                // If the 'messages' key exists, override global messages
-                $this->setMessages($e, $rules, $key, $group, $messages);
-            }
+            $this->handleException($e, $rules, $key, $group, $messages);
         }
 
         $this->setValue($key, $value, $group);
@@ -552,6 +542,30 @@ class Validator
         }
 
         return $result;
+    }
+
+    /**
+     * Handles a validation exception.
+     *
+     * @param NestedValidationException $e
+     * @param AllOf|array               $options
+     * @param string                    $key
+     * @param string                    $group
+     * @param string[]                  $messages
+     */
+    protected function handleException(NestedValidationException $e, $options, $key, $group = null, array $messages = [])
+    {
+        // If the 'message' key exists, set it as only message for this param
+        if (is_array($options) && isset($options['message'])) {
+            if (!is_string($options['message'])) {
+                throw new InvalidArgumentException(sprintf('Expected custom message to be of type string, %s given', gettype($options['message'])));
+            }
+
+            $this->setErrors([$options['message']], $key, $group);
+        } else {
+            // If the 'messages' key exists, override global messages
+            $this->setMessages($e, $options, $key, $group, $messages);
+        }
     }
 
     /**
