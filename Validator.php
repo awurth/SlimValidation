@@ -574,6 +574,20 @@ class Validator
     }
 
     /**
+     * Merges default messages, global messages and individual messages.
+     *
+     * @param string[] $errors
+     *
+     * @return string[]
+     */
+    protected function mergeMessages(array $errors)
+    {
+        $errors = array_filter(call_user_func_array('array_merge', $errors));
+
+        return $this->showValidationRules ? $errors : array_values($errors);
+    }
+
+    /**
      * Sets error messages after validation.
      *
      * @param NestedValidationException $e
@@ -611,8 +625,6 @@ class Validator
             $errors[] = $e->findMessages($options['messages']);
         }
 
-        $errors = array_filter(call_user_func_array('array_merge', $errors));
-
-        $this->setErrors($this->showValidationRules ? $errors : array_values($errors), $key, $group);
+        $this->setErrors($this->mergeMessages($errors), $key, $group);
     }
 }
