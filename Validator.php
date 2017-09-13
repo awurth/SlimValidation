@@ -185,18 +185,12 @@ class Validator
      */
     public function value($value, $rules, $key, $group = null, array $messages = [])
     {
-        try {
-            if ($rules instanceof AllOf) {
-                $rules->assert($value);
-            } else {
-                if (!is_array($rules) || !isset($rules['rules']) || !($rules['rules'] instanceof AllOf)) {
-                    throw new InvalidArgumentException('Validation rules are missing');
-                }
+        $configuration = new Configuration($rules);
 
-                $rules['rules']->assert($value);
-            }
+        try {
+            $configuration->getValidationRules()->assert($value);
         } catch (NestedValidationException $e) {
-            $this->handleException($e, $rules, $key, $group, $messages);
+            $this->handleException($e, $configuration, $key, $group, $messages);
         }
 
         $this->setValue($key, $value, $group);
@@ -559,23 +553,19 @@ class Validator
      * Handles a validation exception.
      *
      * @param NestedValidationException $e
-     * @param AllOf|array               $options
+     * @param Configuration             $configuration
      * @param string                    $key
      * @param string                    $group
      * @param string[]                  $messages
      */
-    protected function handleException(NestedValidationException $e, $options, $key, $group = null, array $messages = [])
+    protected function handleException(NestedValidationException $e, $configuration, $key, $group = null, array $messages = [])
     {
         // If the 'message' key exists, set it as only message for this param
-        if (is_array($options) && isset($options['message'])) {
-            if (!is_string($options['message'])) {
-                throw new InvalidArgumentException(sprintf('Expected custom message to be of type string, %s given', gettype($options['message'])));
-            }
-
-            $this->setErrors([$options['message']], $key, $group);
+        if ($configuration->hasMessage()) {
+            $this->setErrors([$configuration->getMessage()], $key, $group);
         } else {
             // If the 'messages' key exists, override global messages
-            $this->storeErrors($e, $options, $key, $group, $messages);
+            $this->storeErrors($e, $configuration, $key, $group, $messages);
         }
     }
 
@@ -597,14 +587,14 @@ class Validator
      * Sets error messages after validation.
      *
      * @param NestedValidationException $e
-     * @param AllOf|array               $options
+     * @param Configuration             $configuration
      * @param string                    $key
      * @param string                    $group
      * @param string[]                  $messages
      */
-    protected function storeErrors(NestedValidationException $e, $options, $key, $group = null, array $messages = [])
+    protected function storeErrors(NestedValidationException $e, $configuration, $key, $group = null, array $messages = [])
     {
-        $rules = $options instanceof AllOf ? $options->getRules() : $options['rules']->getRules();
+        $rules = $configuration->getValidationRules()->getRules();
 
         // Get the names of all rules used for this param
         $rulesNames = [];
@@ -627,8 +617,8 @@ class Validator
         }
 
         // If individual messages are defined
-        if (is_array($options) && !empty($options['messages'])) {
-            $errors[] = $e->findMessages($options['messages']);
+        if ($configuration->hasMessages()) {
+            $errors[] = $e->findMessages($configuration->getMessages());
         }
 
         $this->setErrors($this->mergeMessages($errors), $key, $group);
