@@ -157,10 +157,6 @@ class Validator
      */
     public function validate($input, array $rules, $group = null, array $messages = [])
     {
-        if (!is_object($input) && !is_array($input)) {
-            throw new InvalidArgumentException('The input must be either an object or an array');
-        }
-
         if ($input instanceof Request) {
             return $this->request($input, $rules, $group, $messages);
         } elseif (is_array($input)) {
@@ -169,7 +165,7 @@ class Validator
             return $this->object($input, $rules, $group, $messages);
         }
 
-        return $this;
+        return $this->value($input, $rules, null, $group, $messages);
     }
 
     /**
@@ -185,15 +181,15 @@ class Validator
      */
     public function value($value, $rules, $key, $group = null, array $messages = [])
     {
-        $configuration = new Configuration($rules);
+        $config = new Configuration($rules, $key, $group);
 
         try {
-            $configuration->getValidationRules()->assert($value);
+            $config->getValidationRules()->assert($value);
         } catch (NestedValidationException $e) {
-            $this->handleException($e, $configuration, $key, $group, $messages);
+            $this->handleException($e, $config, $messages);
         }
 
-        $this->setValue($key, $value, $group);
+        $this->setValue($config->getKey(), $value, $config->getGroup());
 
         return $this;
     }
@@ -553,19 +549,17 @@ class Validator
      * Handles a validation exception.
      *
      * @param NestedValidationException $e
-     * @param Configuration             $configuration
-     * @param string                    $key
-     * @param string                    $group
+     * @param Configuration             $config
      * @param string[]                  $messages
      */
-    protected function handleException(NestedValidationException $e, Configuration $configuration, $key, $group = null, array $messages = [])
+    protected function handleException(NestedValidationException $e, Configuration $config, array $messages = [])
     {
         // If the 'message' key exists, set it as only message for this param
-        if ($configuration->hasMessage()) {
-            $this->setErrors([$configuration->getMessage()], $key, $group);
+        if ($config->hasMessage()) {
+            $this->setErrors([$config->getMessage()], $config->getKey(), $config->getGroup());
         } else {
             // If the 'messages' key exists, override global messages
-            $this->storeErrors($e, $configuration, $key, $group, $messages);
+            $this->storeErrors($e, $config, $messages);
         }
     }
 
@@ -587,14 +581,12 @@ class Validator
      * Sets error messages after validation.
      *
      * @param NestedValidationException $e
-     * @param Configuration             $configuration
-     * @param string                    $key
-     * @param string                    $group
+     * @param Configuration             $config
      * @param string[]                  $messages
      */
-    protected function storeErrors(NestedValidationException $e, Configuration $configuration, $key, $group = null, array $messages = [])
+    protected function storeErrors(NestedValidationException $e, Configuration $config, array $messages = [])
     {
-        $rules = $configuration->getValidationRules()->getRules();
+        $rules = $config->getValidationRules()->getRules();
 
         // Get the names of all rules used for this param
         $rulesNames = [];
@@ -617,10 +609,10 @@ class Validator
         }
 
         // If individual messages are defined
-        if ($configuration->hasMessages()) {
-            $errors[] = $e->findMessages($configuration->getMessages());
+        if ($config->hasMessages()) {
+            $errors[] = $e->findMessages($config->getMessages());
         }
 
-        $this->setErrors($this->mergeMessages($errors), $key, $group);
+        $this->setErrors($this->mergeMessages($errors), $config->getKey(), $config->getGroup());
     }
 }
