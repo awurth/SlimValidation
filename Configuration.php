@@ -255,5 +255,9 @@ class Configuration
         if (!$this->hasKey()) {
             throw new InvalidArgumentException('A key must be set');
         }
+
+        if ($this->hasMessage() && !is_string($this->message)) {
+            throw new InvalidArgumentException(sprintf('Expected custom message to be of type string, %s given', gettype($this->message)));
+        }
     }
 }
