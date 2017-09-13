@@ -92,7 +92,7 @@ class Validator
     public function array(array $array, array $rules, $group = null, array $messages = [], $default = null)
     {
         foreach ($rules as $key => $options) {
-            $config = new Configuration($rules, $key, $group, $default);
+            $config = new Configuration($options, $key, $group, $default);
 
             $value = $array[$key] ?? $config->getDefault();
 
@@ -120,7 +120,7 @@ class Validator
         }
 
         foreach ($rules as $property => $options) {
-            $config = new Configuration($rules, null, $group, $default);
+            $config = new Configuration($options, null, $group, $default);
 
             $value = $this->getPropertyValue($object, $property, $config->getDefault());
 
@@ -144,7 +144,7 @@ class Validator
     public function request(Request $request, array $rules, $group = null, array $messages = [], $default = null)
     {
         foreach ($rules as $param => $options) {
-            $config = new Configuration($rules, $param, $group, $default);
+            $config = new Configuration($options, $param, $group, $default);
 
             $value = $this->getRequestParam($request, $param, $config->getDefault());
 
