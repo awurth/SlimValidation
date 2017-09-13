@@ -25,7 +25,7 @@ class Configuration
     /**
      * @var string[]
      */
-    protected $messages;
+    protected $messages = [];
 
     /**
      * @var AllOf
@@ -41,32 +41,16 @@ class Configuration
      */
     public function __construct($options, $key = null, $group = null)
     {
+        $this->key = $key;
+        $this->group = $group;
+
         if ($options instanceof AllOf) {
-            if (empty($key)) {
-                throw new InvalidArgumentException('The key must be set');
-            }
-
             $this->rules = $options;
-            $this->key = $key;
-            $this->group = $group;
-        } elseif (is_array($options)) {
-            if (!isset($options['rules']) || !$options['rules'] instanceof AllOf) {
-                throw new InvalidArgumentException('Validation rules are missing or invalid');
-            }
-
-            $this->key = $options['key'] ?? $key;
-
-            if (!$this->hasKey()) {
-                throw new InvalidArgumentException('The key must be set');
-            }
-
-            $this->group = $options['group'] ?? $group;
-            $this->message = $options['message'] ?? null;
-            $this->messages = $options['messages'] ?? [];
-            $this->rules = $options['rules'];
         } else {
-            throw new InvalidArgumentException(sprintf('Options must be of type %s or array, %s given', AllOf::class, gettype($options)));
+            $this->setOptions($options);
         }
+
+        $this->validateOptions();
     }
 
     /**
@@ -200,6 +184,28 @@ class Configuration
     }
 
     /**
+     * Sets options from an array.
+     *
+     * @param array $options
+     */
+    public function setOptions(array $options)
+    {
+        $availableOptions = [
+            'group',
+            'key',
+            'message',
+            'messages',
+            'rules'
+        ];
+
+        foreach ($availableOptions as $option) {
+            if (isset($options[$option])) {
+                $this->$option = $options[$option];
+            }
+        }
+    }
+
+    /**
      * Sets the validation rules.
      *
      * @param AllOf $rules
@@ -207,5 +213,19 @@ class Configuration
     public function setValidationRules(AllOf $rules)
     {
         $this->rules = $rules;
+    }
+
+    /**
+     * Verifies that all mandatory options are set and valid.
+     */
+    public function validateOptions()
+    {
+        if (!$this->rules instanceof AllOf) {
+            throw new InvalidArgumentException('Validation rules are missing or invalid');
+        }
+
+        if (!$this->hasKey()) {
+            throw new InvalidArgumentException('A key must be set');
+        }
     }
 }
