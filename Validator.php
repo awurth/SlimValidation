@@ -332,24 +332,30 @@ class Validator
      * @param string $key
      * @param string $group
      *
-     * @return string
+     * @return mixed
      */
     public function getValue($key, $group = null)
     {
         if (!empty($group)) {
-            return $this->values[$group][$key] ?? '';
+            return $this->values[$group][$key] ?? null;
         }
 
-        return $this->values[$key] ?? '';
+        return $this->values[$key] ?? null;
     }
 
     /**
      * Gets the validated data.
      *
+     * @param string $group
+     *
      * @return array
      */
-    public function getValues()
+    public function getValues($group = null)
     {
+        if (!empty($group)) {
+            return $this->values[$group] ?? [];
+        }
+
         return $this->values;
     }
 
@@ -576,7 +582,7 @@ class Validator
     /**
      * Merges default messages, global messages and individual messages.
      *
-     * @param string[] $errors
+     * @param array $errors
      *
      * @return string[]
      */
