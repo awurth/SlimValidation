@@ -120,7 +120,7 @@ class Validator
         }
 
         foreach ($rules as $property => $options) {
-            $config = new Configuration($options, null, $group, $default);
+            $config = new Configuration($options, $property, $group, $default);
 
             $value = $this->getPropertyValue($object, $property, $config->getDefault());
 
