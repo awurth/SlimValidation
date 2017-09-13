@@ -4,6 +4,7 @@ namespace Awurth\SlimValidation\Tests;
 
 use Awurth\SlimValidation\Validator;
 use InvalidArgumentException;
+use PHPUnit\Framework\Error\Error;
 use PHPUnit\Framework\TestCase;
 use Respect\Validation\Validator as V;
 use Slim\Http\Environment;
@@ -12,14 +13,24 @@ use Slim\Http\Request;
 class ValidatorTest extends TestCase
 {
     /**
-     * @var Validator
+     * @var array
      */
-    protected $validator;
+    protected $array;
+
+    /**
+     * @var TestObject
+     */
+    protected $object;
 
     /**
      * @var Request
      */
     protected $request;
+
+    /**
+     * @var Validator
+     */
+    protected $validator;
 
     /**
      * {@inheritdoc}
@@ -30,11 +41,18 @@ class ValidatorTest extends TestCase
             'QUERY_STRING' => 'username=a_wurth&password=1234'
         ]));
 
+        $this->array = [
+            'username' => 'a_wurth',
+            'password' => '1234'
+        ];
+
+        $this->object = new TestObject('private', 'protected', 'public');
+
         $this->validator = new Validator();
     }
 
     /**
-     * @expectedException InvalidArgumentException
+     * @expectedException Error
      */
     public function testValidateWithoutRules()
     {
@@ -44,9 +62,9 @@ class ValidatorTest extends TestCase
     }
 
     /**
-     * @expectedException InvalidArgumentException
+     * @expectedException Error
      */
-    public function testValidateWithWrongOptionsType()
+    public function testValidateWithOptionsWrongType()
     {
         $this->validator->validate($this->request, [
             'username' => null
@@ -56,7 +74,7 @@ class ValidatorTest extends TestCase
     /**
      * @expectedException InvalidArgumentException
      */
-    public function testValidateWithWrongRulesType()
+    public function testValidateWithRulesWrongType()
     {
         $this->validator->validate($this->request, [
             'username' => [
@@ -65,14 +83,64 @@ class ValidatorTest extends TestCase
         ]);
     }
 
-    public function testValidate()
+    public function testRequest()
     {
-        $this->validator->validate($this->request, [
+        $this->validator->request($this->request, [
             'username' => V::length(6)
         ]);
 
         $this->assertEquals(['username' => 'a_wurth'], $this->validator->getValues());
         $this->assertEquals('a_wurth', $this->validator->getValue('username'));
+        $this->assertTrue($this->validator->isValid());
+    }
+
+    public function testRequestWithGroup()
+    {
+        $this->validator->request($this->request, [
+            'username' => V::length(6)
+        ], 'user');
+
+        $this->assertEquals([
+            'user' => [
+                'username' => 'a_wurth'
+            ]
+        ], $this->validator->getValues());
+        $this->assertEquals('a_wurth', $this->validator->getValue('username', 'user'));
+        $this->assertTrue($this->validator->isValid());
+    }
+
+    public function testArray()
+    {
+        $this->validator->array($this->array, [
+            'username' => V::notBlank(),
+            'password' => V::notBlank()
+        ]);
+
+        $this->assertEquals(['username' => 'a_wurth', 'password' => '1234'], $this->validator->getValues());
+        $this->assertTrue($this->validator->isValid());
+    }
+
+    public function testObject()
+    {
+        $this->validator->object($this->object, [
+            'privateProperty' => V::notBlank(),
+            'protectedProperty' => V::notBlank(),
+            'publicProperty' => V::notBlank()
+        ]);
+
+        $this->assertEquals([
+            'privateProperty' => 'private',
+            'protectedProperty' => 'protected',
+            'publicProperty' => 'public',
+        ], $this->validator->getValues());
+        $this->assertTrue($this->validator->isValid());
+    }
+
+    public function testValue()
+    {
+        $this->validator->value(2017, V::numeric()->between(2010, 2020), 'year');
+
+        $this->assertEquals(['year' => 2017], $this->validator->getValues());
         $this->assertTrue($this->validator->isValid());
     }
 
@@ -109,6 +177,22 @@ class ValidatorTest extends TestCase
         ], $this->validator->getErrors());
     }
 
+    public function testValidateWithGroupedErrors()
+    {
+        $this->validator->validate($this->request, [
+            'username' => V::length(8)
+        ], 'user');
+
+        $this->assertFalse($this->validator->isValid());
+        $this->assertEquals([
+            'user' => [
+                'username' => [
+                    'length' => '"a_wurth" must have a length greater than 8'
+                ]
+            ]
+        ], $this->validator->getErrors());
+    }
+
     public function testValidateWithCustomDefaultMessage()
     {
         $this->validator->setDefaultMessages([
@@ -119,12 +203,30 @@ class ValidatorTest extends TestCase
             'username' => V::length(8)
         ]);
 
-        $this->assertEquals(['username' => 'a_wurth'], $this->validator->getValues());
-        $this->assertEquals('a_wurth', $this->validator->getValue('username'));
         $this->assertFalse($this->validator->isValid());
         $this->assertEquals([
             'username' => [
                 'length' => 'Too short!'
+            ]
+        ], $this->validator->getErrors());
+    }
+
+    public function testValidateWithCustomDefaultMessageAndGroup()
+    {
+        $this->validator->setDefaultMessages([
+            'length' => 'Too short!'
+        ]);
+
+        $this->validator->validate($this->request, [
+            'username' => V::length(8)
+        ], 'user');
+
+        $this->assertFalse($this->validator->isValid());
+        $this->assertEquals([
+            'user' => [
+                'username' => [
+                    'length' => 'Too short!'
+                ]
             ]
         ], $this->validator->getErrors());
     }
@@ -146,6 +248,34 @@ class ValidatorTest extends TestCase
             ],
             'password' => [
                 'length' => 'Too short!'
+            ]
+        ], $this->validator->getErrors());
+    }
+
+    public function testValidateWithCustomGlobalMessagesAndGroup()
+    {
+        $this->validator->validate($this->request, [
+            'username' => V::length(8),
+            'password' => V::length(8)
+        ], 'user', [
+            'length' => 'Too short!'
+        ]);
+
+        $this->assertEquals([
+            'user' => [
+                'username' => 'a_wurth',
+                'password' => '1234'
+            ]
+        ], $this->validator->getValues());
+        $this->assertFalse($this->validator->isValid());
+        $this->assertEquals([
+            'user' => [
+                'username' => [
+                    'length' => 'Too short!'
+                ],
+                'password' => [
+                    'length' => 'Too short!'
+                ]
             ]
         ], $this->validator->getErrors());
     }
@@ -174,6 +304,37 @@ class ValidatorTest extends TestCase
         ], $this->validator->getErrors());
     }
 
+    public function testValidateWithCustomDefaultAndGlobalMessagesAndGroup()
+    {
+        $this->validator->setDefaultMessage('length', 'Too short!');
+
+        $this->validator->validate($this->request, [
+            'username' => V::length(8),
+            'password' => V::length(8)->alpha()
+        ], 'user', [
+            'alpha' => 'Only letters are allowed'
+        ]);
+
+        $this->assertEquals([
+            'user' => [
+                'username' => 'a_wurth',
+                'password' => '1234'
+            ]
+        ], $this->validator->getValues());
+        $this->assertFalse($this->validator->isValid());
+        $this->assertEquals([
+            'user' => [
+                'username' => [
+                    'length' => 'Too short!'
+                ],
+                'password' => [
+                    'length' => 'Too short!',
+                    'alpha' => 'Only letters are allowed'
+                ]
+            ]
+        ], $this->validator->getErrors());
+    }
+
     public function testValidateWithCustomIndividualMessage()
     {
         $this->validator->validate($this->request, [
@@ -194,6 +355,37 @@ class ValidatorTest extends TestCase
             ],
             'password' => [
                 'length' => '"1234" must have a length greater than 8'
+            ]
+        ], $this->validator->getErrors());
+    }
+
+    public function testValidateWithCustomIndividualMessageAndGroup()
+    {
+        $this->validator->validate($this->request, [
+            'username' => [
+                'rules' => V::length(8),
+                'messages' => [
+                    'length' => 'Too short!'
+                ]
+            ],
+            'password' => V::length(8)
+        ], 'user');
+
+        $this->assertEquals([
+            'user' => [
+                'username' => 'a_wurth',
+                'password' => '1234'
+            ]
+        ], $this->validator->getValues());
+        $this->assertFalse($this->validator->isValid());
+        $this->assertEquals([
+            'user' => [
+                'username' => [
+                    'length' => 'Too short!'
+                ],
+                'password' => [
+                    'length' => '"1234" must have a length greater than 8'
+                ]
             ]
         ], $this->validator->getErrors());
     }
@@ -373,7 +565,7 @@ class ValidatorTest extends TestCase
         ], $this->validator->getErrors());
     }
 
-    public function testSetErrorStorageMode()
+    public function testSetShowValidationRules()
     {
         $this->assertTrue($this->validator->getShowValidationRules());
 
