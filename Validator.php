@@ -558,7 +558,7 @@ class Validator
      * @param string                    $group
      * @param string[]                  $messages
      */
-    protected function handleException(NestedValidationException $e, $configuration, $key, $group = null, array $messages = [])
+    protected function handleException(NestedValidationException $e, Configuration $configuration, $key, $group = null, array $messages = [])
     {
         // If the 'message' key exists, set it as only message for this param
         if ($configuration->hasMessage()) {
@@ -592,7 +592,7 @@ class Validator
      * @param string                    $group
      * @param string[]                  $messages
      */
-    protected function storeErrors(NestedValidationException $e, $configuration, $key, $group = null, array $messages = [])
+    protected function storeErrors(NestedValidationException $e, Configuration $configuration, $key, $group = null, array $messages = [])
     {
         $rules = $configuration->getValidationRules()->getRules();
 
