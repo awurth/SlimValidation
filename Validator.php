@@ -225,7 +225,7 @@ class Validator
      */
     public function addError($key, $message, $group = null)
     {
-        if (null !== $group) {
+        if (!empty($group)) {
             $this->errors[$group][$key][] = $message;
         } else {
             $this->errors[$key][] = $message;
@@ -271,7 +271,7 @@ class Validator
             return $this->getFirstError($key, $group);
         }
 
-        if (null !== $group) {
+        if (!empty($group)) {
             return $this->errors[$group][$key][$index] ?? '';
         }
 
@@ -288,8 +288,8 @@ class Validator
      */
     public function getErrors($key = null, $group = null)
     {
-        if (null !== $key) {
-            if (null !== $group) {
+        if (!empty($key)) {
+            if (!empty($group)) {
                 return $this->errors[$group][$key] ?? [];
             }
 
@@ -309,7 +309,7 @@ class Validator
      */
     public function getFirstError($key, $group = null)
     {
-        if (null !== $group) {
+        if (!empty($group)) {
             if (isset($this->errors[$group][$key])) {
                 $first = array_slice($this->errors[$group][$key], 0, 1);
 
@@ -336,7 +336,7 @@ class Validator
      */
     public function getValue($key, $group = null)
     {
-        if (null !== $group) {
+        if (!empty($group)) {
             return $this->values[$group][$key] ?? '';
         }
 
@@ -373,15 +373,15 @@ class Validator
      */
     public function removeErrors($key = null, $group = null)
     {
-        if (null !== $group) {
-            if (null !== $key) {
+        if (!empty($group)) {
+            if (!empty($key)) {
                 if (isset($this->errors[$group][$key])) {
                     $this->errors[$group][$key] = [];
                 }
             } elseif (isset($this->errors[$group])) {
                 $this->errors[$group] = [];
             }
-        } elseif (null !== $key) {
+        } elseif (!empty($key)) {
             if (isset($this->errors[$key])) {
                 $this->errors[$key] = [];
             }
@@ -430,13 +430,13 @@ class Validator
      */
     public function setErrors(array $errors, $key = null, $group = null)
     {
-        if (null !== $group) {
-            if (null !== $key) {
+        if (!empty($group)) {
+            if (!empty($key)) {
                 $this->errors[$group][$key] = $errors;
             } else {
                 $this->errors[$group] = $errors;
             }
-        } elseif (null !== $key) {
+        } elseif (!empty($key)) {
             $this->errors[$key] = $errors;
         } else {
             $this->errors = $errors;
@@ -470,7 +470,7 @@ class Validator
      */
     public function setValue($key, $value, $group = null)
     {
-        if (null !== $group) {
+        if (!empty($group)) {
             $this->values[$group][$key] = $value;
         } else {
             $this->values[$key] = $value;
@@ -480,7 +480,7 @@ class Validator
     }
 
     /**
-     * Sets the values of request parameters.
+     * Sets values of validated data.
      *
      * @param array $values
      *
