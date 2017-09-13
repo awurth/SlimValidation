@@ -85,15 +85,18 @@ class Validator
      * @param array    $rules
      * @param string   $group
      * @param string[] $messages
+     * @param mixed    $default
      *
      * @return self
      */
-    public function array(array $array, array $rules, $group = null, array $messages = [])
+    public function array(array $array, array $rules, $group = null, array $messages = [], $default = null)
     {
         foreach ($rules as $key => $options) {
-            $value = $array[$key] ?? null;
+            $config = new Configuration($rules, $key, $group, $default);
 
-            $this->value($value, $options, $key, $group, $messages);
+            $value = $array[$key] ?? $config->getDefault();
+
+            $this->validateInput($value, $config, $messages);
         }
 
         return $this;
@@ -106,19 +109,22 @@ class Validator
      * @param array    $rules
      * @param string   $group
      * @param string[] $messages
+     * @param mixed    $default
      *
      * @return self
      */
-    public function object($object, array $rules, $group = null, array $messages = [])
+    public function object($object, array $rules, $group = null, array $messages = [], $default = null)
     {
         if (!is_object($object)) {
             throw new InvalidArgumentException('The first argument should be an object');
         }
 
         foreach ($rules as $property => $options) {
-            $value = $this->getPropertyValue($object, $property);
+            $config = new Configuration($rules, null, $group, $default);
 
-            $this->value($value, $options, $property, $group, $messages);
+            $value = $this->getPropertyValue($object, $property, $config->getDefault());
+
+            $this->validateInput($value, $config, $messages);
         }
 
         return $this;
@@ -131,15 +137,18 @@ class Validator
      * @param array    $rules
      * @param string   $group
      * @param string[] $messages
+     * @param mixed    $default
      *
      * @return self
      */
-    public function request(Request $request, array $rules, $group = null, array $messages = [])
+    public function request(Request $request, array $rules, $group = null, array $messages = [], $default = null)
     {
         foreach ($rules as $param => $options) {
-            $value = $this->getRequestParam($request, $param);
+            $config = new Configuration($rules, $param, $group, $default);
 
-            $this->value($value, $options, $param, $group, $messages);
+            $value = $this->getRequestParam($request, $param, $config->getDefault());
+
+            $this->validateInput($value, $config, $messages);
         }
 
         return $this;
@@ -152,17 +161,18 @@ class Validator
      * @param array                $rules
      * @param string               $group
      * @param string[]             $messages
+     * @param mixed                $default
      *
      * @return self
      */
-    public function validate($input, array $rules, $group = null, array $messages = [])
+    public function validate($input, array $rules, $group = null, array $messages = [], $default = null)
     {
         if ($input instanceof Request) {
-            return $this->request($input, $rules, $group, $messages);
+            return $this->request($input, $rules, $group, $messages, $default);
         } elseif (is_array($input)) {
-            return $this->array($input, $rules, $group, $messages);
+            return $this->array($input, $rules, $group, $messages, $default);
         } elseif (is_object($input)) {
-            return $this->object($input, $rules, $group, $messages);
+            return $this->object($input, $rules, $group, $messages, $default);
         }
 
         return $this->value($input, $rules, null, $group, $messages);
@@ -183,13 +193,7 @@ class Validator
     {
         $config = new Configuration($rules, $key, $group);
 
-        try {
-            $config->getValidationRules()->assert($value);
-        } catch (NestedValidationException $e) {
-            $this->handleException($e, $config, $messages);
-        }
-
-        $this->setValue($config->getKey(), $value, $config->getGroup());
+        $this->validateInput($value, $config, $messages);
 
         return $this;
     }
@@ -523,8 +527,8 @@ class Validator
      * Fetch request parameter value from body or query string (in that order).
      *
      * @param  Request $request
-     * @param  string  $key The parameter key.
-     * @param  string  $default The default value.
+     * @param  string  $key
+     * @param  string  $default
      *
      * @return mixed The parameter value.
      */
@@ -552,13 +556,11 @@ class Validator
      * @param Configuration             $config
      * @param string[]                  $messages
      */
-    protected function handleException(NestedValidationException $e, Configuration $config, array $messages = [])
+    protected function handleValidationException(NestedValidationException $e, Configuration $config, array $messages = [])
     {
-        // If the 'message' key exists, set it as only message for this param
         if ($config->hasMessage()) {
             $this->setErrors([$config->getMessage()], $config->getKey(), $config->getGroup());
         } else {
-            // If the 'messages' key exists, override global messages
             $this->storeErrors($e, $config, $messages);
         }
     }
@@ -614,5 +616,23 @@ class Validator
         }
 
         $this->setErrors($this->mergeMessages($errors), $config->getKey(), $config->getGroup());
+    }
+
+    /**
+     * Executes the validation of a value and handles errors.
+     *
+     * @param mixed         $input
+     * @param Configuration $config
+     * @param string[]      $messages
+     */
+    protected function validateInput($input, Configuration $config, array $messages = [])
+    {
+        try {
+            $config->getValidationRules()->assert($input);
+        } catch (NestedValidationException $e) {
+            $this->handleValidationException($e, $config, $messages);
+        }
+
+        $this->setValue($config->getKey(), $input, $config->getGroup());
     }
 }

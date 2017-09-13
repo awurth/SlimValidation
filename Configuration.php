@@ -8,6 +8,11 @@ use Respect\Validation\Rules\AllOf;
 class Configuration
 {
     /**
+     * @var mixed
+     */
+    protected $default;
+
+    /**
      * @var string
      */
     protected $group;
@@ -36,13 +41,15 @@ class Configuration
      * Constructor.
      *
      * @param AllOf|array $options
-     * @param string $key
-     * @param string $group
+     * @param string      $key
+     * @param string      $group
+     * @param string      $default
      */
-    public function __construct($options, $key = null, $group = null)
+    public function __construct($options, $key = null, $group = null, $default = null)
     {
         $this->key = $key;
         $this->group = $group;
+        $this->default = $default;
 
         if ($options instanceof AllOf) {
             $this->rules = $options;
@@ -51,6 +58,16 @@ class Configuration
         }
 
         $this->validateOptions();
+    }
+
+    /**
+     * Gets the default value for non-existent request parameters, object properties or array keys.
+     *
+     * @return mixed
+     */
+    public function getDefault()
+    {
+        return $this->default;
     }
 
     /**
@@ -144,6 +161,16 @@ class Configuration
     }
 
     /**
+     * Sets the default value for non-existent request parameters, object properties or array keys.
+     *
+     * @param string $default
+     */
+    public function setDefault($default)
+    {
+        $this->default = $default;
+    }
+
+    /**
      * Sets the group to use for errors and values storage.
      *
      * @param string $group
@@ -191,6 +218,7 @@ class Configuration
     public function setOptions(array $options)
     {
         $availableOptions = [
+            'default',
             'group',
             'key',
             'message',
