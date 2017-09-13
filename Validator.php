@@ -482,13 +482,18 @@ class Validator
     /**
      * Sets values of validated data.
      *
-     * @param array $values
+     * @param array  $values
+     * @param string $group
      *
      * @return self
      */
-    public function setValues(array $values)
+    public function setValues(array $values, $group = null)
     {
-        $this->values = $values;
+        if (!empty($group)) {
+            $this->values[$group] = $values;
+        } else {
+            $this->values = $values;
+        }
 
         return $this;
     }
