@@ -375,16 +375,12 @@ class Validator
     {
         if (!empty($group)) {
             if (!empty($key)) {
-                if (isset($this->errors[$group][$key])) {
-                    unset($this->errors[$group][$key]);
-                }
-            } elseif (isset($this->errors[$group])) {
+                unset($this->errors[$group][$key]);
+            } else {
                 unset($this->errors[$group]);
             }
         } elseif (!empty($key)) {
-            if (isset($this->errors[$key])) {
-                unset($this->errors[$key]);
-            }
+            unset($this->errors[$key]);
         }
 
         return $this;
