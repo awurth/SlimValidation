@@ -4,6 +4,8 @@
 
 A validator for the Slim PHP Micro-Framework, using [Respect Validation](https://github.com/Respect/Validation)
 
+See the [project's website](http://awurth.fr/doc/slim-validation/v3) for the complete and up-to-date documentation.
+
 ## Installation
 ``` bash
 $ composer require awurth/slim-validation
@@ -12,10 +14,10 @@ $ composer require awurth/slim-validation
 ### Configuration
 To initialize the validator, create a new instance of `Awurth\SlimValidation\Validator`
 ``` php
-Validator::__construct([ bool $storeErrorsWithRules = true [, array $defaultMessages = [] ]])
+Validator::__construct([ bool $showValidationRules = true [, array $defaultMessages = [] ]])
 ```
 
-##### $storeErrorsWithRules
+##### $showValidationRules
 * If set to `true`, errors will be stored in an associative array with the validation rules names as the key
 ``` php
 $errors = [
@@ -69,19 +71,151 @@ if ($validator->isValid()) {
 }
 ```
 
+### Validation methods
+#### Request parameters validation
+``` php
+$_POST = [
+    'username' => 'awurth',
+    'password' => 'my_password'
+];
+```
+
+``` php
+/**
+ * @var Psr\Http\Message\ServerRequestInterface $request
+ */
+
+$validator->request($request, [
+    'username' => V::notBlank(),
+    'password' => V::length(8)
+]);
+```
+
+#### Object properties validation
+``` php
+class ObjectToValidate {
+    private $privateProperty;
+    protected $protectedProperty;
+    public $pulicProperty;
+    
+    // ...
+}
+```
+
+``` php
+/**
+ * @var object $object
+ */
+
+$validator->object($object, [
+    'privateProperty' => V::notBlank(),
+    'protectedProperty' => V::notBlank(),
+    'publicProperty' => V::notBlank()
+]);
+```
+
+If a property does not exist, the tested value will be `null`
+
+#### Array validation
+``` php
+$arrayToValidate = [
+    'key_1' => 'value_1',
+    'key_2' => 'value_2'
+];
+```
+
+``` php
+/**
+ * @var array $arrayToValidate
+ */
+
+$validator->array($arrayToValidate, [
+    'key_1' => V::notBlank(),
+    'key_2' => V::notBlank()
+]);
+```
+
+#### Single value validation
+``` php
+$validator->value('12345', V::numeric(), 'secret_code');
+```
+
+#### The validate() method
+``` php
+/**
+ * @var Psr\Http\Message\ServerRequestInterface $request
+ */
+
+$validator->validate($request, [
+    'param' => V::notBlank()
+]);
+
+/**
+ * @var object $object
+ */
+
+$validator->validate($object, [
+    'property' => V::notBlank()
+]);
+
+/**
+ * @var array $array
+ */
+
+$validator->array($array, [
+    'key' => V::notBlank()
+]);
+```
+
+### Error groups
+``` php
+$user = [
+    'username' => 'awurth',
+    'password' => 'my_password'
+];
+
+$address = [
+    'street' => '...',
+    'city' => '...',
+    'country' => '...'
+];
+
+$validator->validate($user, [
+    // ...
+], 'user');
+
+$validator->validate($address, [
+    // ...
+], 'address');
+```
+
+``` php
+$validator->getErrors();
+
+// Will return:
+[
+    'user' => [
+        'username' => [
+            // Errors...
+        ]
+    ],
+    'address' => [
+        'street' => [
+            // Errors...
+        ]
+    ]
+]
+```
+
 ### Custom messages
 Slim Validation allows you to set custom messages for validation errors. There are 4 types of custom messages
 
-##### Default rules messages
+#### Default rules messages
 The ones defined in the `Validator` constructor.
-##### Global rules messages
-Messages that overwrite **Respect Validation** and **default rules messages** when calling the `validate` method.
-##### Individual rules messages
-Messages for a single request parameter. Overwrites all above messages.
-##### Single parameter messages
-Defines a single error message for a request parameter, ignoring the validation rules. Overwrites all messages.
 
 #### Global rules messages
+Messages that overwrite **Respect Validation** and **default rules messages** when calling the `validate` method.
+
 ``` php
 $container->validator->validate($request, [
     'get_or_post_parameter_name' => V::length(6, 25)->alnum('_')->noWhitespace(),
@@ -94,6 +228,8 @@ $container->validator->validate($request, [
 ```
 
 #### Individual rules messages
+Messages for a single request parameter. Overwrites all above messages.
+
 ``` php
 $container->validator->validate($request, [
     'get_or_post_parameter_name' => [
@@ -109,6 +245,8 @@ $container->validator->validate($request, [
 ```
 
 #### Single parameter messages
+Defines a single error message for a request parameter, ignoring the validation rules. Overwrites all messages.
+
 ``` php
 $container->validator->validate($request, [
     'get_or_post_parameter_name' => [
