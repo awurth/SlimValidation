@@ -165,6 +165,12 @@ $validator->validate($object, [
 $validator->array($array, [
     'key' => V::notBlank()
 ]);
+
+$secretCode = '12345';
+$validator->validate($secretCode, [
+    'rules' => V::numeric(),
+    'key' => 'secret_code'
+]);
 ```
 
 ### Error groups
