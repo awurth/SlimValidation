@@ -4,9 +4,11 @@
 
 A validator for the Slim PHP Micro-Framework, using [Respect Validation](https://github.com/Respect/Validation)
 
+See the [project's website](http://awurth.fr/doc/slim-validation/v2) for the complete and up-to-date documentation.
+
 ## Installation
 ``` bash
-$ composer require awurth/slim-validation
+$ composer require awurth/slim-validation ^2.0
 ```
 
 ### Configuration
