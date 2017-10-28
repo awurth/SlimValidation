@@ -81,11 +81,11 @@ class Validator
     /**
      * Validates an array with the given rules.
      *
-     * @param array    $array
-     * @param array    $rules
-     * @param string   $group
-     * @param string[] $messages
-     * @param mixed    $default
+     * @param array           $array
+     * @param (AllOf|mixed)[] $rules
+     * @param string|null     $group
+     * @param string[]        $messages
+     * @param mixed|null      $default
      *
      * @return self
      */
@@ -105,11 +105,11 @@ class Validator
     /**
      * Validates an objects properties with the given rules.
      *
-     * @param object   $object
-     * @param array    $rules
-     * @param string   $group
-     * @param string[] $messages
-     * @param mixed    $default
+     * @param object          $object
+     * @param (AllOf|mixed)[] $rules
+     * @param string|null     $group
+     * @param string[]        $messages
+     * @param mixed|null      $default
      *
      * @return self
      */
@@ -133,11 +133,11 @@ class Validator
     /**
      * Validates request parameters with the given rules.
      *
-     * @param Request  $request
-     * @param array    $rules
-     * @param string   $group
-     * @param string[] $messages
-     * @param mixed    $default
+     * @param Request         $request
+     * @param (AllOf|mixed)[] $rules
+     * @param string|null     $group
+     * @param string[]        $messages
+     * @param mixed|null      $default
      *
      * @return self
      */
@@ -157,11 +157,11 @@ class Validator
     /**
      * Validates request parameters, an array or an objects properties.
      *
-     * @param Request|object|array $input
-     * @param array                $rules
-     * @param string               $group
-     * @param string[]             $messages
-     * @param mixed                $default
+     * @param Request|mixed   $input
+     * @param (AllOf|mixed)[] $rules
+     * @param string|null     $group
+     * @param string[]        $messages
+     * @param mixed|null      $default
      *
      * @return self
      */
@@ -184,7 +184,7 @@ class Validator
      * @param mixed       $value
      * @param AllOf|array $rules
      * @param string      $key
-     * @param string      $group
+     * @param string|null $group
      * @param string[]    $messages
      *
      * @return self
@@ -211,9 +211,9 @@ class Validator
     /**
      * Adds a validation error.
      *
-     * @param string $key
-     * @param string $message
-     * @param string $group
+     * @param string      $key
+     * @param string      $message
+     * @param string|null $group
      *
      * @return self
      */
@@ -253,9 +253,9 @@ class Validator
     /**
      * Gets one error.
      *
-     * @param string $key
-     * @param string $index
-     * @param string $group
+     * @param string      $key
+     * @param string|null $index
+     * @param string|null $group
      *
      * @return string
      */
@@ -275,8 +275,8 @@ class Validator
     /**
      * Gets multiple errors.
      *
-     * @param string $key
-     * @param string $group
+     * @param string|null $key
+     * @param string|null $group
      *
      * @return string[]
      */
@@ -296,8 +296,8 @@ class Validator
     /**
      * Gets the first error of a parameter.
      *
-     * @param string $key
-     * @param string $group
+     * @param string      $key
+     * @param string|null $group
      *
      * @return string
      */
@@ -323,8 +323,8 @@ class Validator
     /**
      * Gets a value from the validated data.
      *
-     * @param string $key
-     * @param string $group
+     * @param string      $key
+     * @param string|null $group
      *
      * @return mixed
      */
@@ -340,7 +340,7 @@ class Validator
     /**
      * Gets the validated data.
      *
-     * @param string $group
+     * @param string|null $group
      *
      * @return array
      */
@@ -366,8 +366,8 @@ class Validator
     /**
      * Removes validation errors.
      *
-     * @param string $key
-     * @param string $group
+     * @param string|null $key
+     * @param string|null $group
      *
      * @return self
      */
@@ -418,9 +418,9 @@ class Validator
     /**
      * Sets validation errors.
      *
-     * @param string[] $errors
-     * @param string   $key
-     * @param string   $group
+     * @param string[]    $errors
+     * @param string|null $key
+     * @param string|null $group
      *
      * @return self
      */
@@ -458,9 +458,9 @@ class Validator
     /**
      * Sets the value of a parameter.
      *
-     * @param string $key
-     * @param mixed  $value
-     * @param string $group
+     * @param string      $key
+     * @param mixed       $value
+     * @param string|null $group
      *
      * @return self
      */
@@ -478,8 +478,8 @@ class Validator
     /**
      * Sets values of validated data.
      *
-     * @param array  $values
-     * @param string $group
+     * @param array       $values
+     * @param string|null $group
      *
      * @return self
      */
@@ -497,13 +497,13 @@ class Validator
     /**
      * Gets the value of a property of an object.
      *
-     * @param object $object
-     * @param string $propertyName
-     * @param mixed  $default
+     * @param object     $object
+     * @param string     $propertyName
+     * @param mixed|null $default
      *
      * @return mixed
      */
-    protected function getPropertyValue($object, string $propertyName, $default = null)
+    protected function getPropertyValue($object, $propertyName, $default = null)
     {
         if (!is_object($object)) {
             throw new InvalidArgumentException('The first argument should be an object');
@@ -522,9 +522,9 @@ class Validator
     /**
      * Fetch request parameter value from body or query string (in that order).
      *
-     * @param  Request $request
-     * @param  string  $key
-     * @param  string  $default
+     * @param Request     $request
+     * @param string      $key
+     * @param string|null $default
      *
      * @return mixed The parameter value.
      */
@@ -546,6 +546,23 @@ class Validator
     }
 
     /**
+     * Gets the name of all rules of a group of rules.
+     *
+     * @param AllOf $rules
+     *
+     * @return string[]
+     */
+    protected function getRulesNames(AllOf $rules)
+    {
+        $rulesNames = [];
+        foreach ($rules->getRules() as $rule) {
+            $rulesNames[] = lcfirst((new ReflectionClass($rule))->getShortName());
+        }
+
+        return $rulesNames;
+    }
+
+    /**
      * Handles a validation exception.
      *
      * @param NestedValidationException $e
@@ -564,7 +581,7 @@ class Validator
     /**
      * Merges default messages, global messages and individual messages.
      *
-     * @param array $errors
+     * @param string[] $errors
      *
      * @return string[]
      */
@@ -584,16 +601,8 @@ class Validator
      */
     protected function storeErrors(NestedValidationException $e, Configuration $config, array $messages = [])
     {
-        $rules = $config->getValidationRules()->getRules();
-
-        // Get the names of all rules used for this param
-        $rulesNames = [];
-        foreach ($rules as $rule) {
-            $rulesNames[] = lcfirst((new ReflectionClass($rule))->getShortName());
-        }
-
         $errors = [
-            $e->findMessages($rulesNames)
+            $e->findMessages($this->getRulesNames($config->getValidationRules()))
         ];
 
         // If default messages are defined
