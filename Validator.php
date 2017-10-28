@@ -73,7 +73,7 @@ class Validator
      *
      * @return bool
      */
-    public function isValid()
+    public function isValid(): bool
     {
         return empty($this->errors);
     }
@@ -81,15 +81,15 @@ class Validator
     /**
      * Validates an array with the given rules.
      *
-     * @param array           $array
-     * @param (AllOf|mixed)[] $rules
-     * @param string|null     $group
-     * @param string[]        $messages
-     * @param mixed|null      $default
+     * @param array         $array
+     * @param AllOf[]|array $rules
+     * @param string|null   $group
+     * @param string[]      $messages
+     * @param mixed|null    $default
      *
      * @return self
      */
-    public function array(array $array, array $rules, $group = null, array $messages = [], $default = null)
+    public function array(array $array, array $rules, string $group = null, array $messages = [], $default = null): self
     {
         foreach ($rules as $key => $options) {
             $config = new Configuration($options, $key, $group, $default);
@@ -105,15 +105,15 @@ class Validator
     /**
      * Validates an objects properties with the given rules.
      *
-     * @param object          $object
-     * @param (AllOf|mixed)[] $rules
-     * @param string|null     $group
-     * @param string[]        $messages
-     * @param mixed|null      $default
+     * @param object        $object
+     * @param AllOf[]|array $rules
+     * @param string|null   $group
+     * @param string[]      $messages
+     * @param mixed|null    $default
      *
      * @return self
      */
-    public function object($object, array $rules, $group = null, array $messages = [], $default = null)
+    public function object($object, array $rules, string $group = null, array $messages = [], $default = null): self
     {
         if (!is_object($object)) {
             throw new InvalidArgumentException('The first argument should be an object');
@@ -133,15 +133,15 @@ class Validator
     /**
      * Validates request parameters with the given rules.
      *
-     * @param Request         $request
-     * @param (AllOf|mixed)[] $rules
-     * @param string|null     $group
-     * @param string[]        $messages
-     * @param mixed|null      $default
+     * @param Request       $request
+     * @param AllOf[]|array $rules
+     * @param string|null   $group
+     * @param string[]      $messages
+     * @param mixed|null    $default
      *
      * @return self
      */
-    public function request(Request $request, array $rules, $group = null, array $messages = [], $default = null)
+    public function request(Request $request, array $rules, string $group = null, array $messages = [], $default = null): self
     {
         foreach ($rules as $param => $options) {
             $config = new Configuration($options, $param, $group, $default);
@@ -157,15 +157,15 @@ class Validator
     /**
      * Validates request parameters, an array or an objects properties.
      *
-     * @param Request|mixed   $input
-     * @param (AllOf|mixed)[] $rules
-     * @param string|null     $group
-     * @param string[]        $messages
-     * @param mixed|null      $default
+     * @param Request|mixed $input
+     * @param AllOf[]|array $rules
+     * @param string|null   $group
+     * @param string[]      $messages
+     * @param mixed|null    $default
      *
      * @return self
      */
-    public function validate($input, array $rules, $group = null, array $messages = [], $default = null)
+    public function validate($input, array $rules, string $group = null, array $messages = [], $default = null): self
     {
         if ($input instanceof Request) {
             return $this->request($input, $rules, $group, $messages, $default);
@@ -189,7 +189,7 @@ class Validator
      *
      * @return self
      */
-    public function value($value, $rules, $key, $group = null, array $messages = [])
+    public function value($value, $rules, string $key, string $group = null, array $messages = []): self
     {
         $config = new Configuration($rules, $key, $group);
 
@@ -203,7 +203,7 @@ class Validator
      *
      * @return int
      */
-    public function count()
+    public function count(): int
     {
         return count($this->errors);
     }
@@ -217,7 +217,7 @@ class Validator
      *
      * @return self
      */
-    public function addError($key, $message, $group = null)
+    public function addError(string $key, string $message, string $group = null): self
     {
         if (!empty($group)) {
             $this->errors[$group][$key][] = $message;
@@ -235,7 +235,7 @@ class Validator
      *
      * @return string
      */
-    public function getDefaultMessage($key)
+    public function getDefaultMessage($key): string
     {
         return $this->defaultMessages[$key] ?? '';
     }
@@ -245,7 +245,7 @@ class Validator
      *
      * @return string[]
      */
-    public function getDefaultMessages()
+    public function getDefaultMessages(): array
     {
         return $this->defaultMessages;
     }
@@ -253,13 +253,13 @@ class Validator
     /**
      * Gets one error.
      *
-     * @param string      $key
-     * @param string|null $index
-     * @param string|null $group
+     * @param string          $key
+     * @param string|int|null $index
+     * @param string|null     $group
      *
      * @return string
      */
-    public function getError($key, $index = null, $group = null)
+    public function getError(string $key, $index = null, $group = null)
     {
         if (null === $index) {
             return $this->getFirstError($key, $group);
@@ -280,7 +280,7 @@ class Validator
      *
      * @return string[]
      */
-    public function getErrors($key = null, $group = null)
+    public function getErrors(string $key = null, string $group = null): array
     {
         if (!empty($key)) {
             if (!empty($group)) {
@@ -301,7 +301,7 @@ class Validator
      *
      * @return string
      */
-    public function getFirstError($key, $group = null)
+    public function getFirstError(string $key, string $group = null)
     {
         if (!empty($group)) {
             if (isset($this->errors[$group][$key])) {
@@ -328,7 +328,7 @@ class Validator
      *
      * @return mixed
      */
-    public function getValue($key, $group = null)
+    public function getValue(string $key, string $group = null)
     {
         if (!empty($group)) {
             return $this->values[$group][$key] ?? null;
@@ -344,7 +344,7 @@ class Validator
      *
      * @return array
      */
-    public function getValues($group = null)
+    public function getValues(string $group = null)
     {
         if (!empty($group)) {
             return $this->values[$group] ?? [];
@@ -358,7 +358,7 @@ class Validator
      *
      * @return bool
      */
-    public function getShowValidationRules()
+    public function getShowValidationRules(): bool
     {
         return $this->showValidationRules;
     }
@@ -371,7 +371,7 @@ class Validator
      *
      * @return self
      */
-    public function removeErrors($key = null, $group = null)
+    public function removeErrors(string $key = null, string $group = null): self
     {
         if (!empty($group)) {
             if (!empty($key)) {
@@ -394,7 +394,7 @@ class Validator
      *
      * @return self
      */
-    public function setDefaultMessage($rule, $message)
+    public function setDefaultMessage(string $rule, string $message): self
     {
         $this->defaultMessages[$rule] = $message;
 
@@ -408,7 +408,7 @@ class Validator
      *
      * @return self
      */
-    public function setDefaultMessages(array $messages)
+    public function setDefaultMessages(array $messages): self
     {
         $this->defaultMessages = $messages;
 
@@ -424,7 +424,7 @@ class Validator
      *
      * @return self
      */
-    public function setErrors(array $errors, $key = null, $group = null)
+    public function setErrors(array $errors, string $key = null, string $group = null): self
     {
         if (!empty($group)) {
             if (!empty($key)) {
@@ -448,7 +448,7 @@ class Validator
      *
      * @return self
      */
-    public function setShowValidationRules(bool $showValidationRules)
+    public function setShowValidationRules(bool $showValidationRules): self
     {
         $this->showValidationRules = $showValidationRules;
 
@@ -464,7 +464,7 @@ class Validator
      *
      * @return self
      */
-    public function setValue($key, $value, $group = null)
+    public function setValue(string $key, $value, string $group = null): self
     {
         if (!empty($group)) {
             $this->values[$group][$key] = $value;
@@ -483,7 +483,7 @@ class Validator
      *
      * @return self
      */
-    public function setValues(array $values, $group = null)
+    public function setValues(array $values, string $group = null): self
     {
         if (!empty($group)) {
             $this->values[$group] = $values;
@@ -503,7 +503,7 @@ class Validator
      *
      * @return mixed
      */
-    protected function getPropertyValue($object, $propertyName, $default = null)
+    protected function getPropertyValue($object, string $propertyName, $default = null)
     {
         if (!is_object($object)) {
             throw new InvalidArgumentException('The first argument should be an object');
@@ -520,13 +520,13 @@ class Validator
     }
 
     /**
-     * Fetch request parameter value from body or query string (in that order).
+     * Fetches a request parameter's value from the body or query string (in that order).
      *
      * @param Request     $request
      * @param string      $key
      * @param string|null $default
      *
-     * @return mixed The parameter value.
+     * @return mixed
      */
     protected function getRequestParam(Request $request, $key, $default = null)
     {
@@ -552,7 +552,7 @@ class Validator
      *
      * @return string[]
      */
-    protected function getRulesNames(AllOf $rules)
+    protected function getRulesNames(AllOf $rules): array
     {
         $rulesNames = [];
         foreach ($rules->getRules() as $rule) {
@@ -585,7 +585,7 @@ class Validator
      *
      * @return string[]
      */
-    protected function mergeMessages(array $errors)
+    protected function mergeMessages(array $errors): array
     {
         $errors = array_filter(call_user_func_array('array_merge', $errors));
 

@@ -59,7 +59,7 @@ class Configuration
      * @param string      $group
      * @param string      $default
      */
-    public function __construct($options, $key = null, $group = null, $default = null)
+    public function __construct($options, string $key = null, string $group = null, $default = null)
     {
         $this->key = $key;
         $this->group = $group;
@@ -119,7 +119,7 @@ class Configuration
      *
      * @return string[]
      */
-    public function getMessages()
+    public function getMessages(): array
     {
         return $this->messages;
     }
@@ -129,7 +129,7 @@ class Configuration
      *
      * @return AllOf
      */
-    public function getValidationRules()
+    public function getValidationRules(): AllOf
     {
         return $this->rules;
     }
@@ -139,7 +139,7 @@ class Configuration
      *
      * @return bool
      */
-    public function hasGroup()
+    public function hasGroup(): bool
     {
         return !empty($this->group);
     }
@@ -149,7 +149,7 @@ class Configuration
      *
      * @return bool
      */
-    public function hasKey()
+    public function hasKey(): bool
     {
         return !empty($this->key);
     }
@@ -159,7 +159,7 @@ class Configuration
      *
      * @return bool
      */
-    public function hasMessage()
+    public function hasMessage(): bool
     {
         return !empty($this->message);
     }
@@ -169,7 +169,7 @@ class Configuration
      *
      * @return bool
      */
-    public function hasMessages()
+    public function hasMessages(): bool
     {
         return !empty($this->messages);
     }
@@ -177,7 +177,7 @@ class Configuration
     /**
      * Sets the default value for non-existent request parameters, object properties or array keys.
      *
-     * @param string $default
+     * @param mixed $default
      */
     public function setDefault($default)
     {
@@ -189,7 +189,7 @@ class Configuration
      *
      * @param string $group
      */
-    public function setGroup($group)
+    public function setGroup(string $group)
     {
         $this->group = $group;
     }
@@ -199,7 +199,7 @@ class Configuration
      *
      * @param string $key
      */
-    public function setKey($key)
+    public function setKey(string $key)
     {
         $this->key = $key;
     }
@@ -209,7 +209,7 @@ class Configuration
      *
      * @param string $message
      */
-    public function setMessage($message)
+    public function setMessage(string $message)
     {
         $this->message = $message;
     }
