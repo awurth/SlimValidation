@@ -1,10 +1,24 @@
 <?php
 
+/*
+ * This file is part of the awurth/slim-validation package.
+ *
+ * (c) Alexis Wurth <alexis.wurth57@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Awurth\SlimValidation;
 
 use InvalidArgumentException;
 use Respect\Validation\Rules\AllOf;
 
+/**
+ * Configuration.
+ *
+ * @author Alexis Wurth <awurth.dev@gmail.com>
+ */
 class Configuration
 {
     /**

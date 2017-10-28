@@ -21,7 +21,7 @@ use Respect\Validation\Rules\AllOf;
 /**
  * Validator.
  *
- * @author Alexis Wurth <alexis.wurth57@gmail.com>
+ * @author Alexis Wurth <awurth.dev@gmail.com>
  */
 class Validator
 {

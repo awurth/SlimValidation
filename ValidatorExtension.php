@@ -17,7 +17,7 @@ use Twig\TwigFunction;
 /**
  * ValidatorExtension.
  *
- * @author Alexis Wurth <alexis.wurth57@gmail.com>
+ * @author Alexis Wurth <awurth.dev@gmail.com>
  */
 class ValidatorExtension extends AbstractExtension
 {
