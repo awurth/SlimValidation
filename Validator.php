@@ -581,7 +581,7 @@ class Validator
     /**
      * Merges default messages, global messages and individual messages.
      *
-     * @param string[] $errors
+     * @param array $errors
      *
      * @return string[]
      */
