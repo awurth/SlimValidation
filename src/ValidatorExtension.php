@@ -15,21 +15,21 @@ use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
 /**
- * ValidatorExtension.
+ * Validator Twig Extension.
  *
  * @author Alexis Wurth <awurth.dev@gmail.com>
  */
 class ValidatorExtension extends AbstractExtension
 {
     /**
-     * Array of names for Twig functions.
+     * An array of names for Twig functions.
      *
-     * @var array
+     * @var string[]
      */
-    protected $functionsNames;
+    protected $functionNames;
 
     /**
-     * Validator service.
+     * The validator instance.
      *
      * @var Validator
      */
@@ -38,18 +38,18 @@ class ValidatorExtension extends AbstractExtension
     /**
      * Constructor.
      *
-     * @param Validator $validator The validator instance
-     * @param array $functionsNames An array of names for Twig functions
+     * @param ValidatorInterface $validator     The validator instance
+     * @param string[]           $functionNames An array of names for Twig functions
      */
-    public function __construct(Validator $validator, $functionsNames = [])
+    public function __construct(ValidatorInterface $validator, array $functionNames = [])
     {
         $this->validator = $validator;
 
-        $this->functionsNames['error'] = $functionsNames['error'] ?? 'error';
-        $this->functionsNames['errors'] = $functionsNames['errors'] ?? 'errors';
-        $this->functionsNames['has_error'] = $functionsNames['has_error'] ?? 'has_error';
-        $this->functionsNames['has_errors'] = $functionsNames['has_errors'] ?? 'has_errors';
-        $this->functionsNames['val'] = $functionsNames['val'] ?? 'val';
+        $this->functionNames['error'] = $functionNames['error'] ?? 'error';
+        $this->functionNames['errors'] = $functionNames['errors'] ?? 'errors';
+        $this->functionNames['has_error'] = $functionNames['has_error'] ?? 'has_error';
+        $this->functionNames['has_errors'] = $functionNames['has_errors'] ?? 'has_errors';
+        $this->functionNames['val'] = $functionNames['val'] ?? 'val';
     }
 
     /**
@@ -58,11 +58,11 @@ class ValidatorExtension extends AbstractExtension
     public function getFunctions()
     {
         return [
-            new TwigFunction($this->functionsNames['error'], [$this, 'getError']),
-            new TwigFunction($this->functionsNames['errors'], [$this, 'getErrors']),
-            new TwigFunction($this->functionsNames['has_error'], [$this, 'hasError']),
-            new TwigFunction($this->functionsNames['has_errors'], [$this, 'hasErrors']),
-            new TwigFunction($this->functionsNames['val'], [$this, 'getValue'])
+            new TwigFunction($this->functionNames['error'], [$this, 'getError']),
+            new TwigFunction($this->functionNames['errors'], [$this, 'getErrors']),
+            new TwigFunction($this->functionNames['has_error'], [$this, 'hasError']),
+            new TwigFunction($this->functionNames['has_errors'], [$this, 'hasErrors']),
+            new TwigFunction($this->functionNames['val'], [$this, 'getValue'])
         ];
     }
 

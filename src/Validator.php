@@ -23,7 +23,7 @@ use Respect\Validation\Rules\AllOf;
  *
  * @author Alexis Wurth <awurth.dev@gmail.com>
  */
-class Validator
+class Validator implements ValidatorInterface
 {
     /**
      * The default error messages for the given rules.
@@ -69,9 +69,7 @@ class Validator
     }
 
     /**
-     * Tells if there is no error.
-     *
-     * @return bool
+     * {@inheritdoc}
      */
     public function isValid(): bool
     {
@@ -155,15 +153,7 @@ class Validator
     }
 
     /**
-     * Validates request parameters, an array or an objects properties.
-     *
-     * @param Request|mixed $input
-     * @param AllOf[]|array $rules
-     * @param string|null   $group
-     * @param string[]      $messages
-     * @param mixed|null    $default
-     *
-     * @return self
+     * {@inheritdoc}
      */
     public function validate($input, array $rules, string $group = null, array $messages = [], $default = null): self
     {
@@ -251,13 +241,7 @@ class Validator
     }
 
     /**
-     * Gets one error.
-     *
-     * @param string          $key
-     * @param string|int|null $index
-     * @param string|null     $group
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getError(string $key, $index = null, $group = null)
     {
@@ -273,12 +257,7 @@ class Validator
     }
 
     /**
-     * Gets multiple errors.
-     *
-     * @param string|null $key
-     * @param string|null $group
-     *
-     * @return string[]
+     * {@inheritdoc}
      */
     public function getErrors(string $key = null, string $group = null): array
     {
@@ -321,12 +300,7 @@ class Validator
     }
 
     /**
-     * Gets a value from the validated data.
-     *
-     * @param string      $key
-     * @param string|null $group
-     *
-     * @return mixed
+     * {@inheritdoc}
      */
     public function getValue(string $key, string $group = null)
     {
@@ -338,11 +312,7 @@ class Validator
     }
 
     /**
-     * Gets the validated data.
-     *
-     * @param string|null $group
-     *
-     * @return array
+     * {@inheritdoc}
      */
     public function getValues(string $group = null)
     {
