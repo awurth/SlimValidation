@@ -1,13 +1,13 @@
 {
     "name": "awurth/slim-validation",
     "description": "A validator for the Slim PHP Micro-Framework",
-    "keywords": ["validation", "slim"],
-    "homepage": "https://github.com/awurth/slim-validation",
+    "keywords": ["validation", "respect", "slim"],
+    "homepage": "https://github.com/awurth/SlimValidation",
     "license": "MIT",
     "authors": [
         {
             "name": "Alexis Wurth",
-            "email": "alexis.wurth57@gmail.com",
+            "email": "awurth.dev@gmail.com",
             "homepage": "https://github.com/awurth"
         }
     ],
