@@ -2,7 +2,7 @@
 
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/bdf52753-f379-41c6-85cf-d1d1379b4aa7/mini.png)](https://insight.sensiolabs.com/projects/bdf52753-f379-41c6-85cf-d1d1379b4aa7) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/awurth/slim-validation/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/awurth/slim-validation/?branch=master) [![Build Status](https://travis-ci.org/awurth/slim-validation.svg?branch=master)](https://travis-ci.org/awurth/slim-validation) [![Latest Stable Version](https://poser.pugx.org/awurth/slim-validation/v/stable)](https://packagist.org/packages/awurth/slim-validation) [![Total Downloads](https://poser.pugx.org/awurth/slim-validation/downloads)](https://packagist.org/packages/awurth/slim-validation) [![License](https://poser.pugx.org/awurth/slim-validation/license)](https://packagist.org/packages/awurth/slim-validation)
 
-A validator for the Slim PHP Micro-Framework, using [Respect Validation](https://github.com/Respect/Validation)
+A validator for the Slim PHP Micro-Framework, using [Respect Validation](https://github.com/Respect/Validation) (**Requires PHP 7+**)
 
 > This project was originally designed for use with Slim, but can now be used with any [psr/http-message](https://github.com/php-fig/http-message) compliant framework, or any other PHP project if you don't need request parameters validation.
 
