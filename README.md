@@ -4,6 +4,8 @@
 
 A validator for the Slim PHP Micro-Framework, using [Respect Validation](https://github.com/Respect/Validation)
 
+> This project was originally designed for use with Slim, but can now be used with any [psr/http-message](https://github.com/php-fig/http-message) compliant framework, or any other PHP project if you don't need request parameters validation.
+
 See the [project's website](http://awurth.fr/doc/slim-validation/v3) for the complete and up-to-date documentation.
 
 ## Installation
