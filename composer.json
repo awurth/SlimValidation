@@ -1,7 +1,7 @@
 {
     "name": "awurth/slim-validation",
     "description": "A validator for the Slim PHP Micro-Framework",
-    "keywords": ["validation", "respect", "slim"],
+    "keywords": ["validation", "validator", "respect", "slim"],
     "homepage": "https://github.com/awurth/SlimValidation",
     "license": "MIT",
     "authors": [
@@ -35,6 +35,7 @@
         "sort-packages": true
     },
     "suggest": {
-        "slim/twig-view": "Needed to be able to use the twig extension"
+        "twig/twig": "Needed to be able to use the Twig Extension",
+        "slim/twig-view": "Needed to be able to use the Twig Extension with Slim"
     }
 }
