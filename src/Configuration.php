@@ -3,7 +3,7 @@
 /*
  * This file is part of the awurth/slim-validation package.
  *
- * (c) Alexis Wurth <alexis.wurth57@gmail.com>
+ * (c) Alexis Wurth <awurth.dev@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
