@@ -228,7 +228,7 @@ Messages that overwrite **Respect Validation** and **default rules messages** wh
 $container->validator->validate($request, [
     'get_or_post_parameter_name' => V::length(6, 25)->alnum('_')->noWhitespace(),
     // ...
-], [
+], null, [
     'length' => 'Custom message',
     'alnum' => 'Custom message',
     // ...
