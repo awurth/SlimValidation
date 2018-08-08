@@ -12,7 +12,7 @@ $ composer require awurth/slim-validation ^2.0
 ```
 
 ### Configuration
-To initialize the validator, create a new instance of `Awurth\SlimValidation\Validator`
+To initialize the validator, create a new instance of `Awurth\Slim\Validation\Validator`
 ``` php
 Validator::__construct([ bool $storeErrorsWithRules = true [, array $defaultMessages = [] ]])
 ```
