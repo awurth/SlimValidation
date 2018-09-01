@@ -3,7 +3,7 @@
 /*
  * This file is part of the awurth/slim-validation package.
  *
- * (c) Alexis Wurth <awurth.dev@gmail.com>
+ * (c) Alexis Wurth <alexis.wurth57@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -90,10 +90,14 @@ class Validator implements ValidatorInterface
     public function array(array $array, array $rules, string $group = null, array $messages = [], $default = null): self
     {
         foreach ($rules as $key => $options) {
+
             $config = new Configuration($options, $key, $group, $default);
 
-            $value = $array[$key] ?? $config->getDefault();
-
+            if($config->getAllData()){
+                $value = $array;
+            }else{
+                $value = $array[$key] ?? $config->getDefault();
+            }
             $this->validateInput($value, $config, $messages);
         }
 

@@ -137,6 +137,18 @@ $validator->array($arrayToValidate, [
 ]);
 ```
 
+If you need to perform complex validations with the options when or key, you can pass a parameter called alldata, to send the entire data array to the validation
+
+``` php
+$validator->array($arrayToValidate, [
+    'other_use_building' => [ 'rules' => V::key('use_building', V::optional(V::intVal()->between(1, 8)))
+    ->when(V::key('use_building', V::equals(8)),
+        V::key('other_use_building', V::notEmpty()),
+        V::key('use_building', V::optional(v::intVal()))
+    ),
+    'alldata' => True,
+```
+
 #### Single value validation
 ``` php
 $validator->value('12345', V::numeric(), 'secret_code');

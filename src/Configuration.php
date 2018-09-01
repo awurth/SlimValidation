@@ -3,7 +3,7 @@
 /*
  * This file is part of the awurth/slim-validation package.
  *
- * (c) Alexis Wurth <awurth.dev@gmail.com>
+ * (c) Alexis Wurth <alexis.wurth57@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -46,6 +46,11 @@ class Configuration
      */
     protected $messages = [];
 
+    /**
+     * @var bool
+     */
+
+    protected $alldata = False;
     /**
      * @var AllOf
      */
@@ -123,6 +128,17 @@ class Configuration
     {
         return $this->messages;
     }
+
+    /**
+     * Gets if need all data
+     *
+     * @return bool
+     */
+    public function getAllData(): bool
+    {
+        return $this->alldata;
+    }
+
 
     /**
      * Gets the validation rules.
@@ -225,6 +241,17 @@ class Configuration
     }
 
     /**
+     * Sets if need all data.
+     *
+     * @param bool $alldata
+     */
+    public function setAllData(bool $alldata)
+    {
+        $this->alldata = $alldata;
+    }
+
+
+    /**
      * Sets options from an array.
      *
      * @param array $options
@@ -237,7 +264,8 @@ class Configuration
             'key',
             'message',
             'messages',
-            'rules'
+            'rules',
+            'alldata'
         ];
 
         foreach ($availableOptions as $option) {
