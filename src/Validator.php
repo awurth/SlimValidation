@@ -14,6 +14,7 @@ namespace Awurth\SlimValidation;
 use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use ReflectionClass;
+use ReflectionException;
 use ReflectionProperty;
 use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Rules\AllOf;
@@ -477,10 +478,14 @@ class Validator implements ValidatorInterface
             return $default;
         }
 
-        $reflectionProperty = new ReflectionProperty($object, $propertyName);
-        $reflectionProperty->setAccessible(true);
+        try {
+            $reflectionProperty = new ReflectionProperty($object, $propertyName);
+            $reflectionProperty->setAccessible(true);
 
-        return $reflectionProperty->getValue($object);
+            return $reflectionProperty->getValue($object);
+        } catch (ReflectionException $e) {
+            return $default;
+        }
     }
 
     /**
@@ -520,7 +525,10 @@ class Validator implements ValidatorInterface
     {
         $rulesNames = [];
         foreach ($rules->getRules() as $rule) {
-            $rulesNames[] = lcfirst((new ReflectionClass($rule))->getShortName());
+            try {
+                $rulesNames[] = lcfirst((new ReflectionClass($rule))->getShortName());
+            } catch (ReflectionException $e) {
+            }
         }
 
         return $rulesNames;
