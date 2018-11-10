@@ -90,11 +90,11 @@ class Validator implements ValidatorInterface
     public function array(array $array, array $rules, string $group = null, array $messages = [], $default = null): self
     {
         foreach ($rules as $key => $options) {
-            $config = new Configuration($options, $key, $group, $default);
-
-            $value = $array[$key] ?? $config->getDefault();
-
-            $this->validateInput($value, $config, $messages);
+            $this->validateInput(
+                $array[$key] ?? $default,
+                new Configuration($options, $key, $group, $default),
+                $messages
+            );
         }
 
         return $this;
@@ -118,11 +118,11 @@ class Validator implements ValidatorInterface
         }
 
         foreach ($rules as $property => $options) {
-            $config = new Configuration($options, $property, $group, $default);
-
-            $value = $this->getPropertyValue($object, $property, $config->getDefault());
-
-            $this->validateInput($value, $config, $messages);
+            $this->validateInput(
+                $this->getPropertyValue($object, $property, $default),
+                new Configuration($options, $property, $group, $default),
+                $messages
+            );
         }
 
         return $this;
@@ -142,11 +142,11 @@ class Validator implements ValidatorInterface
     public function request(Request $request, array $rules, string $group = null, array $messages = [], $default = null): self
     {
         foreach ($rules as $param => $options) {
-            $config = new Configuration($options, $param, $group, $default);
-
-            $value = $this->getRequestParam($request, $param, $config->getDefault());
-
-            $this->validateInput($value, $config, $messages);
+            $this->validateInput(
+                $this->getRequestParam($request, $param, $default),
+                new Configuration($options, $param, $group, $default),
+                $messages
+            );
         }
 
         return $this;
@@ -181,11 +181,7 @@ class Validator implements ValidatorInterface
      */
     public function value($value, $rules, string $key, string $group = null, array $messages = []): self
     {
-        $config = new Configuration($rules, $key, $group);
-
-        $this->validateInput($value, $config, $messages);
-
-        return $this;
+        return $this->validateInput($value, new Configuration($rules, $key, $group), $messages);
     }
 
     /**
@@ -455,10 +451,8 @@ class Validator implements ValidatorInterface
      */
     public function setValues(array $values, string $group = null): self
     {
-        if (!empty($group)) {
-            $this->values[$group] = $values;
-        } else {
-            $this->values = $values;
+        foreach ($values as $key => $value) {
+            $this->setValue($key, $value, $group);
         }
 
         return $this;
@@ -599,8 +593,10 @@ class Validator implements ValidatorInterface
      * @param mixed         $input
      * @param Configuration $config
      * @param string[]      $messages
+     *
+     * @return self
      */
-    protected function validateInput($input, Configuration $config, array $messages = [])
+    protected function validateInput($input, Configuration $config, array $messages = []): self
     {
         try {
             $config->getValidationRules()->assert($input);
@@ -608,6 +604,6 @@ class Validator implements ValidatorInterface
             $this->handleValidationException($e, $config, $messages);
         }
 
-        $this->setValue($config->getKey(), $input, $config->getGroup());
+        return $this->setValue($config->getKey(), $input, $config->getGroup());
     }
 }
