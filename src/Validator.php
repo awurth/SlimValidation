@@ -509,6 +509,8 @@ class Validator implements ValidatorInterface
             $result = $postParams->$key;
         } elseif (isset($getParams[$key])) {
             $result = $getParams[$key];
+        } elseif (isset($_FILES[$key])) {
+            $result = $_FILES[$key];
         }
 
         return $result;
