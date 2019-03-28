@@ -319,8 +319,18 @@ public function register(Request $request, Response $response)
         $this->validator->validate($request, [
             'username' => V::length(6, 25)->alnum('_')->noWhitespace(),
             'email' => V::notBlank()->email(),
-            'password' => V::length(6, 25),
-            'confirm_password' => V::equals($request->getParam('password'))
+            'password' => [
+                'rules' => v::length(6, 25),
+                'messages' => [
+                    'length' => 'This field must have a length between {{minValue}} and {{maxValue}} characters'
+                ]
+            ],
+            'confirm_password' => [
+                'rules' => v::equals($request->getParam('password')),
+                'messages' => [
+                    'equals' => 'The password confirmation must be equal to the password'
+                ]
+            ]
         ]);
         
         if ($this->validator->isValid()) {
