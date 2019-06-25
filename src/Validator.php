@@ -609,6 +609,7 @@ class Validator implements ValidatorInterface
     protected function validateInput($input, Configuration $config, array $messages = []): self
     {
         try {
+            $config->getValidationRules()->setName($config->getKey());
             $config->getValidationRules()->assert($input);
         } catch (NestedValidationException $e) {
             $this->handleValidationException($e, $config, $messages);
