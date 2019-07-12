@@ -18,6 +18,8 @@ use ReflectionException;
 use ReflectionProperty;
 use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Rules\AllOf;
+use Respect\Validation\Rules\AbstractWrapper;
+
 
 /**
  * Validator.
