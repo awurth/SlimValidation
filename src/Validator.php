@@ -528,7 +528,11 @@ class Validator implements ValidatorInterface
         $rulesNames = [];
         foreach ($rules->getRules() as $rule) {
             try {
-                $rulesNames[] = lcfirst((new ReflectionClass($rule))->getShortName());
+                if ($rule instanceof AbstractWrapper) {
+                    $rulesNames = array_merge($rulesNames, $this->getRulesNames($rule->getValidatable()));
+                } else {
+                    $rulesNames[] = lcfirst((new ReflectionClass($rule))->getShortName());
+                }
             } catch (ReflectionException $e) {
             }
         }
