@@ -502,6 +502,10 @@ class Validator implements ValidatorInterface
         $postParams = $request->getParsedBody();
         $getParams = $request->getQueryParams();
 
+        if ($request->getAttribute('route')) {
+            $routeParams = $request->getAttribute('route')->getArguments();
+        }
+
         $result = $default;
         if (is_array($postParams) && isset($postParams[$key])) {
             $result = $postParams[$key];
@@ -509,6 +513,8 @@ class Validator implements ValidatorInterface
             $result = $postParams->$key;
         } elseif (isset($getParams[$key])) {
             $result = $getParams[$key];
+        } elseif (isset($routeParams[$key])) {
+            $result = $routeParams[$key];
         } elseif (isset($_FILES[$key])) {
             $result = $_FILES[$key];
         }
