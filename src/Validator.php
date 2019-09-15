@@ -18,6 +18,8 @@ use ReflectionException;
 use ReflectionProperty;
 use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Rules\AllOf;
+use Respect\Validation\Rules\AbstractWrapper;
+
 
 /**
  * Validator.
@@ -528,7 +530,11 @@ class Validator implements ValidatorInterface
         $rulesNames = [];
         foreach ($rules->getRules() as $rule) {
             try {
-                $rulesNames[] = lcfirst((new ReflectionClass($rule))->getShortName());
+                if ($rule instanceof AbstractWrapper) {
+                    $rulesNames = array_merge($rulesNames, $this->getRulesNames($rule->getValidatable()));
+                } else {
+                    $rulesNames[] = lcfirst((new ReflectionClass($rule))->getShortName());
+                }
             } catch (ReflectionException $e) {
             }
         }
