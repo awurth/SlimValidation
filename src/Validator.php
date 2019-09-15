@@ -19,7 +19,7 @@ use ReflectionProperty;
 use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Rules\AllOf;
 use Respect\Validation\Rules\AbstractWrapper;
-
+use Slim\Interfaces\RouteInterface;
 
 /**
  * Validator.
@@ -503,9 +503,11 @@ class Validator implements ValidatorInterface
     {
         $postParams = $request->getParsedBody();
         $getParams = $request->getQueryParams();
+        $route = $request->getAttribute('route');
 
-        if ($request->getAttribute('route')) {
-            $routeParams = $request->getAttribute('route')->getArguments();
+        $routeParams = [];
+        if ($route instanceof RouteInterface) {
+            $routeParams = $route->getArguments();
         }
 
         $result = $default;
