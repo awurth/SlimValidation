@@ -162,9 +162,13 @@ class Validator implements ValidatorInterface
     {
         if ($input instanceof Request) {
             return $this->request($input, $rules, $group, $messages, $default);
-        } elseif (is_array($input)) {
+        }
+
+        if (is_array($input)) {
             return $this->array($input, $rules, $group, $messages, $default);
-        } elseif (is_object($input)) {
+        }
+
+        if (is_object($input)) {
             return $this->object($input, $rules, $group, $messages, $default);
         }
 
