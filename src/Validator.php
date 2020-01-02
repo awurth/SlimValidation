@@ -242,17 +242,17 @@ class Validator implements ValidatorInterface
     /**
      * {@inheritdoc}
      */
-    public function getError(string $key, $index = null, $group = null)
+    public function getError(string $key, $index = null, $group = null): string
     {
         if (null === $index) {
             return $this->getFirstError($key, $group);
         }
 
         if (!empty($group)) {
-            return $this->errors[$group][$key][$index] ?? '';
+            return (string)($this->errors[$group][$key][$index] ?? '');
         }
 
-        return $this->errors[$key][$index] ?? '';
+        return (string)($this->errors[$key][$index] ?? '');
     }
 
     /**
@@ -279,20 +279,20 @@ class Validator implements ValidatorInterface
      *
      * @return string
      */
-    public function getFirstError(string $key, string $group = null)
+    public function getFirstError(string $key, string $group = null): string
     {
         if (!empty($group)) {
             if (isset($this->errors[$group][$key])) {
                 $first = array_slice($this->errors[$group][$key], 0, 1);
 
-                return array_shift($first);
+                return (string)array_shift($first);
             }
         }
 
         if (isset($this->errors[$key])) {
             $first = array_slice($this->errors[$key], 0, 1);
 
-            return array_shift($first);
+            return (string)array_shift($first);
         }
 
         return '';
@@ -313,7 +313,7 @@ class Validator implements ValidatorInterface
     /**
      * {@inheritdoc}
      */
-    public function getValues(string $group = null)
+    public function getValues(string $group = null): array
     {
         if (!empty($group)) {
             return $this->values[$group] ?? [];

@@ -29,8 +29,6 @@ interface ValidatorInterface
      * @param string|null   $group
      * @param string[]      $messages
      * @param mixed|null    $default
-     *
-     * @return self
      */
     public function validate($input, array $rules, string $group = null, array $messages = [], $default = null);
 
@@ -39,7 +37,7 @@ interface ValidatorInterface
      *
      * @return bool
      */
-    public function isValid();
+    public function isValid(): bool;
 
     /**
      * Gets one error.
@@ -50,7 +48,7 @@ interface ValidatorInterface
      *
      * @return string
      */
-    public function getError(string $key, $index = null, $group = null);
+    public function getError(string $key, $index = null, $group = null): string;
 
     /**
      * Gets multiple errors.
@@ -60,7 +58,7 @@ interface ValidatorInterface
      *
      * @return string[]
      */
-    public function getErrors(string $key = null, string $group = null);
+    public function getErrors(string $key = null, string $group = null): array;
 
     /**
      * Gets a value from the validated data.
@@ -79,5 +77,5 @@ interface ValidatorInterface
      *
      * @return array
      */
-    public function getValues(string $group = null);
+    public function getValues(string $group = null): array;
 }
