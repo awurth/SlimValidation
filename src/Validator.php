@@ -343,12 +343,12 @@ class Validator implements ValidatorInterface
     public function removeErrors(string $key = null, string $group = null): self
     {
         if (!empty($group)) {
-            if (!empty($key)) {
+            if ($key) {
                 unset($this->errors[$group][$key]);
             } else {
                 unset($this->errors[$group]);
             }
-        } elseif (!empty($key)) {
+        } elseif ($key) {
             unset($this->errors[$key]);
         }
 
@@ -396,12 +396,12 @@ class Validator implements ValidatorInterface
     public function setErrors(array $errors, string $key = null, string $group = null): self
     {
         if (!empty($group)) {
-            if (!empty($key)) {
+            if ($key) {
                 $this->errors[$group][$key] = $errors;
             } else {
                 $this->errors[$group] = $errors;
             }
-        } elseif (!empty($key)) {
+        } elseif ($key) {
             $this->errors[$key] = $errors;
         } else {
             $this->errors = $errors;
