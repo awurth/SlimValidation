@@ -285,12 +285,10 @@ class Validator implements ValidatorInterface
      */
     public function getFirstError(string $key, string $group = null): string
     {
-        if (!empty($group)) {
-            if (isset($this->errors[$group][$key])) {
-                $first = array_slice($this->errors[$group][$key], 0, 1);
+        if ($group && isset($this->errors[$group][$key])) {
+            $first = array_slice($this->errors[$group][$key], 0, 1);
 
-                return (string)array_shift($first);
-            }
+            return (string)array_shift($first);
         }
 
         if (isset($this->errors[$key])) {
