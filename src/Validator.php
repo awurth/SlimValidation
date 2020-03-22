@@ -57,12 +57,6 @@ class Validator implements ValidatorInterface
      */
     protected $values;
 
-    /**
-     * Constructor.
-     *
-     * @param bool     $showValidationRules
-     * @param string[] $defaultMessages
-     */
     public function __construct(bool $showValidationRules = true, array $defaultMessages = [])
     {
         $this->showValidationRules = $showValidationRules;
@@ -87,7 +81,7 @@ class Validator implements ValidatorInterface
      *
      * @return self
      */
-    public function array(array $array, array $rules, string $group = null, array $messages = [], $default = null): self
+    public function array(array $array, array $rules, ?string $group = null, array $messages = [], $default = null): self
     {
         foreach ($rules as $key => $options) {
             $this->validateInput(
@@ -111,7 +105,7 @@ class Validator implements ValidatorInterface
      *
      * @return self
      */
-    public function object($object, array $rules, string $group = null, array $messages = [], $default = null): self
+    public function object($object, array $rules, ?string $group = null, array $messages = [], $default = null): self
     {
         if (!is_object($object)) {
             throw new InvalidArgumentException('The first argument should be an object');
@@ -139,7 +133,7 @@ class Validator implements ValidatorInterface
      *
      * @return self
      */
-    public function request(Request $request, array $rules, string $group = null, array $messages = [], $default = null): self
+    public function request(Request $request, array $rules, ?string $group = null, array $messages = [], $default = null): self
     {
         foreach ($rules as $param => $options) {
             $this->validateInput(
@@ -152,7 +146,7 @@ class Validator implements ValidatorInterface
         return $this;
     }
 
-    public function validate($input, array $rules, string $group = null, array $messages = [], $default = null): self
+    public function validate($input, array $rules, ?string $group = null, array $messages = [], $default = null): self
     {
         if ($input instanceof Request) {
             return $this->request($input, $rules, $group, $messages, $default);
@@ -180,7 +174,7 @@ class Validator implements ValidatorInterface
      *
      * @return self
      */
-    public function value($value, $rules, string $key, string $group = null, array $messages = []): self
+    public function value($value, $rules, string $key, ?string $group = null, array $messages = []): self
     {
         return $this->validateInput($value, new Configuration($rules, $key, $group), $messages);
     }
@@ -195,16 +189,7 @@ class Validator implements ValidatorInterface
         return count($this->errors);
     }
 
-    /**
-     * Adds a validation error.
-     *
-     * @param string      $key
-     * @param string      $message
-     * @param string|null $group
-     *
-     * @return self
-     */
-    public function addError(string $key, string $message, string $group = null): self
+    public function addError(string $key, string $message, ?string $group = null): self
     {
         if (!empty($group)) {
             $this->errors[$group][$key][] = $message;
@@ -215,29 +200,17 @@ class Validator implements ValidatorInterface
         return $this;
     }
 
-    /**
-     * Gets one default messages.
-     *
-     * @param string $key
-     *
-     * @return string
-     */
-    public function getDefaultMessage($key): string
+    public function getDefaultMessage(string $key): string
     {
         return $this->defaultMessages[$key] ?? '';
     }
 
-    /**
-     * Gets all default messages.
-     *
-     * @return string[]
-     */
     public function getDefaultMessages(): array
     {
         return $this->defaultMessages;
     }
 
-    public function getError(string $key, $index = null, $group = null): string
+    public function getError(string $key, $index = null, ?string $group = null): string
     {
         if (null === $index) {
             return $this->getFirstError($key, $group);
@@ -250,7 +223,7 @@ class Validator implements ValidatorInterface
         return (string)($this->errors[$key][$index] ?? '');
     }
 
-    public function getErrors(string $key = null, string $group = null): array
+    public function getErrors(?string $key = null, ?string $group = null): array
     {
         if (!empty($key)) {
             if (!empty($group)) {
@@ -263,15 +236,7 @@ class Validator implements ValidatorInterface
         return $this->errors;
     }
 
-    /**
-     * Gets the first error of a parameter.
-     *
-     * @param string      $key
-     * @param string|null $group
-     *
-     * @return string
-     */
-    public function getFirstError(string $key, string $group = null): string
+    public function getFirstError(string $key, ?string $group = null): string
     {
         if ($group && isset($this->errors[$group][$key])) {
             $first = array_slice($this->errors[$group][$key], 0, 1);
@@ -288,7 +253,7 @@ class Validator implements ValidatorInterface
         return '';
     }
 
-    public function getValue(string $key, string $group = null)
+    public function getValue(string $key, ?string $group = null)
     {
         if (!empty($group)) {
             return $this->values[$group][$key] ?? null;
@@ -297,7 +262,7 @@ class Validator implements ValidatorInterface
         return $this->values[$key] ?? null;
     }
 
-    public function getValues(string $group = null): array
+    public function getValues(?string $group = null): array
     {
         if (!empty($group)) {
             return $this->values[$group] ?? [];
@@ -306,25 +271,12 @@ class Validator implements ValidatorInterface
         return $this->values;
     }
 
-    /**
-     * Gets the errors storage mode.
-     *
-     * @return bool
-     */
     public function getShowValidationRules(): bool
     {
         return $this->showValidationRules;
     }
 
-    /**
-     * Removes validation errors.
-     *
-     * @param string|null $key
-     * @param string|null $group
-     *
-     * @return self
-     */
-    public function removeErrors(string $key = null, string $group = null): self
+    public function removeErrors(?string $key = null, ?string $group = null): self
     {
         if (!empty($group)) {
             if ($key) {
@@ -339,14 +291,6 @@ class Validator implements ValidatorInterface
         return $this;
     }
 
-    /**
-     * Sets the default error message for a validation rule.
-     *
-     * @param string $rule
-     * @param string $message
-     *
-     * @return self
-     */
     public function setDefaultMessage(string $rule, string $message): self
     {
         $this->defaultMessages[$rule] = $message;
@@ -354,13 +298,6 @@ class Validator implements ValidatorInterface
         return $this;
     }
 
-    /**
-     * Sets default error messages.
-     *
-     * @param string[] $messages
-     *
-     * @return self
-     */
     public function setDefaultMessages(array $messages): self
     {
         $this->defaultMessages = $messages;
@@ -368,16 +305,7 @@ class Validator implements ValidatorInterface
         return $this;
     }
 
-    /**
-     * Sets validation errors.
-     *
-     * @param string[]    $errors
-     * @param string|null $key
-     * @param string|null $group
-     *
-     * @return self
-     */
-    public function setErrors(array $errors, string $key = null, string $group = null): self
+    public function setErrors(array $errors, ?string $key = null, ?string $group = null): self
     {
         if (!empty($group)) {
             if ($key) {
@@ -394,13 +322,6 @@ class Validator implements ValidatorInterface
         return $this;
     }
 
-    /**
-     * Sets the errors storage mode.
-     *
-     * @param bool $showValidationRules
-     *
-     * @return self
-     */
     public function setShowValidationRules(bool $showValidationRules): self
     {
         $this->showValidationRules = $showValidationRules;
@@ -417,7 +338,7 @@ class Validator implements ValidatorInterface
      *
      * @return self
      */
-    public function setValue(string $key, $value, string $group = null): self
+    public function setValue(string $key, $value, ?string $group = null): self
     {
         if (!empty($group)) {
             $this->values[$group][$key] = $value;
@@ -436,7 +357,7 @@ class Validator implements ValidatorInterface
      *
      * @return self
      */
-    public function setValues(array $values, string $group = null): self
+    public function setValues(array $values, ?string $group = null): self
     {
         foreach ($values as $key => $value) {
             $this->setValue($key, $value, $group);
@@ -541,7 +462,7 @@ class Validator implements ValidatorInterface
      * @param Configuration             $config
      * @param string[]                  $messages
      */
-    protected function handleValidationException(NestedValidationException $e, Configuration $config, array $messages = [])
+    protected function handleValidationException(NestedValidationException $e, Configuration $config, array $messages = []): void
     {
         if ($config->hasMessage()) {
             $this->setErrors([$config->getMessage()], $config->getKey(), $config->getGroup());
@@ -571,7 +492,7 @@ class Validator implements ValidatorInterface
      * @param Configuration             $config
      * @param string[]                  $messages
      */
-    protected function storeErrors(NestedValidationException $e, Configuration $config, array $messages = [])
+    protected function storeErrors(NestedValidationException $e, Configuration $config, array $messages = []): void
     {
         $errors = [
             $e->findMessages($this->getRulesNames($config->getValidationRules()))

@@ -52,7 +52,7 @@ class ValidatorExtension extends AbstractExtension
         $this->functionNames['val'] = $functionNames['val'] ?? 'val';
     }
 
-    public function getFunctions()
+    public function getFunctions(): array
     {
         return [
             new TwigFunction($this->functionNames['error'], [$this, 'getError']),
@@ -63,65 +63,27 @@ class ValidatorExtension extends AbstractExtension
         ];
     }
 
-    /**
-     * Gets the first validation error of a parameter.
-     *
-     * @param string $key
-     * @param string $index
-     * @param string $group
-     *
-     * @return string
-     */
-    public function getError($key, $index = null, $group = null)
+    public function getError(string $key, $index = null, $group = null): string
     {
         return $this->validator->getError($key, $index, $group);
     }
 
-    /**
-     * Gets validation errors.
-     *
-     * @param string $key
-     * @param string $group
-     *
-     * @return string[]
-     */
-    public function getErrors($key = null, $group = null)
+    public function getErrors(?string $key = null, ?string $group = null): array
     {
         return $this->validator->getErrors($key, $group);
     }
 
-    /**
-     * Gets a value from the validated data.
-     *
-     * @param string $key
-     * @param string $group
-     *
-     * @return string
-     */
-    public function getValue($key, $group = null)
+    public function getValue(string $key, ?string $group = null)
     {
         return $this->validator->getValue($key, $group);
     }
 
-    /**
-     * Tells whether there are validation errors for a parameter.
-     *
-     * @param string $key
-     * @param string $group
-     *
-     * @return bool
-     */
-    public function hasError($key, $group = null)
+    public function hasError(string $key, ?string $group = null): bool
     {
         return !empty($this->validator->getErrors($key, $group));
     }
 
-    /**
-     * Tells whether there are validation errors.
-     *
-     * @return bool
-     */
-    public function hasErrors()
+    public function hasErrors(): bool
     {
         return !$this->validator->isValid();
     }
