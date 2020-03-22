@@ -14,8 +14,6 @@ namespace Awurth\SlimValidation;
 use Respect\Validation\Validatable as RespectValidatable;
 
 /**
- * Configuration.
- *
  * @author Alexis Wurth <awurth.dev@gmail.com>
  */
 class Validatable

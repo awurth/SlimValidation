@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the awurth/slim-validation package.
+ *
+ * (c) Alexis Wurth <awurth.dev@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Awurth\SlimValidation;
 
 use ArrayAccess;
@@ -8,6 +17,9 @@ use Countable;
 use IteratorAggregate;
 use OutOfBoundsException;
 
+/**
+ * @author Alexis Wurth <awurth.dev@gmail.com>
+ */
 class ValidationErrorList implements ArrayAccess, Countable, IteratorAggregate
 {
     /**
