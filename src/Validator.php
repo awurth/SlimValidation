@@ -14,10 +14,11 @@ namespace Awurth\SlimValidation;
 use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use ReflectionClass;
-use ReflectionException;
+use Respect\Validation\Rules\AbstractComposite;
 use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Rules\AllOf;
 use Respect\Validation\Rules\AbstractWrapper;
+use Respect\Validation\Validatable as RespectValidatable;
 use Slim\Interfaces\RouteInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
@@ -137,7 +138,7 @@ class Validator
      */
     public function validate($input, $rules, string $path, array $messages = []): self
     {
-        return $this->validateInput($input, ValidatableFactory::create($path,$rules), $messages);
+        return $this->validateInput($input, ValidatableFactory::create($path, $rules), $messages);
     }
 
     public function getDefaultMessage(string $rule): string
@@ -205,28 +206,18 @@ class Validator
         return $result;
     }
 
-    /**
-     * Gets the name of all rules of a group of rules.
-     *
-     * @param AllOf $rules
-     *
-     * @return string[]
-     */
-    protected function getRulesNames(AllOf $rules): array
+    protected function getRulesNames(RespectValidatable $validatable): array
     {
-        $rulesNames = [];
-        foreach ($rules->getRules() as $rule) {
-            try {
-                if ($rule instanceof AbstractWrapper) {
-                    $rulesNames = array_merge($rulesNames, $this->getRulesNames($rule->getValidatable()));
-                } else {
-                    $rulesNames[] = lcfirst((new ReflectionClass($rule))->getShortName());
-                }
-            } catch (ReflectionException $e) {
+        if ($validatable instanceof AbstractComposite) {
+            $rulesNames = [];
+            foreach ($validatable->getRules() as $rule) {
+                array_push($rulesNames, ...$this->getRulesNames($rule instanceof AbstractWrapper ? $rule->getValidatable() : $rule));
             }
+
+            return $rulesNames;
         }
 
-        return $rulesNames;
+        return [lcfirst((new ReflectionClass($validatable))->getShortName())];
     }
 
     protected function handleValidationException(NestedValidationException $e, Validatable $validatable, array $messages, $input): void
