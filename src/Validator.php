@@ -16,7 +16,6 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use ReflectionClass;
 use Respect\Validation\Rules\AbstractComposite;
 use Respect\Validation\Exceptions\NestedValidationException;
-use Respect\Validation\Rules\AllOf;
 use Respect\Validation\Rules\AbstractWrapper;
 use Respect\Validation\Validatable as RespectValidatable;
 use Slim\Interfaces\RouteInterface;
@@ -56,10 +55,10 @@ class Validator
     /**
      * Validates an array with the given rules.
      *
-     * @param array         $array
-     * @param AllOf[]|array $rules
-     * @param string[]      $messages
-     * @param mixed|null    $default
+     * @param array                      $array
+     * @param RespectValidatable[]|array $rules
+     * @param string[]                   $messages
+     * @param mixed|null                 $default
      *
      * @return self
      */
@@ -76,10 +75,10 @@ class Validator
     /**
      * Validates an objects properties with the given rules.
      *
-     * @param object        $object
-     * @param AllOf[]|array $rules
-     * @param string[]      $messages
-     * @param mixed|null    $default
+     * @param object                     $object
+     * @param RespectValidatable[]|array $rules
+     * @param string[]                   $messages
+     * @param mixed|null                 $default
      *
      * @return self
      */
@@ -105,10 +104,10 @@ class Validator
     /**
      * Validates request parameters with the given rules.
      *
-     * @param Request       $request
-     * @param AllOf[]|array $rules
-     * @param string[]      $messages
-     * @param mixed|null    $default
+     * @param Request                    $request
+     * @param RespectValidatable[]|array $rules
+     * @param string[]                   $messages
+     * @param mixed|null                 $default
      *
      * @return self
      */
@@ -129,10 +128,10 @@ class Validator
     /**
      * Validates a single value with the given rules.
      *
-     * @param mixed       $input
-     * @param AllOf|array $rules
-     * @param string      $path
-     * @param string[]    $messages
+     * @param mixed                    $input
+     * @param RespectValidatable|array $rules
+     * @param string                   $path
+     * @param string[]                 $messages
      *
      * @return self
      */

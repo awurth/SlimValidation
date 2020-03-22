@@ -11,8 +11,7 @@
 
 namespace Awurth\SlimValidation;
 
-use InvalidArgumentException;
-use Respect\Validation\Rules\AllOf;
+use Respect\Validation\Validatable as RespectValidatable;
 
 /**
  * Configuration.
@@ -46,11 +45,11 @@ class Validatable
     private $path;
 
     /**
-     * @var AllOf
+     * @var RespectValidatable
      */
     private $rules;
 
-    public function __construct(string $path, AllOf $rules)
+    public function __construct(string $path, RespectValidatable $rules)
     {
         $this->path = $path;
         $this->rules = $rules;
@@ -109,12 +108,12 @@ class Validatable
         return $this;
     }
 
-    public function getValidationRules(): AllOf
+    public function getValidationRules(): RespectValidatable
     {
         return $this->rules;
     }
 
-    public function setValidationRules(AllOf $rules): self
+    public function setValidationRules(RespectValidatable $rules): self
     {
         $this->rules = $rules;
 

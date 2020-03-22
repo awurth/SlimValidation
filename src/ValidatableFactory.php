@@ -2,7 +2,7 @@
 
 namespace Awurth\SlimValidation;
 
-use Respect\Validation\Rules\AllOf;
+use Respect\Validation\Validatable as RespectValidatable;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ValidatableFactory
@@ -11,7 +11,7 @@ class ValidatableFactory
 
     public static function create(string $path, $options, $default = null): Validatable
     {
-        if ($options instanceof AllOf) {
+        if ($options instanceof RespectValidatable) {
             $options = ['rules' => $options];
         }
 
@@ -32,7 +32,7 @@ class ValidatableFactory
                     'messages' => []
                 ])
                 ->setRequired('rules')
-                ->setAllowedTypes('rules', AllOf::class)
+                ->setAllowedTypes('rules', RespectValidatable::class)
                 ->setAllowedTypes('message', ['null', 'string'])
                 ->setAllowedTypes('messages', 'string[]');
         }
