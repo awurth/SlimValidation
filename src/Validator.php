@@ -65,11 +65,8 @@ class Validator
     public function validateArray(array $array, array $rules, array $messages = [], $default = null): self
     {
         foreach ($rules as $key => $options) {
-            $this->validateInput(
-                $array[$key] ?? $default,
-                new Configuration($options, $key, $default),
-                $messages
-            );
+            $validatable = ValidatableFactory::create($key, $options, $default);
+            $this->validateInput($array[$key] ?? $validatable->getDefault(), $validatable, $messages);
         }
 
         return $this;
@@ -92,11 +89,13 @@ class Validator
         }
 
         foreach ($rules as $property => $options) {
+            $validatable = ValidatableFactory::create($property, $options, $default);
+
             $input = $this->getPropertyAccessor()->isReadable($object, $property)
                 ? $this->getPropertyAccessor()->getValue($object, $property)
-                : $default;
+                : $validatable->getDefault();
 
-            $this->validateInput($input, new Configuration($options, $property, $default), $messages);
+            $this->validateInput($input, $validatable, $messages);
         }
 
         return $this;
@@ -115,9 +114,10 @@ class Validator
     public function validateRequest(Request $request, array $rules, array $messages = [], $default = null): self
     {
         foreach ($rules as $param => $options) {
+            $validatable = ValidatableFactory::create($param, $options, $default);
             $this->validateInput(
-                $this->getRequestParam($request, $param, $default),
-                new Configuration($options, $param, $default),
+                $this->getRequestParam($request, $param, $validatable->getDefault()),
+                $validatable,
                 $messages
             );
         }
@@ -130,19 +130,19 @@ class Validator
      *
      * @param mixed       $input
      * @param AllOf|array $rules
-     * @param string      $key
+     * @param string      $path
      * @param string[]    $messages
      *
      * @return self
      */
-    public function validate($input, $rules, string $key, array $messages = []): self
+    public function validate($input, $rules, string $path, array $messages = []): self
     {
-        return $this->validateInput($input, new Configuration($rules, $key), $messages);
+        return $this->validateInput($input, ValidatableFactory::create($path,$rules), $messages);
     }
 
-    public function getDefaultMessage(string $key): string
+    public function getDefaultMessage(string $rule): string
     {
-        return $this->defaultMessages[$key] ?? '';
+        return $this->defaultMessages[$rule] ?? '';
     }
 
     public function getDefaultMessages(): array
@@ -229,23 +229,23 @@ class Validator
         return $rulesNames;
     }
 
-    protected function handleValidationException(NestedValidationException $e, Configuration $config, array $messages = []): void
+    protected function handleValidationException(NestedValidationException $e, Validatable $validatable, array $messages = []): void
     {
-        if ($config->hasMessage()) {
-            $this->errors->add(new ValidationError($config->getKey(), $config->getMessage()));
+        if ($message = $validatable->getMessage()) {
+            $this->errors->add(new ValidationError($validatable->getPath(), $message));
         } else {
-            foreach ($this->findErrorMessages($e, $config, $messages) as $ruleName => $message) {
+            foreach ($this->findErrorMessages($e, $validatable, $messages) as $ruleName => $message) {
                 $this->errors->add(
-                    (new ValidationError($config->getKey(), $message))->setRule($ruleName)
+                    (new ValidationError($validatable->getPath(), $message))->setRule($ruleName)
                 );
             }
         }
     }
 
-    protected function findErrorMessages(NestedValidationException $e, Configuration $config, array $messages = []): array
+    protected function findErrorMessages(NestedValidationException $e, Validatable $validatable, array $messages = []): array
     {
         $errors = [
-            $e->findMessages($this->getRulesNames($config->getValidationRules()))
+            $e->findMessages($this->getRulesNames($validatable->getValidationRules()))
         ];
 
         // If default messages are defined
@@ -259,19 +259,19 @@ class Validator
         }
 
         // If individual messages are defined
-        if ($config->hasMessages()) {
-            $errors[] = $e->findMessages($config->getMessages());
+        if ($validatableMessages = $validatable->getMessages()) {
+            $errors[] = $e->findMessages($validatableMessages);
         }
 
         return array_filter(array_merge(...$errors));
     }
 
-    protected function validateInput($input, Configuration $config, array $messages = []): self
+    protected function validateInput($input, Validatable $validatable, array $messages = []): self
     {
         try {
-            $config->getValidationRules()->assert($input);
+            $validatable->getValidationRules()->assert($input);
         } catch (NestedValidationException $e) {
-            $this->handleValidationException($e, $config, $messages);
+            $this->handleValidationException($e, $validatable, $messages);
         }
 
         return $this;
