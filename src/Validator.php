@@ -32,7 +32,7 @@ class Validator
      *
      * @var string[]
      */
-    protected $defaultMessages;
+    private $defaultMessages;
 
     /**
      * The list of validation errors.
@@ -62,7 +62,7 @@ class Validator
      *
      * @return self
      */
-    public function array(array $array, array $rules, array $messages = [], $default = null): self
+    public function validateArray(array $array, array $rules, array $messages = [], $default = null): self
     {
         foreach ($rules as $key => $options) {
             $this->validateInput(
@@ -85,7 +85,7 @@ class Validator
      *
      * @return self
      */
-    public function object($object, array $rules, array $messages = [], $default = null): self
+    public function validateObject($object, array $rules, array $messages = [], $default = null): self
     {
         if (!is_object($object)) {
             throw new InvalidArgumentException('The first argument should be an object');
@@ -112,7 +112,7 @@ class Validator
      *
      * @return self
      */
-    public function request(Request $request, array $rules, array $messages = [], $default = null): self
+    public function validateRequest(Request $request, array $rules, array $messages = [], $default = null): self
     {
         foreach ($rules as $param => $options) {
             $this->validateInput(
@@ -125,36 +125,19 @@ class Validator
         return $this;
     }
 
-    public function validate($input, array $rules, array $messages = [], $default = null): self
-    {
-        if ($input instanceof Request) {
-            return $this->request($input, $rules, $messages, $default);
-        }
-
-        if (is_array($input)) {
-            return $this->array($input, $rules, $messages, $default);
-        }
-
-        if (is_object($input)) {
-            return $this->object($input, $rules, $messages, $default);
-        }
-
-        return $this->value($input, $rules, null, $messages);
-    }
-
     /**
      * Validates a single value with the given rules.
      *
-     * @param mixed       $value
+     * @param mixed       $input
      * @param AllOf|array $rules
      * @param string      $key
      * @param string[]    $messages
      *
      * @return self
      */
-    public function value($value, $rules, string $key, array $messages = []): self
+    public function validate($input, $rules, string $key, array $messages = []): self
     {
-        return $this->validateInput($value, new Configuration($rules, $key), $messages);
+        return $this->validateInput($input, new Configuration($rules, $key), $messages);
     }
 
     public function getDefaultMessage(string $key): string
