@@ -26,65 +26,50 @@ class ValidatorExtension extends AbstractExtension
      *
      * @var string[]
      */
-    protected $functionNames;
+    private $functionNames;
+
+    private $validator;
 
     /**
-     * The validator instance.
-     *
-     * @var Validator
+     * @param Validator $validator     The validator instance
+     * @param string[]  $functionNames An array of names for Twig functions
      */
-    protected $validator;
-
-    /**
-     * Constructor.
-     *
-     * @param ValidatorInterface $validator     The validator instance
-     * @param string[]           $functionNames An array of names for Twig functions
-     */
-    public function __construct(ValidatorInterface $validator, array $functionNames = [])
+    public function __construct(Validator $validator, array $functionNames = [])
     {
         $this->validator = $validator;
 
-        $this->functionNames['error'] = $functionNames['error'] ?? 'error';
         $this->functionNames['errors'] = $functionNames['errors'] ?? 'errors';
         $this->functionNames['has_error'] = $functionNames['has_error'] ?? 'has_error';
         $this->functionNames['has_errors'] = $functionNames['has_errors'] ?? 'has_errors';
-        $this->functionNames['val'] = $functionNames['val'] ?? 'val';
     }
 
     public function getFunctions(): array
     {
         return [
-            new TwigFunction($this->functionNames['error'], [$this, 'getError']),
             new TwigFunction($this->functionNames['errors'], [$this, 'getErrors']),
             new TwigFunction($this->functionNames['has_error'], [$this, 'hasError']),
-            new TwigFunction($this->functionNames['has_errors'], [$this, 'hasErrors']),
-            new TwigFunction($this->functionNames['val'], [$this, 'getValue'])
+            new TwigFunction($this->functionNames['has_errors'], [$this, 'hasErrors'])
         ];
     }
 
-    public function getError(string $key, $index = null, $group = null): string
+    public function getErrors(?string $path = null): ValidationErrorList
     {
-        return $this->validator->getError($key, $index, $group);
+        return null === $path ? $this->validator->getErrors() : $this->validator->getErrors()->findByPath($path);
     }
 
-    public function getErrors(?string $key = null, ?string $group = null): array
+    public function hasError(string $path): bool
     {
-        return $this->validator->getErrors($key, $group);
-    }
+        foreach ($this->validator->getErrors() as $error) {
+            if ($error->getPath() === $path) {
+                return true;
+            }
+        }
 
-    public function getValue(string $key, ?string $group = null)
-    {
-        return $this->validator->getValue($key, $group);
-    }
-
-    public function hasError(string $key, ?string $group = null): bool
-    {
-        return !empty($this->validator->getErrors($key, $group));
+        return false;
     }
 
     public function hasErrors(): bool
     {
-        return !$this->validator->isValid();
+        return (bool)$this->validator->getErrors()->count();
     }
 }

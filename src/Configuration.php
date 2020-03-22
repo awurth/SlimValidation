@@ -29,11 +29,6 @@ class Configuration
     /**
      * @var string
      */
-    protected $group;
-
-    /**
-     * @var string
-     */
     protected $key;
 
     /**
@@ -52,17 +47,13 @@ class Configuration
     protected $rules;
 
     /**
-     * Constructor.
-     *
      * @param AllOf|array $options
      * @param string      $key
-     * @param string      $group
-     * @param string      $default
+     * @param mixed       $default
      */
-    public function __construct($options, string $key = null, string $group = null, $default = null)
+    public function __construct($options, string $key, $default = null)
     {
         $this->key = $key;
-        $this->group = $group;
         $this->default = $default;
 
         if ($options instanceof AllOf) {
@@ -85,21 +76,11 @@ class Configuration
     }
 
     /**
-     * Gets the group to use for errors and values storage.
-     *
-     * @return string
-     */
-    public function getGroup()
-    {
-        return $this->group;
-    }
-
-    /**
      * Gets the key to use for errors and values storage.
      *
-     * @return string
+     * @return string|null
      */
-    public function getKey()
+    public function getKey(): ?string
     {
         return $this->key;
     }
@@ -109,7 +90,7 @@ class Configuration
      *
      * @return string|null
      */
-    public function getMessage()
+    public function getMessage(): ?string
     {
         return $this->message;
     }
@@ -132,16 +113,6 @@ class Configuration
     public function getValidationRules(): AllOf
     {
         return $this->rules;
-    }
-
-    /**
-     * Tells whether a group has been set.
-     *
-     * @return bool
-     */
-    public function hasGroup(): bool
-    {
-        return !empty($this->group);
     }
 
     /**
@@ -179,19 +150,9 @@ class Configuration
      *
      * @param mixed $default
      */
-    public function setDefault($default)
+    public function setDefault($default): void
     {
         $this->default = $default;
-    }
-
-    /**
-     * Sets the group to use for errors and values storage.
-     *
-     * @param string $group
-     */
-    public function setGroup(string $group)
-    {
-        $this->group = $group;
     }
 
     /**
@@ -199,7 +160,7 @@ class Configuration
      *
      * @param string $key
      */
-    public function setKey(string $key)
+    public function setKey(string $key): void
     {
         $this->key = $key;
     }
@@ -209,7 +170,7 @@ class Configuration
      *
      * @param string $message
      */
-    public function setMessage(string $message)
+    public function setMessage(string $message): void
     {
         $this->message = $message;
     }
@@ -219,7 +180,7 @@ class Configuration
      *
      * @param string[] $messages
      */
-    public function setMessages(array $messages)
+    public function setMessages(array $messages): void
     {
         $this->messages = $messages;
     }
@@ -229,11 +190,10 @@ class Configuration
      *
      * @param array $options
      */
-    public function setOptions(array $options)
+    public function setOptions(array $options): void
     {
         $availableOptions = [
             'default',
-            'group',
             'key',
             'message',
             'messages',
@@ -252,7 +212,7 @@ class Configuration
      *
      * @param AllOf $rules
      */
-    public function setValidationRules(AllOf $rules)
+    public function setValidationRules(AllOf $rules): void
     {
         $this->rules = $rules;
     }
@@ -260,7 +220,7 @@ class Configuration
     /**
      * Verifies that all mandatory options are set and valid.
      */
-    public function validateOptions()
+    public function validateOptions(): void
     {
         if (!$this->rules instanceof AllOf) {
             throw new InvalidArgumentException('Validation rules are missing or invalid');
