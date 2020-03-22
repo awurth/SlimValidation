@@ -15,11 +15,12 @@ use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use ReflectionClass;
 use ReflectionException;
-use ReflectionProperty;
 use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Rules\AllOf;
 use Respect\Validation\Rules\AbstractWrapper;
 use Slim\Interfaces\RouteInterface;
+use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 /**
  * @author Alexis Wurth <awurth.dev@gmail.com>
@@ -39,6 +40,11 @@ class Validator
      * @var ValidationErrorList
      */
     private $errors;
+
+    /**
+     * @var PropertyAccessor
+     */
+    private $propertyAccessor;
 
     public function __construct(array $defaultMessages = [])
     {
@@ -86,11 +92,11 @@ class Validator
         }
 
         foreach ($rules as $property => $options) {
-            $this->validateInput(
-                $this->getPropertyValue($object, $property, $default),
-                new Configuration($options, $property, $default),
-                $messages
-            );
+            $input = $this->getPropertyAccessor()->isReadable($object, $property)
+                ? $this->getPropertyAccessor()->getValue($object, $property)
+                : $default;
+
+            $this->validateInput($input, new Configuration($options, $property, $default), $messages);
         }
 
         return $this;
@@ -178,35 +184,6 @@ class Validator
         $this->defaultMessages = $messages;
 
         return $this;
-    }
-
-    /**
-     * Gets the value of a property of an object.
-     *
-     * @param object     $object
-     * @param string     $propertyName
-     * @param mixed|null $default
-     *
-     * @return mixed
-     */
-    protected function getPropertyValue($object, string $propertyName, $default = null)
-    {
-        if (!is_object($object)) {
-            throw new InvalidArgumentException('The first argument should be an object');
-        }
-
-        if (!property_exists($object, $propertyName)) {
-            return $default;
-        }
-
-        try {
-            $reflectionProperty = new ReflectionProperty($object, $propertyName);
-            $reflectionProperty->setAccessible(true);
-
-            return $reflectionProperty->getValue($object);
-        } catch (ReflectionException $e) {
-            return $default;
-        }
     }
 
     /**
@@ -315,5 +292,14 @@ class Validator
         }
 
         return $this;
+    }
+
+    private function getPropertyAccessor(): PropertyAccessor
+    {
+        if (null === $this->propertyAccessor) {
+            $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
+        }
+
+        return $this->propertyAccessor;
     }
 }
