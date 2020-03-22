@@ -32,9 +32,6 @@ class ValidatorTest extends TestCase
      */
     protected $validator;
 
-    /**
-     * {@inheritdoc}
-     */
     public function setUp()
     {
         $this->request = Request::createFromEnvironment(Environment::mock([

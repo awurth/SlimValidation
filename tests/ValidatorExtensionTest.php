@@ -18,9 +18,6 @@ class ValidatorExtensionTest extends TestCase
      */
     protected $validatorExtension;
 
-    /**
-     * {@inheritdoc}
-     */
     public function setUp()
     {
         $this->validator = new Validator();

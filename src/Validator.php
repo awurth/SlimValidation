@@ -71,9 +71,6 @@ class Validator implements ValidatorInterface
         $this->values = [];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function isValid(): bool
     {
         return empty($this->errors);
@@ -155,9 +152,6 @@ class Validator implements ValidatorInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function validate($input, array $rules, string $group = null, array $messages = [], $default = null): self
     {
         if ($input instanceof Request) {
@@ -243,9 +237,6 @@ class Validator implements ValidatorInterface
         return $this->defaultMessages;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getError(string $key, $index = null, $group = null): string
     {
         if (null === $index) {
@@ -259,9 +250,6 @@ class Validator implements ValidatorInterface
         return (string)($this->errors[$key][$index] ?? '');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getErrors(string $key = null, string $group = null): array
     {
         if (!empty($key)) {
@@ -300,9 +288,6 @@ class Validator implements ValidatorInterface
         return '';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getValue(string $key, string $group = null)
     {
         if (!empty($group)) {
@@ -312,9 +297,6 @@ class Validator implements ValidatorInterface
         return $this->values[$key] ?? null;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getValues(string $group = null): array
     {
         if (!empty($group)) {

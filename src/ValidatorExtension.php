@@ -52,9 +52,6 @@ class ValidatorExtension extends AbstractExtension
         $this->functionNames['val'] = $functionNames['val'] ?? 'val';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getFunctions()
     {
         return [
