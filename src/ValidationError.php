@@ -4,14 +4,28 @@ namespace Awurth\SlimValidation;
 
 class ValidationError
 {
-    protected $message;
-    protected $path;
-    protected $rule;
+    private $invalidValue;
+    private $message;
+    private $path;
+    private $rule;
 
-    public function __construct(string $path, string $message)
+    public function __construct(string $path, string $message, $invalidValue)
     {
         $this->path = $path;
         $this->message = $message;
+        $this->invalidValue = $invalidValue;
+    }
+
+    public function getInvalidValue()
+    {
+        return $this->invalidValue;
+    }
+
+    public function setInvalidValue($invalidValue): self
+    {
+        $this->invalidValue = $invalidValue;
+
+        return $this;
     }
 
     public function getMessage(): string

@@ -229,14 +229,14 @@ class Validator
         return $rulesNames;
     }
 
-    protected function handleValidationException(NestedValidationException $e, Validatable $validatable, array $messages = []): void
+    protected function handleValidationException(NestedValidationException $e, Validatable $validatable, array $messages, $input): void
     {
         if ($message = $validatable->getMessage()) {
-            $this->errors->add(new ValidationError($validatable->getPath(), $message));
+            $this->errors->add(new ValidationError($validatable->getPath(), $message, $input));
         } else {
             foreach ($this->findErrorMessages($e, $validatable, $messages) as $ruleName => $message) {
                 $this->errors->add(
-                    (new ValidationError($validatable->getPath(), $message))->setRule($ruleName)
+                    (new ValidationError($validatable->getPath(), $message, $input))->setRule($ruleName)
                 );
             }
         }
@@ -271,7 +271,7 @@ class Validator
         try {
             $validatable->getValidationRules()->assert($input);
         } catch (NestedValidationException $e) {
-            $this->handleValidationException($e, $validatable, $messages);
+            $this->handleValidationException($e, $validatable, $messages, $input);
         }
 
         return $this;
