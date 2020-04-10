@@ -17,8 +17,10 @@ use ReflectionClass;
 use ReflectionException;
 use ReflectionProperty;
 use Respect\Validation\Exceptions\NestedValidationException;
+use Respect\Validation\Rules\AbstractComposite;
 use Respect\Validation\Rules\AllOf;
 use Respect\Validation\Rules\AbstractWrapper;
+use Respect\Validation\Validatable as RespectValidatable;
 use Slim\Interfaces\RouteInterface;
 
 /**
@@ -531,25 +533,22 @@ class Validator implements ValidatorInterface
     /**
      * Gets the name of all rules of a group of rules.
      *
-     * @param AllOf $rules
+     * @param RespectValidatable $validatable
      *
      * @return string[]
      */
-    protected function getRulesNames(AllOf $rules): array
+    protected function getRulesNames(RespectValidatable $validatable): array
     {
-        $rulesNames = [];
-        foreach ($rules->getRules() as $rule) {
-            try {
-                if ($rule instanceof AbstractWrapper) {
-                    $rulesNames = array_merge($rulesNames, $this->getRulesNames($rule->getValidatable()));
-                } else {
-                    $rulesNames[] = lcfirst((new ReflectionClass($rule))->getShortName());
-                }
-            } catch (ReflectionException $e) {
+        if ($validatable instanceof AbstractComposite) {
+            $rulesNames = [];
+            foreach ($validatable->getRules() as $rule) {
+                array_push($rulesNames, ...$this->getRulesNames($rule instanceof AbstractWrapper ? $rule->getValidatable() : $rule));
             }
+
+            return $rulesNames;
         }
 
-        return $rulesNames;
+        return [lcfirst((new ReflectionClass($validatable))->getShortName())];
     }
 
     /**
