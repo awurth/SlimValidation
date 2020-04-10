@@ -14,8 +14,6 @@ A validator for PHP, using [Respect Validation](https://github.com/Respect/Valid
   compliant framework, or any other PHP project if you don't need 
   request parameters validation.
 
-[Documentation](http://awurth.fr/doc/slim-validation/v3)
-
 ## Installation
 ``` bash
 $ composer require awurth/slim-validation
