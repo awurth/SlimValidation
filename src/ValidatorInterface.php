@@ -12,7 +12,7 @@
 namespace Awurth\SlimValidation;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Respect\Validation\Rules\AllOf;
+use Respect\Validation\Validatable;
 
 /**
  * Validator Interface.
@@ -24,11 +24,11 @@ interface ValidatorInterface
     /**
      * Validates request parameters, an array or an objects properties.
      *
-     * @param Request|mixed $input
-     * @param AllOf[]|array $rules
-     * @param string|null   $group
-     * @param string[]      $messages
-     * @param mixed|null    $default
+     * @param Request|mixed       $input
+     * @param Validatable[]|array $rules
+     * @param string|null         $group
+     * @param string[]            $messages
+     * @param mixed|null          $default
      */
     public function validate($input, array $rules, string $group = null, array $messages = [], $default = null);
 

@@ -12,7 +12,7 @@
 namespace Awurth\SlimValidation;
 
 use InvalidArgumentException;
-use Respect\Validation\Rules\AllOf;
+use Respect\Validation\Validatable;
 
 /**
  * Configuration.
@@ -47,17 +47,17 @@ class Configuration
     protected $messages = [];
 
     /**
-     * @var AllOf
+     * @var Validatable
      */
     protected $rules;
 
     /**
      * Constructor.
      *
-     * @param AllOf|array $options
-     * @param string      $key
-     * @param string      $group
-     * @param string      $default
+     * @param Validatable|array $options
+     * @param string            $key
+     * @param string            $group
+     * @param string            $default
      */
     public function __construct($options, string $key = null, string $group = null, $default = null)
     {
@@ -65,7 +65,7 @@ class Configuration
         $this->group = $group;
         $this->default = $default;
 
-        if ($options instanceof AllOf) {
+        if ($options instanceof Validatable) {
             $this->rules = $options;
         } else {
             $this->setOptions($options);
@@ -127,9 +127,9 @@ class Configuration
     /**
      * Gets the validation rules.
      *
-     * @return AllOf
+     * @return Validatable
      */
-    public function getValidationRules(): AllOf
+    public function getValidationRules(): Validatable
     {
         return $this->rules;
     }
@@ -250,9 +250,9 @@ class Configuration
     /**
      * Sets the validation rules.
      *
-     * @param AllOf $rules
+     * @param Validatable $rules
      */
-    public function setValidationRules(AllOf $rules)
+    public function setValidationRules(Validatable $rules)
     {
         $this->rules = $rules;
     }
@@ -262,7 +262,7 @@ class Configuration
      */
     public function validateOptions()
     {
-        if (!$this->rules instanceof AllOf) {
+        if (!$this->rules instanceof Validatable) {
             throw new InvalidArgumentException('Validation rules are missing or invalid');
         }
 

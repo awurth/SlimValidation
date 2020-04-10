@@ -18,9 +18,8 @@ use ReflectionException;
 use ReflectionProperty;
 use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Rules\AbstractComposite;
-use Respect\Validation\Rules\AllOf;
 use Respect\Validation\Rules\AbstractWrapper;
-use Respect\Validation\Validatable as RespectValidatable;
+use Respect\Validation\Validatable;
 use Slim\Interfaces\RouteInterface;
 
 /**
@@ -84,11 +83,11 @@ class Validator implements ValidatorInterface
     /**
      * Validates an array with the given rules.
      *
-     * @param array         $array
-     * @param AllOf[]|array $rules
-     * @param string|null   $group
-     * @param string[]      $messages
-     * @param mixed|null    $default
+     * @param array               $array
+     * @param Validatable[]|array $rules
+     * @param string|null         $group
+     * @param string[]            $messages
+     * @param mixed|null          $default
      *
      * @return self
      */
@@ -108,11 +107,11 @@ class Validator implements ValidatorInterface
     /**
      * Validates an objects properties with the given rules.
      *
-     * @param object        $object
-     * @param AllOf[]|array $rules
-     * @param string|null   $group
-     * @param string[]      $messages
-     * @param mixed|null    $default
+     * @param object              $object
+     * @param Validatable[]|array $rules
+     * @param string|null         $group
+     * @param string[]            $messages
+     * @param mixed|null          $default
      *
      * @return self
      */
@@ -136,11 +135,11 @@ class Validator implements ValidatorInterface
     /**
      * Validates request parameters with the given rules.
      *
-     * @param Request       $request
-     * @param AllOf[]|array $rules
-     * @param string|null   $group
-     * @param string[]      $messages
-     * @param mixed|null    $default
+     * @param Request             $request
+     * @param Validatable[]|array $rules
+     * @param string|null         $group
+     * @param string[]            $messages
+     * @param mixed|null          $default
      *
      * @return self
      */
@@ -180,11 +179,11 @@ class Validator implements ValidatorInterface
     /**
      * Validates a single value with the given rules.
      *
-     * @param mixed       $value
-     * @param AllOf|array $rules
-     * @param string      $key
-     * @param string|null $group
-     * @param string[]    $messages
+     * @param mixed             $value
+     * @param Validatable|array $rules
+     * @param string            $key
+     * @param string|null       $group
+     * @param string[]          $messages
      *
      * @return self
      */
@@ -533,11 +532,11 @@ class Validator implements ValidatorInterface
     /**
      * Gets the name of all rules of a group of rules.
      *
-     * @param RespectValidatable $validatable
+     * @param Validatable $validatable
      *
      * @return string[]
      */
-    protected function getRulesNames(RespectValidatable $validatable): array
+    protected function getRulesNames(Validatable $validatable): array
     {
         if ($validatable instanceof AbstractComposite) {
             $rulesNames = [];
