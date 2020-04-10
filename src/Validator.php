@@ -576,7 +576,7 @@ class Validator implements ValidatorInterface
      */
     protected function mergeMessages(array $errors): array
     {
-        $errors = array_filter(call_user_func_array('array_merge', $errors));
+        $errors = array_filter(array_merge(...$errors));
 
         return $this->showValidationRules ? $errors : array_values($errors);
     }
