@@ -574,12 +574,12 @@ class ValidatorTest extends TestCase
         $this->assertFalse($this->validator->getShowValidationRules());
     }
 
-    public function testValidateSearcher()
+    public function testValidateInvalidSearcher()
     {
-        $this->validator->value('CA', [
+        $this->validator->value('FR', [
             'rules' => V::subdivisionCode('US')
         ], 'subdivision');
 
-        $this->assertTrue($this->validator->isValid());
+        $this->assertFalse($this->validator->isValid());
     }
 }
