@@ -17,11 +17,6 @@ class TestObject
         $this->publicProperty = $publicProperty;
     }
 
-    public function getPrivateProperty()
-    {
-        return $this->privateProperty;
-    }
-
     public function getProtectedProperty()
     {
         return $this->protectedProperty;
