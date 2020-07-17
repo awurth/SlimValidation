@@ -541,7 +541,7 @@ class Validator implements ValidatorInterface
         if ($validatable instanceof AbstractComposite) {
             $rulesNames = [];
             foreach ($validatable->getRules() as $rule) {
-                array_push($rulesNames, ...$this->getRulesNames($rule instanceof AbstractWrapper ? $rule->getValidatable() : $rule));
+                array_push($rulesNames, ...$this->getRulesNames($rule));
             }
 
             return $rulesNames;
