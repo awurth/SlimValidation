@@ -8,6 +8,8 @@ use PHPUnit\Framework\TestCase;
 use Respect\Validation\Validator as V;
 use Slim\Http\Environment;
 use Slim\Http\Request;
+use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
+use Symfony\Component\OptionsResolver\Exception\MissingOptionsException;
 
 class ValidatorTest extends TestCase
 {
@@ -49,21 +51,14 @@ class ValidatorTest extends TestCase
 
     public function testValidateWithoutRules(): void
     {
-        $this->expectError();
-
-        $this->validator->validateRequest($this->request, ['username']);
-    }
-
-    public function testValidateWithOptionsWrongType(): void
-    {
-        $this->expectError();
+        $this->expectException(MissingOptionsException::class);
 
         $this->validator->validateRequest($this->request, ['username' => null]);
     }
 
     public function testValidateWithRulesWrongType(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidOptionsException::class);
 
         $this->validator->validateRequest($this->request, [
             'username' => [
@@ -120,7 +115,7 @@ class ValidatorTest extends TestCase
         self::assertSame('username', $error->getPath());
         self::assertSame('length', $error->getRule());
         self::assertSame('a_wurth', $error->getInvalidValue());
-        self::assertSame('"a_wurth" must have a length greater than 8', $error->getMessage());
+        self::assertSame('"a_wurth" must have a length greater than or equal to 8', $error->getMessage());
     }
 
     public function testValidateWithCustomDefaultMessage(): void
@@ -177,13 +172,13 @@ class ValidatorTest extends TestCase
         self::assertSame('username', $errors->get(0)->getPath());
         self::assertSame('Too short!', $errors->get(0)->getMessage());
         self::assertSame('password', $errors->get(1)->getPath());
-        self::assertSame('"1234" must have a length greater than 8', $errors->get(1)->getMessage());
+        self::assertSame('"1234" must have a length greater than or equal to 8', $errors->get(1)->getMessage());
     }
 
     public function testValidateWithWrongCustomSingleMessageType(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("The option \"message\" with value 10 is expected to be of type \"null\" or \"string\", but is of type \"integer\".");
+        $this->expectExceptionMessage("The option \"message\" with value 10 is expected to be of type \"null\" or \"string\", but is of type \"int\".");
 
         $this->validator->validateRequest($this->request, [
             'username' => [

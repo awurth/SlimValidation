@@ -13,10 +13,7 @@ namespace Awurth\SlimValidation;
 
 use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use ReflectionClass;
-use Respect\Validation\Rules\AbstractComposite;
 use Respect\Validation\Exceptions\NestedValidationException;
-use Respect\Validation\Rules\AbstractWrapper;
 use Respect\Validation\Validatable as RespectValidatable;
 use Slim\Interfaces\RouteInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -169,6 +166,22 @@ class Validator
         return $this;
     }
 
+    protected function getErrorMessages(NestedValidationException $e, Validatable $validatable, array $messages = []): array
+    {
+        $definedMessages = array_replace($this->defaultMessages, $messages, $validatable->getMessages());
+
+        $errors = [];
+        foreach ($e->getMessages($definedMessages) as $name => $error) {
+            if (is_array($error)) {
+                array_replace($errors, $error);
+            } else {
+                $errors[$name] = $error;
+            }
+        }
+
+        return $errors;
+    }
+
     /**
      * Fetches a request parameter's value from the body or query string (in that order).
      *
@@ -205,55 +218,17 @@ class Validator
         return $result;
     }
 
-    protected function getRulesNames(RespectValidatable $validatable): array
-    {
-        if ($validatable instanceof AbstractComposite) {
-            $rulesNames = [];
-            foreach ($validatable->getRules() as $rule) {
-                array_push($rulesNames, ...$this->getRulesNames($rule instanceof AbstractWrapper ? $rule->getValidatable() : $rule));
-            }
-
-            return $rulesNames;
-        }
-
-        return [lcfirst((new ReflectionClass($validatable))->getShortName())];
-    }
-
     protected function handleValidationException(NestedValidationException $e, Validatable $validatable, array $messages, $input): void
     {
         if ($message = $validatable->getMessage()) {
             $this->getErrorList()->add(new ValidationError($validatable->getPath(), $message, $input));
         } else {
-            foreach ($this->findErrorMessages($e, $validatable, $messages) as $ruleName => $message) {
+            foreach ($this->getErrorMessages($e, $validatable, $messages) as $ruleName => $message) {
                 $this->getErrorList()->add(
                     (new ValidationError($validatable->getPath(), $message, $input))->setRule($ruleName)
                 );
             }
         }
-    }
-
-    protected function findErrorMessages(NestedValidationException $e, Validatable $validatable, array $messages = []): array
-    {
-        $errors = [
-            $e->findMessages($this->getRulesNames($validatable->getValidationRules()))
-        ];
-
-        // If default messages are defined
-        if (!empty($this->defaultMessages)) {
-            $errors[] = $e->findMessages($this->defaultMessages);
-        }
-
-        // If global messages are defined
-        if (!empty($messages)) {
-            $errors[] = $e->findMessages($messages);
-        }
-
-        // If individual messages are defined
-        if ($validatableMessages = $validatable->getMessages()) {
-            $errors[] = $e->findMessages($validatableMessages);
-        }
-
-        return array_filter(array_merge(...$errors));
     }
 
     protected function validateInput($input, Validatable $validatable, array $messages = []): void

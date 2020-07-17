@@ -21,10 +21,21 @@ class ValidatableFactory
 {
     private static $optionsResolver;
 
+    /**
+     * @param string                   $path
+     * @param RespectValidatable|array $options
+     * @param mixed                    $default
+     *
+     * @return Validatable
+     */
     public static function create(string $path, $options, $default = null): Validatable
     {
         if ($options instanceof RespectValidatable) {
             $options = ['rules' => $options];
+        }
+
+        if (!is_array($options)) {
+            $options = [];
         }
 
         $options = self::getOptionsResolver()->resolve($options);
