@@ -79,12 +79,8 @@ class Validator
      *
      * @return ValidationErrorList
      */
-    public function validateObject($object, array $rules, array $messages = [], $default = null): ValidationErrorList
+    public function validateObject(object $object, array $rules, array $messages = [], $default = null): ValidationErrorList
     {
-        if (!is_object($object)) {
-            throw new InvalidArgumentException('The first argument should be an object');
-        }
-
         $this->errors = new ValidationErrorList();
         foreach ($rules as $property => $options) {
             $validatable = ValidatableFactory::create($property, $options, $default);
