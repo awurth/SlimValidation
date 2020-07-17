@@ -166,7 +166,7 @@ class Validator
         return $this;
     }
 
-    protected function getErrorMessages(NestedValidationException $e, Validatable $validatable, array $messages = []): array
+    private function getErrorMessages(NestedValidationException $e, Validatable $validatable, array $messages = []): array
     {
         $definedMessages = array_replace($this->defaultMessages, $messages, $validatable->getMessages());
 
@@ -191,7 +191,7 @@ class Validator
      *
      * @return mixed
      */
-    protected function getRequestParam(Request $request, $key, $default = null)
+    private function getRequestParam(Request $request, $key, $default = null)
     {
         $postParams = $request->getParsedBody();
         $getParams = $request->getQueryParams();
@@ -218,7 +218,7 @@ class Validator
         return $result;
     }
 
-    protected function handleValidationException(NestedValidationException $e, Validatable $validatable, array $messages, $input): void
+    private function handleValidationException(NestedValidationException $e, Validatable $validatable, array $messages, $input): void
     {
         if ($message = $validatable->getMessage()) {
             $this->getErrorList()->add(new ValidationError($validatable->getPath(), $message, $input));
@@ -231,7 +231,7 @@ class Validator
         }
     }
 
-    protected function validateInput($input, Validatable $validatable, array $messages = []): void
+    private function validateInput($input, Validatable $validatable, array $messages = []): void
     {
         try {
             $validatable->getValidationRules()->assert($input);

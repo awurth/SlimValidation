@@ -16,22 +16,22 @@ class ValidatorTest extends TestCase
     /**
      * @var array
      */
-    protected $array;
+    private $array;
 
     /**
      * @var TestObject
      */
-    protected $object;
+    private $object;
 
     /**
      * @var Request
      */
-    protected $request;
+    private $request;
 
     /**
      * @var Validator
      */
-    protected $validator;
+    private $validator;
 
     public function setUp(): void
     {
