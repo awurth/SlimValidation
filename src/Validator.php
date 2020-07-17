@@ -142,9 +142,9 @@ class Validator
         return $this->getErrorList();
     }
 
-    public function getDefaultMessage(string $rule): string
+    public function getDefaultMessage(string $name): string
     {
-        return $this->defaultMessages[$rule] ?? '';
+        return $this->defaultMessages[$name] ?? '';
     }
 
     public function getDefaultMessages(): array
@@ -152,9 +152,9 @@ class Validator
         return $this->defaultMessages;
     }
 
-    public function setDefaultMessage(string $rule, string $message): self
+    public function setDefaultMessage(string $name, string $message): self
     {
-        $this->defaultMessages[$rule] = $message;
+        $this->defaultMessages[$name] = $message;
 
         return $this;
     }
@@ -223,9 +223,9 @@ class Validator
         if ($message = $validatable->getMessage()) {
             $this->getErrorList()->add(new ValidationError($validatable->getPath(), $message, $input));
         } else {
-            foreach ($this->getErrorMessages($e, $validatable, $messages) as $ruleName => $message) {
+            foreach ($this->getErrorMessages($e, $validatable, $messages) as $name => $message) {
                 $this->getErrorList()->add(
-                    (new ValidationError($validatable->getPath(), $message, $input))->setRule($ruleName)
+                    (new ValidationError($validatable->getPath(), $message, $input))->setName($name)
                 );
             }
         }

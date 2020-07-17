@@ -19,7 +19,7 @@ class ValidationError
     private $invalidValue;
     private $message;
     private $path;
-    private $rule;
+    private $name;
 
     public function __construct(string $path, string $message, $invalidValue)
     {
@@ -64,14 +64,14 @@ class ValidationError
         return $this;
     }
 
-    public function getRule(): ?string
+    public function getName(): ?string
     {
-        return $this->rule;
+        return $this->name;
     }
 
-    public function setRule(?string $rule): self
+    public function setName(?string $name): self
     {
-        $this->rule = $rule;
+        $this->name = $name;
 
         return $this;
     }
