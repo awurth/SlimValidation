@@ -27,17 +27,17 @@ class TestObject
         return $this->publicProperty;
     }
 
-    public function setPrivateProperty($privateProperty)
+    public function setPrivateProperty($privateProperty): void
     {
         $this->privateProperty = $privateProperty;
     }
 
-    public function setProtectedProperty($protectedProperty)
+    public function setProtectedProperty($protectedProperty): void
     {
         $this->protectedProperty = $protectedProperty;
     }
 
-    public function setPublicProperty($publicProperty)
+    public function setPublicProperty($publicProperty): void
     {
         $this->publicProperty = $publicProperty;
     }
