@@ -541,7 +541,7 @@ class Validator implements ValidatorInterface
         if ($validatable instanceof AbstractComposite) {
             $rulesNames = [];
             foreach ($validatable->getRules() as $rule) {
-                array_push($rulesNames, ...$this->getRulesNames($rule));
+                array_push($rulesNames, ...$this->getRulesNames($rule instanceof AbstractWrapper ? $rule->getValidatable() : $rule));
             }
 
             return $rulesNames;
@@ -590,22 +590,22 @@ class Validator implements ValidatorInterface
     protected function storeErrors(NestedValidationException $e, Configuration $config, array $messages = [])
     {
         $errors = [
-            $e->getMessages($this->getRulesNames($config->getValidationRules()))
+            $e->findMessages($this->getRulesNames($config->getValidationRules()))
         ];
 
         // If default messages are defined
         if (!empty($this->defaultMessages)) {
-            $errors[] = $e->getMessages($this->defaultMessages);
+            $errors[] = $e->findMessages($this->defaultMessages);
         }
 
         // If global messages are defined
         if (!empty($messages)) {
-            $errors[] = $e->getMessages($messages);
+            $errors[] = $e->findMessages($messages);
         }
 
         // If individual messages are defined
         if ($config->hasMessages()) {
-            $errors[] = $e->getMessages($config->getMessages());
+            $errors[] = $e->findMessages($config->getMessages());
         }
 
         $this->setErrors($this->mergeMessages($errors), $config->getKey(), $config->getGroup());

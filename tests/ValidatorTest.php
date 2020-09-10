@@ -138,7 +138,7 @@ class ValidatorTest extends TestCase
 
     public function testValue()
     {
-        $this->validator->value(2017, V::numericVal()->between(2010, 2020), 'year');
+        $this->validator->value(2017, V::numeric()->between(2010, 2020), 'year');
 
         $this->assertEquals(['year' => 2017], $this->validator->getValues());
         $this->assertTrue($this->validator->isValid());
@@ -147,7 +147,7 @@ class ValidatorTest extends TestCase
     public function testValidateWithErrors()
     {
         $this->validator->validate($this->request, [
-            'username' => V::length(8, null, false)
+            'username' => V::length(8)
         ]);
 
         $this->assertEquals(['username' => 'a_wurth'], $this->validator->getValues());
@@ -164,7 +164,7 @@ class ValidatorTest extends TestCase
     {
         $this->validator->setShowValidationRules(false);
         $this->validator->validate($this->request, [
-            'username' => V::length(8, null, false)
+            'username' => V::length(8)
         ]);
 
         $this->assertEquals(['username' => 'a_wurth'], $this->validator->getValues());
@@ -180,7 +180,7 @@ class ValidatorTest extends TestCase
     public function testValidateWithGroupedErrors()
     {
         $this->validator->validate($this->request, [
-            'username' => V::length(8, null, false)
+            'username' => V::length(8)
         ], 'user');
 
         $this->assertFalse($this->validator->isValid());
@@ -344,7 +344,7 @@ class ValidatorTest extends TestCase
                     'length' => 'Too short!'
                 ]
             ],
-            'password' => V::length(8, null, false),
+            'password' => V::length(8)
         ]);
 
         $this->assertEquals(['username' => 'a_wurth', 'password' => '1234'], $this->validator->getValues());
@@ -368,7 +368,7 @@ class ValidatorTest extends TestCase
                     'length' => 'Too short!'
                 ]
             ],
-            'password' => V::length(8, null, false)
+            'password' => V::length(8)
         ], 'user');
 
         $this->assertEquals([
