@@ -161,12 +161,12 @@ class Validator
         return $this;
     }
 
-    private function getErrorMessages(NestedValidationException $e, Validatable $validatable, array $messages = []): array
+    private function extractMessagesFromException(NestedValidationException $exception, Validatable $validatable, array $messages = []): array
     {
         $definedMessages = array_replace($this->defaultMessages, $messages, $validatable->getMessages());
 
         $errors = [];
-        foreach ($e->getMessages($definedMessages) as $name => $error) {
+        foreach ($exception->getMessages($definedMessages) as $name => $error) {
             if (is_array($error)) {
                 array_replace($errors, $error);
             } else {
@@ -218,7 +218,8 @@ class Validator
         if ($message = $validatable->getMessage()) {
             $this->getErrorList()->add(new ValidationError($validatable->getPath(), $message, $input));
         } else {
-            foreach ($this->getErrorMessages($e, $validatable, $messages) as $name => $message) {
+            $exceptionMessages = $this->extractMessagesFromException($e, $validatable, $messages);
+            foreach ($exceptionMessages as $name => $message) {
                 $this->getErrorList()->add(
                     (new ValidationError($validatable->getPath(), $message, $input))->setName($name)
                 );
