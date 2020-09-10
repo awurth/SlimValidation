@@ -11,7 +11,6 @@
 
 namespace Awurth\SlimValidation;
 
-use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Validatable as RespectValidatable;
