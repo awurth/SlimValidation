@@ -15,7 +15,6 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Validatable as RespectValidatable;
 use Slim\Interfaces\RouteInterface;
-use Slim\Routing\RouteContext;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
@@ -191,10 +190,14 @@ class Validator
     {
         $postParams = $request->getParsedBody();
         $getParams = $request->getQueryParams();
-
+        $route = $request->getAttribute('route');
         $routeParams = [];
-        $routeContext = RouteContext::fromRequest($request);
-        $route = $routeContext->getRoute();
+        
+        if (class_exists('\\Slim\\Routing\\RouteContext')) {
+            $routeContext = \Slim\Routing\RouteContext::fromRequest($request);
+            $route = $routeContext->getRoute();
+        }
+
         if ($route instanceof RouteInterface) {
             $routeParams = $route->getArguments();
         }
