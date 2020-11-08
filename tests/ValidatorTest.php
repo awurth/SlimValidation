@@ -113,7 +113,7 @@ class ValidatorTest extends TestCase
         $error = $errors->get(0);
 
         self::assertSame('username', $error->getPath());
-        self::assertSame('length', $error->getRule());
+        self::assertSame('length', $error->getName());
         self::assertSame('a_wurth', $error->getInvalidValue());
         self::assertSame('"a_wurth" must have a length greater than or equal to 8', $error->getMessage());
     }
@@ -153,7 +153,7 @@ class ValidatorTest extends TestCase
         self::assertSame('Too short!', $errors->get(0)->getMessage());
         self::assertSame('Too short!', $errors->get(1)->getMessage());
         self::assertSame('Only letters are allowed', $errors->get(2)->getMessage());
-        self::assertSame('alpha', $errors->get(2)->getRule());
+        self::assertSame('alpha', $errors->get(2)->getName());
     }
 
     public function testValidateWithCustomIndividualMessage(): void
