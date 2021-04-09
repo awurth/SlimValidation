@@ -22,11 +22,11 @@
         }
     },
     "require": {
-        "php": "^7.0",
+        "php": "^7.0|^8.0",
         "psr/http-message": "^1.0",
         "respect/validation": "^1.1"
     },
-    "require-dev": {
+    "require-dev-disabled": {
         "phpunit/phpunit": "^6.3",
         "slim/slim": "^3.8",
         "slim/twig-view": "^2.2"
