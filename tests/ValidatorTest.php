@@ -50,7 +50,7 @@ class ValidatorTest extends TestCase
 
     public function testValidateWithoutRules()
     {
-        $this->expectError();
+        $this->expectException(Error::class);
         $this->validator->validate($this->request, [
             'username'
         ]);
@@ -58,7 +58,7 @@ class ValidatorTest extends TestCase
 
     public function testValidateWithOptionsWrongType()
     {
-        $this->expectError();
+        $this->expectException(Error::class);
         $this->validator->validate($this->request, [
             'username' => null
         ]);
