@@ -30,7 +30,7 @@ interface ValidatorInterface
      * @param string[]            $messages
      * @param mixed|null          $default
      */
-    public function validate($input, array $rules, string $group = null, array $messages = [], $default = null);
+    public function validate($input, array $rules, ?string $group = null, array $messages = [], $default = null);
 
     /**
      * Tells if there is no error.
@@ -58,7 +58,7 @@ interface ValidatorInterface
      *
      * @return string[]
      */
-    public function getErrors(string $key = null, string $group = null): array;
+    public function getErrors(?string $key = null, ?string $group = null): array;
 
     /**
      * Gets a value from the validated data.
@@ -68,7 +68,7 @@ interface ValidatorInterface
      *
      * @return mixed
      */
-    public function getValue(string $key, string $group = null);
+    public function getValue(string $key, ?string $group = null);
 
     /**
      * Gets the validated data.
@@ -77,5 +77,5 @@ interface ValidatorInterface
      *
      * @return array
      */
-    public function getValues(string $group = null): array;
+    public function getValues(?string $group = null): array;
 }

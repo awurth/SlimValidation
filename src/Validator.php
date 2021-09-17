@@ -39,7 +39,7 @@ class Validator implements ValidatorInterface
     /**
      * The list of validation errors.
      *
-     * @var string[]
+     * @var array
      */
     protected $errors;
 
@@ -91,7 +91,7 @@ class Validator implements ValidatorInterface
      *
      * @return self
      */
-    public function array(array $array, array $rules, string $group = null, array $messages = [], $default = null): self
+    public function array(array $array, array $rules, ?string $group = null, array $messages = [], $default = null): self
     {
         foreach ($rules as $key => $options) {
             $this->validateInput(
@@ -115,7 +115,7 @@ class Validator implements ValidatorInterface
      *
      * @return self
      */
-    public function object($object, array $rules, string $group = null, array $messages = [], $default = null): self
+    public function object($object, array $rules, ?string $group = null, array $messages = [], $default = null): self
     {
         if (!is_object($object)) {
             throw new InvalidArgumentException('The first argument should be an object');
@@ -143,7 +143,7 @@ class Validator implements ValidatorInterface
      *
      * @return self
      */
-    public function request(Request $request, array $rules, string $group = null, array $messages = [], $default = null): self
+    public function request(Request $request, array $rules, ?string $group = null, array $messages = [], $default = null): self
     {
         foreach ($rules as $param => $options) {
             $this->validateInput(
@@ -159,7 +159,7 @@ class Validator implements ValidatorInterface
     /**
      * {@inheritdoc}
      */
-    public function validate($input, array $rules, string $group = null, array $messages = [], $default = null): self
+    public function validate($input, array $rules, ?string $group = null, array $messages = [], $default = null): self
     {
         if ($input instanceof Request) {
             return $this->request($input, $rules, $group, $messages, $default);
@@ -187,7 +187,7 @@ class Validator implements ValidatorInterface
      *
      * @return self
      */
-    public function value($value, $rules, string $key, string $group = null, array $messages = []): self
+    public function value($value, $rules, string $key, ?string $group = null, array $messages = []): self
     {
         return $this->validateInput($value, new Configuration($rules, $key, $group), $messages);
     }
@@ -211,7 +211,7 @@ class Validator implements ValidatorInterface
      *
      * @return self
      */
-    public function addError(string $key, string $message, string $group = null): self
+    public function addError(string $key, string $message, ?string $group = null): self
     {
         if (!empty($group)) {
             $this->errors[$group][$key][] = $message;
@@ -263,7 +263,7 @@ class Validator implements ValidatorInterface
     /**
      * {@inheritdoc}
      */
-    public function getErrors(string $key = null, string $group = null): array
+    public function getErrors(?string $key = null, ?string $group = null): array
     {
         if (!empty($key)) {
             if (!empty($group)) {
@@ -284,7 +284,7 @@ class Validator implements ValidatorInterface
      *
      * @return string
      */
-    public function getFirstError(string $key, string $group = null): string
+    public function getFirstError(string $key, ?string $group = null): string
     {
         if ($group && isset($this->errors[$group][$key])) {
             $first = array_slice($this->errors[$group][$key], 0, 1);
@@ -304,7 +304,7 @@ class Validator implements ValidatorInterface
     /**
      * {@inheritdoc}
      */
-    public function getValue(string $key, string $group = null)
+    public function getValue(string $key, ?string $group = null)
     {
         if (!empty($group)) {
             return $this->values[$group][$key] ?? null;
@@ -316,7 +316,7 @@ class Validator implements ValidatorInterface
     /**
      * {@inheritdoc}
      */
-    public function getValues(string $group = null): array
+    public function getValues(?string $group = null): array
     {
         if (!empty($group)) {
             return $this->values[$group] ?? [];
@@ -343,7 +343,7 @@ class Validator implements ValidatorInterface
      *
      * @return self
      */
-    public function removeErrors(string $key = null, string $group = null): self
+    public function removeErrors(?string $key = null, ?string $group = null): self
     {
         if (!empty($group)) {
             if ($key) {
@@ -396,7 +396,7 @@ class Validator implements ValidatorInterface
      *
      * @return self
      */
-    public function setErrors(array $errors, string $key = null, string $group = null): self
+    public function setErrors(array $errors, ?string $key = null, ?string $group = null): self
     {
         if (!empty($group)) {
             if ($key) {
@@ -436,7 +436,7 @@ class Validator implements ValidatorInterface
      *
      * @return self
      */
-    public function setValue(string $key, $value, string $group = null): self
+    public function setValue(string $key, $value, ?string $group = null): self
     {
         if (!empty($group)) {
             $this->values[$group][$key] = $value;
@@ -455,7 +455,7 @@ class Validator implements ValidatorInterface
      *
      * @return self
      */
-    public function setValues(array $values, string $group = null): self
+    public function setValues(array $values, ?string $group = null): self
     {
         foreach ($values as $key => $value) {
             $this->setValue($key, $value, $group);

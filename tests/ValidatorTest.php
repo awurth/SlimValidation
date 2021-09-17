@@ -32,10 +32,7 @@ class ValidatorTest extends TestCase
      */
     protected $validator;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setUp()
+    public function setUp(): void
     {
         $this->request = Request::createFromEnvironment(Environment::mock([
             'QUERY_STRING' => 'username=a_wurth&password=1234'
@@ -51,31 +48,25 @@ class ValidatorTest extends TestCase
         $this->validator = new Validator();
     }
 
-    /**
-     * @expectedException Error
-     */
     public function testValidateWithoutRules()
     {
+        $this->expectError();
         $this->validator->validate($this->request, [
             'username'
         ]);
     }
 
-    /**
-     * @expectedException Error
-     */
     public function testValidateWithOptionsWrongType()
     {
+        $this->expectError();
         $this->validator->validate($this->request, [
             'username' => null
         ]);
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
     public function testValidateWithRulesWrongType()
     {
+        $this->expectException(InvalidArgumentException::class);
         $this->validator->validate($this->request, [
             'username' => [
                 'rules' => null
@@ -390,12 +381,10 @@ class ValidatorTest extends TestCase
         ], $this->validator->getErrors());
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Expected custom message to be of type string, integer given
-     */
     public function testValidateWithWrongCustomSingleMessageType()
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Expected custom message to be of type string, integer given');
         $this->validator->validate($this->request, [
             'username' => [
                 'rules' => V::length(8)->alnum(),

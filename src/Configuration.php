@@ -55,11 +55,11 @@ class Configuration
      * Constructor.
      *
      * @param Validatable|array $options
-     * @param string            $key
-     * @param string            $group
-     * @param string            $default
+     * @param string|null       $key
+     * @param string|null       $group
+     * @param mixed             $default
      */
-    public function __construct($options, string $key = null, string $group = null, $default = null)
+    public function __construct($options, ?string $key = null, ?string $group = null, $default = null)
     {
         $this->key = $key;
         $this->group = $group;
