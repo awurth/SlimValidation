@@ -4,11 +4,11 @@ namespace Awurth\SlimValidation\Tests;
 
 use Awurth\SlimValidation\Validator;
 use InvalidArgumentException;
-use PHPUnit\Framework\Error\Error;
 use PHPUnit\Framework\TestCase;
 use Respect\Validation\Validator as V;
 use Slim\Http\Environment;
 use Slim\Http\Request;
+use TypeError;
 
 class ValidatorTest extends TestCase
 {
@@ -50,7 +50,7 @@ class ValidatorTest extends TestCase
 
     public function testValidateWithoutRules()
     {
-        $this->expectException(Error::class);
+        $this->expectException(TypeError::class);
         $this->validator->validate($this->request, [
             'username'
         ]);
@@ -58,7 +58,7 @@ class ValidatorTest extends TestCase
 
     public function testValidateWithOptionsWrongType()
     {
-        $this->expectException(Error::class);
+        $this->expectException(TypeError::class);
         $this->validator->validate($this->request, [
             'username' => null
         ]);
