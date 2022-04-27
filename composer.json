@@ -13,12 +13,12 @@
     ],
     "autoload": {
         "psr-4": {
-            "Awurth\\SlimValidation\\": "src"
+            "Awurth\\Validator\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Awurth\\SlimValidation\\Tests\\": "tests"
+            "Awurth\\Validator\\Tests\\": "tests"
         }
     },
     "require": {
