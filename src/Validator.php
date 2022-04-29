@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the Awurth Validator package.
+ *
+ * (c) Alexis Wurth <awurth.dev@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Awurth\Validator;
 
 use InvalidArgumentException;
@@ -7,6 +16,11 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Validatable;
 
+/**
+ * The Validator.
+ *
+ * @author Alexis Wurth <awurth.dev@gmail.com>
+ */
 final class Validator
 {
     public function __construct(

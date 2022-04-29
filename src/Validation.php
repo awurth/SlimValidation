@@ -1,10 +1,24 @@
 <?php
 
+/*
+ * This file is part of the Awurth Validator package.
+ *
+ * (c) Alexis Wurth <awurth.dev@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Awurth\Validator;
 
 use Respect\Validation\Validatable;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Contains validation rules and other data used to handle validation failures.
+ *
+ * @author Alexis Wurth <awurth.dev@gmail.com>
+ */
 final class Validation
 {
     private static ?OptionsResolver $optionsResolver = null;

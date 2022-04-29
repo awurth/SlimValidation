@@ -1,21 +1,29 @@
 <?php
 
+/*
+ * This file is part of the Awurth Validator package.
+ *
+ * (c) Alexis Wurth <awurth.dev@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Awurth\Validator;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Interfaces\RouteInterface;
 use Slim\Routing\RouteContext;
 
+/**
+ * Allows accessing a Request's parameters.
+ *
+ * @author Alexis Wurth <awurth.dev@gmail.com>
+ */
 final class RequestParameterAccessor
 {
     /**
      * Fetches a request parameter's value from the body or query string (in that order).
-     *
-     * @param Request     $request
-     * @param string      $key
-     * @param string|null $default
-     *
-     * @return mixed
      */
     public static function getValue(Request $request, string $key, mixed $default = null): mixed
     {

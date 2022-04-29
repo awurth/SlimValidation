@@ -1,7 +1,21 @@
 <?php
 
+/*
+ * This file is part of the Awurth Validator package.
+ *
+ * (c) Alexis Wurth <awurth.dev@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Awurth\Validator;
 
+/**
+ * Represents a validation failure.
+ *
+ * @author Alexis Wurth <awurth.dev@gmail.com>
+ */
 final class ValidationFailure implements ValidationFailureInterface
 {
     public function __construct(
