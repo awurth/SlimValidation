@@ -17,7 +17,6 @@ use ReflectionClass;
 use ReflectionProperty;
 use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Rules\AbstractComposite;
-use Respect\Validation\Rules\AbstractWrapper;
 use Respect\Validation\Validatable;
 use Slim\Interfaces\RouteInterface;
 
