@@ -14,7 +14,6 @@ namespace Awurth\SlimValidation;
 use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use ReflectionClass;
-use ReflectionException;
 use ReflectionProperty;
 use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Rules\AbstractComposite;
@@ -115,7 +114,7 @@ class Validator implements ValidatorInterface
      *
      * @return self
      */
-    public function object($object, array $rules, ?string $group = null, array $messages = [], $default = null): self
+    public function object(object $object, array $rules, ?string $group = null, array $messages = [], $default = null): self
     {
         if (!is_object($object)) {
             throw new InvalidArgumentException('The first argument should be an object');
@@ -229,7 +228,7 @@ class Validator implements ValidatorInterface
      *
      * @return string
      */
-    public function getDefaultMessage($key): string
+    public function getDefaultMessage(string $key): string
     {
         return $this->defaultMessages[$key] ?? '';
     }
@@ -390,9 +389,9 @@ class Validator implements ValidatorInterface
     /**
      * Sets validation errors.
      *
-     * @param string[]    $errors
-     * @param string|null $key
-     * @param string|null $group
+     * @param string[]|string[][] $errors
+     * @param string|null         $key
+     * @param string|null         $group
      *
      * @return self
      */
@@ -473,7 +472,7 @@ class Validator implements ValidatorInterface
      *
      * @return mixed
      */
-    protected function getPropertyValue($object, string $propertyName, $default = null)
+    protected function getPropertyValue(object $object, string $propertyName, $default = null)
     {
         if (!is_object($object)) {
             throw new InvalidArgumentException('The first argument should be an object');
@@ -483,14 +482,10 @@ class Validator implements ValidatorInterface
             return $default;
         }
 
-        try {
-            $reflectionProperty = new ReflectionProperty($object, $propertyName);
-            $reflectionProperty->setAccessible(true);
+        $reflectionProperty = new ReflectionProperty($object, $propertyName);
+        $reflectionProperty->setAccessible(true);
 
-            return $reflectionProperty->getValue($object);
-        } catch (ReflectionException $e) {
-            return $default;
-        }
+        return $reflectionProperty->getValue($object);
     }
 
     /**
@@ -502,7 +497,7 @@ class Validator implements ValidatorInterface
      *
      * @return mixed
      */
-    protected function getRequestParam(Request $request, $key, $default = null)
+    protected function getRequestParam(Request $request, string $key, string $default = null)
     {
         $postParams = $request->getParsedBody();
         $getParams = $request->getQueryParams();
@@ -541,7 +536,7 @@ class Validator implements ValidatorInterface
         if ($validatable instanceof AbstractComposite) {
             $rulesNames = [];
             foreach ($validatable->getRules() as $rule) {
-                array_push($rulesNames, ...$this->getRulesNames($rule instanceof AbstractWrapper ? $rule->getValidatable() : $rule));
+                array_push($rulesNames, ...$this->getRulesNames($rule));
             }
 
             return $rulesNames;
@@ -590,22 +585,22 @@ class Validator implements ValidatorInterface
     protected function storeErrors(NestedValidationException $e, Configuration $config, array $messages = [])
     {
         $errors = [
-            $e->findMessages($this->getRulesNames($config->getValidationRules()))
+            $e->getMessages($this->getRulesNames($config->getValidationRules()))
         ];
 
         // If default messages are defined
         if (!empty($this->defaultMessages)) {
-            $errors[] = $e->findMessages($this->defaultMessages);
+            $errors[] = $e->getMessages($this->defaultMessages);
         }
 
         // If global messages are defined
         if (!empty($messages)) {
-            $errors[] = $e->findMessages($messages);
+            $errors[] = $e->getMessages($messages);
         }
 
         // If individual messages are defined
         if ($config->hasMessages()) {
-            $errors[] = $e->findMessages($config->getMessages());
+            $errors[] = $e->getMessages($config->getMessages());
         }
 
         $this->setErrors($this->mergeMessages($errors), $config->getKey(), $config->getGroup());

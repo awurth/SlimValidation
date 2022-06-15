@@ -6,8 +6,11 @@ use Awurth\SlimValidation\Validator;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Respect\Validation\Validator as V;
-use Slim\Http\Environment;
-use Slim\Http\Request;
+use Slim\Psr7\Environment;
+use Slim\Psr7\Factory\StreamFactory;
+use Slim\Psr7\Factory\UriFactory;
+use Slim\Psr7\Headers;
+use Slim\Psr7\Request;
 use TypeError;
 
 class ValidatorTest extends TestCase
@@ -34,9 +37,12 @@ class ValidatorTest extends TestCase
 
     public function setUp(): void
     {
-        $this->request = Request::createFromEnvironment(Environment::mock([
+        $uri = (new UriFactory())->createFromGlobals(Environment::mock([
             'QUERY_STRING' => 'username=a_wurth&password=1234'
         ]));
+        $headers = Headers::createFromGlobals();
+        $body = (new StreamFactory())->createStream();
+        $this->request = new Request('GET', $uri, $headers, [], [], $body);
 
         $this->array = [
             'username' => 'a_wurth',
@@ -129,7 +135,7 @@ class ValidatorTest extends TestCase
 
     public function testValue()
     {
-        $this->validator->value(2017, V::numeric()->between(2010, 2020), 'year');
+        $this->validator->value(2017, V::numericVal()->between(2010, 2020), 'year');
 
         $this->assertEquals(['year' => 2017], $this->validator->getValues());
         $this->assertTrue($this->validator->isValid());
@@ -146,7 +152,7 @@ class ValidatorTest extends TestCase
         $this->assertFalse($this->validator->isValid());
         $this->assertEquals([
             'username' => [
-                'length' => '"a_wurth" must have a length greater than 8'
+                'length' => '"a_wurth" must have a length greater than or equal to 8'
             ]
         ], $this->validator->getErrors());
     }
@@ -163,7 +169,7 @@ class ValidatorTest extends TestCase
         $this->assertFalse($this->validator->isValid());
         $this->assertEquals([
             'username' => [
-                '"a_wurth" must have a length greater than 8'
+                '"a_wurth" must have a length greater than or equal to 8'
             ]
         ], $this->validator->getErrors());
     }
@@ -178,7 +184,7 @@ class ValidatorTest extends TestCase
         $this->assertEquals([
             'user' => [
                 'username' => [
-                    'length' => '"a_wurth" must have a length greater than 8'
+                    'length' => '"a_wurth" must have a length greater than or equal to 8'
                 ]
             ]
         ], $this->validator->getErrors());
@@ -345,7 +351,7 @@ class ValidatorTest extends TestCase
                 'length' => 'Too short!'
             ],
             'password' => [
-                'length' => '"1234" must have a length greater than 8'
+                'length' => '"1234" must have a length greater than or equal to 8'
             ]
         ], $this->validator->getErrors());
     }
@@ -375,7 +381,7 @@ class ValidatorTest extends TestCase
                     'length' => 'Too short!'
                 ],
                 'password' => [
-                    'length' => '"1234" must have a length greater than 8'
+                    'length' => '"1234" must have a length greater than or equal to 8'
                 ]
             ]
         ], $this->validator->getErrors());
