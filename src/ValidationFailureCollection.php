@@ -35,7 +35,7 @@ final class ValidationFailureCollection implements ValidationFailureCollectionIn
 
     public function filter(callable $callback): self
     {
-        return new self(array_filter($this->failures, $callback));
+        return new self(\array_filter($this->failures, $callback));
     }
 
     public function find(callable $callback): ?ValidationFailureInterface
@@ -64,7 +64,7 @@ final class ValidationFailureCollection implements ValidationFailureCollectionIn
     public function get(int $offset): ValidationFailureInterface
     {
         if (!isset($this->failures[$offset])) {
-            throw new OutOfBoundsException(sprintf('The offset "%s" does not exist.', $offset));
+            throw new OutOfBoundsException(\sprintf('The offset "%s" does not exist.', $offset));
         }
 
         return $this->failures[$offset];
@@ -107,7 +107,7 @@ final class ValidationFailureCollection implements ValidationFailureCollectionIn
 
     public function count(): int
     {
-        return count($this->failures);
+        return \count($this->failures);
     }
 
     public function getIterator(): Traversable

@@ -35,7 +35,7 @@ final class Validator
             return $this->assert($subject, Validation::create(['rules' => $rules]), $messages);
         }
 
-        if (!$subject instanceof Request && !is_object($subject) && !is_array($subject)) {
+        if (!$subject instanceof Request && !\is_object($subject) && !\is_array($subject)) {
             return $this->assert($subject, Validation::create($rules), $messages);
         }
 
@@ -78,11 +78,11 @@ final class Validator
 
     private function extractMessagesFromException(NestedValidationException $exception, Validation $validation, array $messages = []): array
     {
-        $definedMessages = array_replace(/*$this->defaultMessages, */ $messages, $validation->getMessages());
+        $definedMessages = \array_replace(/*$this->defaultMessages, */ $messages, $validation->getMessages());
 
         $errors = [];
         foreach ($exception->getMessages($definedMessages) as $name => $error) {
-            if (is_array($error)) {
+            if (\is_array($error)) {
                 $errors = [...$errors, ...$error];
             } else {
                 $errors[$name] = $error;
@@ -94,7 +94,7 @@ final class Validator
 
     private function getValue(mixed $subject, string $property, mixed $default = null): mixed
     {
-        if (is_array($subject)) {
+        if (\is_array($subject)) {
             return $subject[$property] ?? $default;
         }
 
@@ -102,15 +102,15 @@ final class Validator
             return RequestParameterAccessor::getValue($subject, $property, $default);
         }
 
-        if (is_object($subject)) {
+        if (\is_object($subject)) {
             return ObjectPropertyAccessor::getValue($subject, $property, $default);
         }
 
         throw new InvalidArgumentException(
-            sprintf(
+            \sprintf(
                 'The subject must be of type "array", "object" or "%s", "%s" given',
                 Request::class,
-                get_class($subject)
+                \get_class($subject)
             )
         );
     }

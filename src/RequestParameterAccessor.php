@@ -32,7 +32,7 @@ final class RequestParameterAccessor
         $route = $request->getAttribute('route');
         $routeParams = [];
 
-        if (class_exists(RouteContext::class)) {
+        if (\class_exists(RouteContext::class)) {
             $routeContext = RouteContext::fromRequest($request);
             $route = $routeContext->getRoute();
         }
@@ -42,9 +42,9 @@ final class RequestParameterAccessor
         }
 
         $result = $default;
-        if (is_array($postParams) && isset($postParams[$key])) {
+        if (\is_array($postParams) && isset($postParams[$key])) {
             $result = $postParams[$key];
-        } elseif (is_object($postParams) && property_exists($postParams, $key)) {
+        } elseif (\is_object($postParams) && \property_exists($postParams, $key)) {
             $result = $postParams->$key;
         } elseif (isset($getParams[$key])) {
             $result = $getParams[$key];
