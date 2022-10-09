@@ -19,6 +19,9 @@ return (new PhpCsFixer\Config())
         ],
         'compact_nullable_typehint' => true,
         'declare_strict_types' => true,
+        'native_function_invocation' => [
+            'strict' => false,
+        ],
         'no_superfluous_elseif' => true,
         'no_useless_else' => true,
         'no_useless_return' => true,
