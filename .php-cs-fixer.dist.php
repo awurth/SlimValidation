@@ -20,7 +20,7 @@ return (new PhpCsFixer\Config())
         'compact_nullable_typehint' => true,
         'declare_strict_types' => true,
         'native_function_invocation' => [
-            'strict' => false,
+            'include' => ['@internal'],
         ],
         'no_superfluous_elseif' => true,
         'no_useless_else' => true,
