@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the Awurth Validator package.
  *
@@ -42,15 +44,15 @@ class ValidatorTest extends TestCase
      */
     private $validator;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->request = Request::createFromEnvironment(Environment::mock([
-            'QUERY_STRING' => 'username=a_wurth&password=1234'
+            'QUERY_STRING' => 'username=a_wurth&password=1234',
         ]));
 
         $this->array = [
             'username' => 'a_wurth',
-            'password' => '1234'
+            'password' => '1234',
         ];
 
         $this->object = new TestObject('private', 'protected', 'public');
@@ -71,8 +73,8 @@ class ValidatorTest extends TestCase
 
         $this->validator->validateRequest($this->request, [
             'username' => [
-                'rules' => null
-            ]
+                'rules' => null,
+            ],
         ]);
     }
 
@@ -87,7 +89,7 @@ class ValidatorTest extends TestCase
     {
         $errors = $this->validator->validateArray($this->array, [
             'username' => V::notBlank(),
-            'password' => V::notBlank()
+            'password' => V::notBlank(),
         ]);
 
         self::assertSame(0, $errors->count());
@@ -98,7 +100,7 @@ class ValidatorTest extends TestCase
         $errors = $this->validator->validateObject($this->object, [
             'privateProperty' => V::notBlank(),
             'protectedProperty' => V::notBlank(),
-            'publicProperty' => V::notBlank()
+            'publicProperty' => V::notBlank(),
         ]);
 
         self::assertSame(1, $errors->count());
@@ -114,7 +116,7 @@ class ValidatorTest extends TestCase
     public function testValidateWithErrors(): void
     {
         $errors = $this->validator->validateRequest($this->request, [
-            'username' => V::length(8)
+            'username' => V::length(8),
         ]);
 
         self::assertSame(1, $errors->count());
@@ -131,7 +133,7 @@ class ValidatorTest extends TestCase
     {
         $this->validator->setDefaultMessages(['length' => 'Too short!']);
         $errors = $this->validator->validateRequest($this->request, [
-            'username' => V::length(8)
+            'username' => V::length(8),
         ]);
 
         self::assertSame(1, $errors->count());
@@ -142,7 +144,7 @@ class ValidatorTest extends TestCase
     {
         $errors = $this->validator->validateRequest($this->request, [
             'username' => V::length(8),
-            'password' => V::length(8)
+            'password' => V::length(8),
         ], ['length' => 'Too short!']);
 
         self::assertSame(2, $errors->count());
@@ -155,7 +157,7 @@ class ValidatorTest extends TestCase
         $this->validator->setDefaultMessage('length', 'Too short!');
         $errors = $this->validator->validateRequest($this->request, [
             'username' => V::length(8),
-            'password' => V::length(8)->alpha()
+            'password' => V::length(8)->alpha(),
         ], ['alpha' => 'Only letters are allowed']);
 
         self::assertSame(3, $errors->count());
@@ -171,10 +173,10 @@ class ValidatorTest extends TestCase
             'username' => [
                 'rules' => V::length(8),
                 'messages' => [
-                    'length' => 'Too short!'
-                ]
+                    'length' => 'Too short!',
+                ],
             ],
-            'password' => V::length(8)
+            'password' => V::length(8),
         ]);
 
         self::assertSame(2, $errors->count());
@@ -187,13 +189,13 @@ class ValidatorTest extends TestCase
     public function testValidateWithWrongCustomSingleMessageType(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("The option \"message\" with value 10 is expected to be of type \"null\" or \"string\", but is of type \"int\".");
+        $this->expectExceptionMessage('The option "message" with value 10 is expected to be of type "null" or "string", but is of type "int".');
 
         $this->validator->validateRequest($this->request, [
             'username' => [
                 'rules' => V::length(8)->alnum(),
-                'message' => 10
-            ]
+                'message' => 10,
+            ],
         ]);
     }
 
@@ -204,15 +206,15 @@ class ValidatorTest extends TestCase
                 'rules' => V::length(8)->alnum(),
                 'message' => 'Bad username.',
                 'messages' => [
-                    'length' => 'Too short!'
-                ]
+                    'length' => 'Too short!',
+                ],
             ],
             'password' => [
                 'rules' => V::length(8),
                 'messages' => [
-                    'length' => 'Too short!'
-                ]
-            ]
+                    'length' => 'Too short!',
+                ],
+            ],
         ]);
 
         self::assertSame(2, $errors->count());

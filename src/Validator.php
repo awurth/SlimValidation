@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the Awurth Validator package.
  *
@@ -78,7 +80,7 @@ final class Validator
 
     private function extractMessagesFromException(NestedValidationException $exception, Validation $validation, array $messages = []): array
     {
-        $definedMessages = \array_replace(/*$this->defaultMessages, */ $messages, $validation->getMessages());
+        $definedMessages = \array_replace(/* $this->defaultMessages, */ $messages, $validation->getMessages());
 
         $errors = [];
         foreach ($exception->getMessages($definedMessages) as $name => $error) {
@@ -106,12 +108,6 @@ final class Validator
             return ObjectPropertyAccessor::getValue($subject, $property, $default);
         }
 
-        throw new InvalidArgumentException(
-            \sprintf(
-                'The subject must be of type "array", "object" or "%s", "%s" given',
-                Request::class,
-                \get_class($subject)
-            )
-        );
+        throw new InvalidArgumentException(\sprintf('The subject must be of type "array", "object" or "%s", "%s" given', Request::class, \get_class($subject)));
     }
 }

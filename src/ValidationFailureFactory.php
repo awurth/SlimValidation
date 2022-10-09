@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the Awurth Validator package.
  *
@@ -23,8 +25,7 @@ final class ValidationFailureFactory implements ValidationFailureFactoryInterfac
         mixed $invalidValue,
         ?string $property = null,
         ?string $ruleName = null
-    ): ValidationFailureInterface
-    {
+    ): ValidationFailureInterface {
         return new ValidationFailure($message, $invalidValue, $property, $ruleName);
     }
 }
