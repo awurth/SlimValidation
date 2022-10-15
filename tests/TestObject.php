@@ -11,29 +11,23 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Awurth\SlimValidation\Tests;
+namespace Awurth\Validator\Tests;
 
-class TestObject
+final class TestObject
 {
-    private $privateProperty;
-
-    protected $protectedProperty;
-
-    public $publicProperty;
-
-    public function __construct($privateProperty = null, $protectedProperty = null, $publicProperty = null)
-    {
-        $this->privateProperty = $privateProperty;
-        $this->protectedProperty = $protectedProperty;
-        $this->publicProperty = $publicProperty;
+    public function __construct(
+        private mixed $privateProperty = null,
+        protected mixed $protectedProperty = null,
+        public mixed $publicProperty = null
+    ) {
     }
 
-    public function getProtectedProperty()
+    public function getProtectedProperty(): mixed
     {
         return $this->protectedProperty;
     }
 
-    public function getPublicProperty()
+    public function getPublicProperty(): mixed
     {
         return $this->publicProperty;
     }

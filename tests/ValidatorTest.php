@@ -11,38 +11,23 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Awurth\SlimValidation\Tests;
+namespace Awurth\Validator\Tests;
 
-use Awurth\SlimValidation\Validator;
+use Awurth\Validator\ValidationFailureCollectionFactory;
+use Awurth\Validator\ValidationFailureFactory;
+use Awurth\Validator\Validator;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Respect\Validation\Validator as V;
-use Slim\Http\Environment;
-use Slim\Http\Request;
 use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
 use Symfony\Component\OptionsResolver\Exception\MissingOptionsException;
 
 class ValidatorTest extends TestCase
 {
-    /**
-     * @var array
-     */
-    private $array;
-
-    /**
-     * @var TestObject
-     */
-    private $object;
-
-    /**
-     * @var Request
-     */
-    private $request;
-
-    /**
-     * @var Validator
-     */
-    private $validator;
+    private array $array;
+    private TestObject $object;
+    private Request $request;
+    private Validator $validator;
 
     protected function setUp(): void
     {
@@ -57,21 +42,21 @@ class ValidatorTest extends TestCase
 
         $this->object = new TestObject('private', 'protected', 'public');
 
-        $this->validator = new Validator();
+        $this->validator = new Validator(new ValidationFailureCollectionFactory(), new ValidationFailureFactory());
     }
 
     public function testValidateWithoutRules(): void
     {
         $this->expectException(MissingOptionsException::class);
 
-        $this->validator->validateRequest($this->request, ['username' => null]);
+        $this->validator->validate($this->request, ['username' => null]);
     }
 
     public function testValidateWithRulesWrongType(): void
     {
         $this->expectException(InvalidOptionsException::class);
 
-        $this->validator->validateRequest($this->request, [
+        $this->validator->validate($this->request, [
             'username' => [
                 'rules' => null,
             ],
@@ -80,14 +65,14 @@ class ValidatorTest extends TestCase
 
     public function testRequest(): void
     {
-        $errors = $this->validator->validateRequest($this->request, ['username' => V::length(6)]);
+        $errors = $this->validator->validate($this->request, ['username' => V::length(6)]);
 
         self::assertSame(0, $errors->count());
     }
 
     public function testArray(): void
     {
-        $errors = $this->validator->validateArray($this->array, [
+        $errors = $this->validator->validate($this->array, [
             'username' => V::notBlank(),
             'password' => V::notBlank(),
         ]);
@@ -97,7 +82,7 @@ class ValidatorTest extends TestCase
 
     public function testObject(): void
     {
-        $errors = $this->validator->validateObject($this->object, [
+        $errors = $this->validator->validate($this->object, [
             'privateProperty' => V::notBlank(),
             'protectedProperty' => V::notBlank(),
             'publicProperty' => V::notBlank(),
@@ -108,14 +93,14 @@ class ValidatorTest extends TestCase
 
     public function testValue(): void
     {
-        $errors = $this->validator->validate(2017, V::numericVal()->between(2010, 2020), 'year');
+        $errors = $this->validator->validate(2017, V::numericVal()->between(2010, 2020));
 
         self::assertSame(0, $errors->count());
     }
 
     public function testValidateWithErrors(): void
     {
-        $errors = $this->validator->validateRequest($this->request, [
+        $errors = $this->validator->validate($this->request, [
             'username' => V::length(8),
         ]);
 
@@ -132,7 +117,7 @@ class ValidatorTest extends TestCase
     public function testValidateWithCustomDefaultMessage(): void
     {
         $this->validator->setDefaultMessages(['length' => 'Too short!']);
-        $errors = $this->validator->validateRequest($this->request, [
+        $errors = $this->validator->validate($this->request, [
             'username' => V::length(8),
         ]);
 
@@ -142,7 +127,7 @@ class ValidatorTest extends TestCase
 
     public function testValidateWithCustomGlobalMessages(): void
     {
-        $errors = $this->validator->validateRequest($this->request, [
+        $errors = $this->validator->validate($this->request, [
             'username' => V::length(8),
             'password' => V::length(8),
         ], ['length' => 'Too short!']);
@@ -155,7 +140,7 @@ class ValidatorTest extends TestCase
     public function testValidateWithCustomDefaultAndGlobalMessages(): void
     {
         $this->validator->setDefaultMessage('length', 'Too short!');
-        $errors = $this->validator->validateRequest($this->request, [
+        $errors = $this->validator->validate($this->request, [
             'username' => V::length(8),
             'password' => V::length(8)->alpha(),
         ], ['alpha' => 'Only letters are allowed']);
@@ -169,7 +154,7 @@ class ValidatorTest extends TestCase
 
     public function testValidateWithCustomIndividualMessage(): void
     {
-        $errors = $this->validator->validateRequest($this->request, [
+        $errors = $this->validator->validate($this->request, [
             'username' => [
                 'rules' => V::length(8),
                 'messages' => [
@@ -191,7 +176,7 @@ class ValidatorTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('The option "message" with value 10 is expected to be of type "null" or "string", but is of type "int".');
 
-        $this->validator->validateRequest($this->request, [
+        $this->validator->validate($this->request, [
             'username' => [
                 'rules' => V::length(8)->alnum(),
                 'message' => 10,
@@ -201,7 +186,7 @@ class ValidatorTest extends TestCase
 
     public function testValidateWithCustomSingleMessage(): void
     {
-        $errors = $this->validator->validateRequest($this->request, [
+        $errors = $this->validator->validate($this->request, [
             'username' => [
                 'rules' => V::length(8)->alnum(),
                 'message' => 'Bad username.',
