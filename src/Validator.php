@@ -23,7 +23,7 @@ use Respect\Validation\Validatable;
  *
  * @author Alexis Wurth <awurth.dev@gmail.com>
  */
-final class Validator
+final class Validator implements ValidatorInterface
 {
     public function __construct(
         private readonly ValidationFailureCollectionFactoryInterface $validationFailureCollectionFactory,
