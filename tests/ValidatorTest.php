@@ -13,8 +13,6 @@ declare(strict_types=1);
 
 namespace Awurth\Validator\Tests;
 
-use Awurth\Validator\ValidationFailureCollectionFactory;
-use Awurth\Validator\ValidationFailureFactory;
 use Awurth\Validator\Validator;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
@@ -42,7 +40,7 @@ class ValidatorTest extends TestCase
 
         $this->object = new TestObject('private', 'protected', 'public');
 
-        $this->validator = new Validator(new ValidationFailureCollectionFactory(), new ValidationFailureFactory());
+        $this->validator = Validator::create();
     }
 
     public function testValidateWithoutRules(): void

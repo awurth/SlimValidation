@@ -26,33 +26,46 @@ use Respect\Validation\Validatable;
 final class Validator implements ValidatorInterface
 {
     public function __construct(
+        private readonly ValidationFactoryInterface $validationFactory,
         private readonly ValidationFailureCollectionFactoryInterface $validationFailureCollectionFactory,
         private readonly ValidationFailureFactoryInterface $validationFailureFactory
     ) {
     }
 
+    public static function create(
+        ?ValidationFactoryInterface $validationFactory = null,
+        ?ValidationFailureCollectionFactoryInterface $validationFailureCollectionFactory = null,
+        ?ValidationFailureFactoryInterface $validationFailureFactory = null
+    ): self {
+        return new self(
+            $validationFactory ?? new ValidationFactory(),
+            $validationFailureCollectionFactory ?? new ValidationFailureCollectionFactory(),
+            $validationFailureFactory ?? new ValidationFailureFactory()
+        );
+    }
+
     public function validate(mixed $subject, Validatable|array $rules, array $messages = []): ValidationFailureCollectionInterface
     {
         if ($rules instanceof Validatable) {
-            return $this->assert($subject, Validation::create(['rules' => $rules]), $messages);
+            return $this->assert($subject, $this->validationFactory->create(['rules' => $rules]), $messages);
         }
 
         if (!$subject instanceof Request && !\is_object($subject) && !\is_array($subject)) {
-            return $this->assert($subject, Validation::create($rules), $messages);
+            return $this->assert($subject, $this->validationFactory->create($rules), $messages);
         }
 
         $failures = $this->validationFailureCollectionFactory->create();
         foreach ($rules as $property => $options) {
             $value = $this->getValue($subject, $property);
             $failures->addAll(
-                $this->assert($value, Validation::create($options, $property), $messages)
+                $this->assert($value, $this->validationFactory->create($options, $property), $messages)
             );
         }
 
         return $failures;
     }
 
-    private function assert(mixed $subject, Validation $validation, array $messages = []): ValidationFailureCollectionInterface
+    private function assert(mixed $subject, ValidationInterface $validation, array $messages = []): ValidationFailureCollectionInterface
     {
         $failures = $this->validationFailureCollectionFactory->create();
 
@@ -78,7 +91,7 @@ final class Validator implements ValidatorInterface
         return $failures;
     }
 
-    private function extractMessagesFromException(NestedValidationException $exception, Validation $validation, array $messages = []): array
+    private function extractMessagesFromException(NestedValidationException $exception, ValidationInterface $validation, array $messages = []): array
     {
         $definedMessages = \array_replace(/* $this->defaultMessages, */ $messages, $validation->getMessages());
 
