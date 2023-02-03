@@ -15,7 +15,9 @@ namespace Awurth\Validator\Tests;
 
 use Awurth\Validator\Validator;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\ServerRequestInterface;
 use Respect\Validation\Validator as V;
+use Slim\Psr7\Factory\ServerRequestFactory;
 use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
 use Symfony\Component\OptionsResolver\Exception\MissingOptionsException;
 
@@ -23,14 +25,12 @@ class ValidatorTest extends TestCase
 {
     private array $array;
     private TestObject $object;
-    private Request $request;
+    private ServerRequestInterface $request;
     private Validator $validator;
 
     protected function setUp(): void
     {
-        $this->request = Request::createFromEnvironment(Environment::mock([
-            'QUERY_STRING' => 'username=a_wurth&password=1234',
-        ]));
+        $this->request = (new ServerRequestFactory())->createServerRequest('POST', 'http://localhost?username=a_wurth&password=1234');
 
         $this->array = [
             'username' => 'a_wurth',
@@ -162,9 +162,9 @@ class ValidatorTest extends TestCase
         ]);
 
         self::assertSame(2, $errors->count());
-        self::assertSame('username', $errors->get(0)->getPath());
+        self::assertSame('username', $errors->get(0)->getProperty());
         self::assertSame('Too short!', $errors->get(0)->getMessage());
-        self::assertSame('password', $errors->get(1)->getPath());
+        self::assertSame('password', $errors->get(1)->getProperty());
         self::assertSame('"1234" must have a length greater than or equal to 8', $errors->get(1)->getMessage());
     }
 
