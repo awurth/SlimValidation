@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Awurth\Validator;
 
+use Awurth\Validator\Exception\InvalidPropertyOptionsException;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Validatable;
@@ -55,10 +56,16 @@ final class Validator implements ValidatorInterface
 
         $failures = $this->validationFailureCollectionFactory->create();
         foreach ($rules as $property => $options) {
+            if ($options instanceof Validatable) {
+                $options = ['rules' => $options];
+            } elseif (!\is_array($options)) {
+                throw new InvalidPropertyOptionsException(\sprintf('Expected an array or an instance of "%s", "%s" given', Validatable::class, \get_debug_type($options)));
+            }
+
             $value = $this->getValue($subject, $property);
-            $failures->addAll(
-                $this->assert($value, $this->validationFactory->create($options, $property), $messages)
-            );
+            $validation = $this->validationFactory->create($options, $property);
+
+            $failures->addAll($this->assert($value, $validation, $messages));
         }
 
         return $failures;

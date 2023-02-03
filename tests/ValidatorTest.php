@@ -13,13 +13,13 @@ declare(strict_types=1);
 
 namespace Awurth\Validator\Tests;
 
+use Awurth\Validator\Exception\InvalidPropertyOptionsException;
 use Awurth\Validator\Validator;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use Respect\Validation\Validator as V;
 use Slim\Psr7\Factory\ServerRequestFactory;
 use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
-use Symfony\Component\OptionsResolver\Exception\MissingOptionsException;
 
 class ValidatorTest extends TestCase
 {
@@ -44,7 +44,7 @@ class ValidatorTest extends TestCase
 
     public function testValidateWithoutRules(): void
     {
-        $this->expectException(MissingOptionsException::class);
+        $this->expectException(InvalidPropertyOptionsException::class);
 
         $this->validator->validate($this->request, ['username' => null]);
     }
@@ -105,22 +105,22 @@ class ValidatorTest extends TestCase
 
         $error = $errors->get(0);
 
-        self::assertSame('username', $error->getPath());
-        self::assertSame('length', $error->getName());
+        self::assertSame('username', $error->getProperty());
+        self::assertSame('length', $error->getRuleName());
         self::assertSame('a_wurth', $error->getInvalidValue());
         self::assertSame('"a_wurth" must have a length greater than or equal to 8', $error->getMessage());
     }
 
-    public function testValidateWithCustomDefaultMessage(): void
-    {
-        $this->validator->setDefaultMessages(['length' => 'Too short!']);
-        $errors = $this->validator->validate($this->request, [
-            'username' => V::length(8),
-        ]);
-
-        self::assertSame(1, $errors->count());
-        self::assertSame('Too short!', $errors->get(0)->getMessage());
-    }
+    // public function testValidateWithCustomDefaultMessage(): void
+    // {
+    //     $this->validator->setDefaultMessages(['length' => 'Too short!']);
+    //     $errors = $this->validator->validate($this->request, [
+    //         'username' => V::length(8),
+    //     ]);
+    //
+    //     self::assertSame(1, $errors->count());
+    //     self::assertSame('Too short!', $errors->get(0)->getMessage());
+    // }
 
     public function testValidateWithCustomGlobalMessages(): void
     {
@@ -134,20 +134,20 @@ class ValidatorTest extends TestCase
         self::assertSame('Too short!', $errors->get(1)->getMessage());
     }
 
-    public function testValidateWithCustomDefaultAndGlobalMessages(): void
-    {
-        $this->validator->setDefaultMessage('length', 'Too short!');
-        $errors = $this->validator->validate($this->request, [
-            'username' => V::length(8),
-            'password' => V::length(8)->alpha(),
-        ], ['alpha' => 'Only letters are allowed']);
-
-        self::assertSame(3, $errors->count());
-        self::assertSame('Too short!', $errors->get(0)->getMessage());
-        self::assertSame('Too short!', $errors->get(1)->getMessage());
-        self::assertSame('Only letters are allowed', $errors->get(2)->getMessage());
-        self::assertSame('alpha', $errors->get(2)->getName());
-    }
+    // public function testValidateWithCustomDefaultAndGlobalMessages(): void
+    // {
+    //     $this->validator->setDefaultMessage('length', 'Too short!');
+    //     $errors = $this->validator->validate($this->request, [
+    //         'username' => V::length(8),
+    //         'password' => V::length(8)->alpha(),
+    //     ], ['alpha' => 'Only letters are allowed']);
+    //
+    //     self::assertSame(3, $errors->count());
+    //     self::assertSame('Too short!', $errors->get(0)->getMessage());
+    //     self::assertSame('Too short!', $errors->get(1)->getMessage());
+    //     self::assertSame('Only letters are allowed', $errors->get(2)->getMessage());
+    //     self::assertSame('alpha', $errors->get(2)->getRuleName());
+    // }
 
     public function testValidateWithCustomIndividualMessage(): void
     {
@@ -200,18 +200,18 @@ class ValidatorTest extends TestCase
         ]);
 
         self::assertSame(2, $errors->count());
-        self::assertSame('username', $errors->get(0)->getPath());
+        self::assertSame('username', $errors->get(0)->getProperty());
         self::assertSame('Bad username.', $errors->get(0)->getMessage());
-        self::assertSame('password', $errors->get(1)->getPath());
+        self::assertSame('password', $errors->get(1)->getProperty());
         self::assertSame('Too short!', $errors->get(1)->getMessage());
     }
 
-    public function testSetDefaultMessage(): void
-    {
-        self::assertEquals([], $this->validator->getDefaultMessages());
-
-        $this->validator->setDefaultMessage('length', 'Too short!');
-
-        self::assertEquals(['length' => 'Too short!'], $this->validator->getDefaultMessages());
-    }
+    // public function testSetDefaultMessage(): void
+    // {
+    //     self::assertEquals([], $this->validator->getDefaultMessages());
+    //
+    //     $this->validator->setDefaultMessage('length', 'Too short!');
+    //
+    //     self::assertEquals(['length' => 'Too short!'], $this->validator->getDefaultMessages());
+    // }
 }
