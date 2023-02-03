@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Awurth\Validator\Tests;
 
 use Awurth\Validator\Validator;
-use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Respect\Validation\Validator as V;
 use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
@@ -171,7 +170,7 @@ class ValidatorTest extends TestCase
 
     public function testValidateWithWrongCustomSingleMessageType(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('The option "message" with value 10 is expected to be of type "null" or "string", but is of type "int".');
 
         $this->validator->validate($this->request, [

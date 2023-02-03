@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Awurth\Validator;
 
-use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Validatable;
@@ -121,6 +120,6 @@ final class Validator implements ValidatorInterface
             return ObjectPropertyAccessor::getValue($subject, $property, $default);
         }
 
-        throw new InvalidArgumentException(\sprintf('The subject must be of type "array", "object" or "%s", "%s" given', Request::class, \get_class($subject)));
+        throw new \InvalidArgumentException(\sprintf('The subject must be of type "array", "object" or "%s", "%s" given', Request::class, \get_class($subject)));
     }
 }
