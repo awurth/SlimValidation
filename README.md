@@ -12,6 +12,15 @@ A validator for PHP, using [Respect Validation](https://github.com/Respect/Valid
   request parameters validation.
 
 ## Installation
+
 ``` bash
 $ composer require awurth/slim-validation
 ```
+
+## Documentation
+
+* [**3.4**](https://github.com/awurth/SlimValidation/blob/master/docs)
+
+## License
+
+This package is available under the [MIT license](LICENSE).
