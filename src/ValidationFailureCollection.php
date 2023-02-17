@@ -25,6 +25,9 @@ final class ValidationFailureCollection implements ValidationFailureCollectionIn
      */
     private array $failures = [];
 
+    /**
+     * @param ValidationFailureInterface[] $failures
+     */
     public function __construct(iterable $failures = [])
     {
         $this->addAll($failures);

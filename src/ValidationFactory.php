@@ -34,7 +34,7 @@ final class ValidationFactory implements ValidationFactoryInterface
             $property,
             $options['default'] ?? $default,
             $options['message'],
-            $options['messages']
+            $options['messages'],
         );
     }
 

@@ -53,9 +53,6 @@ final class Validator implements ValidatorInterface
         );
     }
 
-    /**
-     * @param array<string, string> $messages
-     */
     public function validate(mixed $subject, Validatable|array $rules, array $messages = []): ValidationFailureCollectionInterface
     {
         if ($rules instanceof Validatable) {
