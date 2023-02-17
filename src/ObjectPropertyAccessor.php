@@ -29,7 +29,8 @@ final class ObjectPropertyAccessor
     {
         return self::getPropertyAccessor()->isReadable($object, $property)
             ? self::getPropertyAccessor()->getValue($object, $property)
-            : $default;
+            : $default
+        ;
     }
 
     private static function getPropertyAccessor(): PropertyAccessor

@@ -24,7 +24,7 @@ final class ValidationFailureFactory implements ValidationFailureFactoryInterfac
         string $message,
         mixed $invalidValue,
         ?string $property = null,
-        ?string $ruleName = null
+        ?string $ruleName = null,
     ): ValidationFailureInterface {
         return new ValidationFailure($message, $invalidValue, $property, $ruleName);
     }

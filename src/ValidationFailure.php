@@ -24,7 +24,7 @@ final class ValidationFailure implements ValidationFailureInterface
         private readonly string $message,
         private readonly mixed $invalidValue,
         private readonly ?string $property = null,
-        private readonly ?string $ruleName = null
+        private readonly ?string $ruleName = null,
     ) {
     }
 

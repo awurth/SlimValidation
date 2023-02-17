@@ -27,7 +27,7 @@ final class Validation implements ValidationInterface
         private readonly ?string $property = null,
         private readonly mixed $default = null,
         private readonly ?string $message = null,
-        private readonly array $messages = []
+        private readonly array $messages = [],
     ) {
     }
 
