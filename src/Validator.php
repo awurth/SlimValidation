@@ -133,7 +133,7 @@ final class Validator implements ValidatorInterface
     private function getValue(mixed $subject, string $property, mixed $default = null): mixed
     {
         if (\is_array($subject)) {
-            return $subject[$property] ?? $default;
+            return \array_key_exists($property, $subject) ? $subject[$property] : $default;
         }
 
         if ($subject instanceof Request) {

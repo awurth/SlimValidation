@@ -44,15 +44,15 @@ final class RequestParameterAccessor
         }
 
         $result = $default;
-        if (\is_array($postParams) && isset($postParams[$key])) {
+        if (\is_array($postParams) && \array_key_exists($key, $postParams)) {
             $result = $postParams[$key];
         } elseif (\is_object($postParams) && \property_exists($postParams, $key)) {
             $result = $postParams->$key;
-        } elseif (isset($getParams[$key])) {
+        } elseif (\array_key_exists($key, $getParams)) {
             $result = $getParams[$key];
-        } elseif (isset($routeParams[$key])) {
+        } elseif (\array_key_exists($key, $routeParams)) {
             $result = $routeParams[$key];
-        } elseif (isset($_FILES[$key])) {
+        } elseif (\array_key_exists($key, $_FILES)) {
             $result = $_FILES[$key];
         }
 
