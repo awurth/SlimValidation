@@ -74,8 +74,8 @@ final class Validator implements ValidatorInterface
                 throw new InvalidPropertyOptionsException(\sprintf('Expected an array or an instance of "%s", "%s" given', Validatable::class, \get_debug_type($options)));
             }
 
-            $value = $this->getValue($subject, $property);
             $validation = $this->validationFactory->create($options, $property);
+            $value = $this->getValue($subject, $property, $validation->getDefault());
 
             $failures->addAll($this->assert($value, $validation, $messages));
         }
