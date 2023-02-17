@@ -90,7 +90,7 @@ final class ValidationFailureCollection implements ValidationFailureCollectionIn
         return $this->has($offset);
     }
 
-    public function offsetGet(mixed $offset): mixed
+    public function offsetGet(mixed $offset): ValidationFailureInterface
     {
         return $this->get($offset);
     }
