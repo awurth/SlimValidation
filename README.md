@@ -19,7 +19,7 @@ $ composer require awurth/slim-validation
 
 ## Documentation
 
-* [**3.4**](https://github.com/awurth/SlimValidation/blob/master/docs)
+* [**3.4**](https://github.com/awurth/SlimValidation/tree/master/docs)
 
 ## License
 
