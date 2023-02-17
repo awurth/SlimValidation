@@ -43,6 +43,7 @@ final class ValidationFactory implements ValidationFactoryInterface
         if (null === self::$optionsResolver) {
             self::$optionsResolver = (new OptionsResolver())
                 ->setDefaults([
+                    'default' => null,
                     'message' => null,
                     'messages' => [],
                 ])
