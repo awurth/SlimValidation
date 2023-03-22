@@ -1,8 +1,11 @@
 # Slim Validation
 
+[![CI](https://github.com/awurth/SlimValidation/actions/workflows/ci.yml/badge.svg)](https://github.com/awurth/SlimValidation/actions/workflows/ci.yml)
 [![Latest Stable Version](https://poser.pugx.org/awurth/slim-validation/v/stable)](https://packagist.org/packages/awurth/slim-validation)
-[![Total Downloads](https://poser.pugx.org/awurth/slim-validation/downloads)](https://packagist.org/packages/awurth/slim-validation)
 [![License](https://poser.pugx.org/awurth/slim-validation/license)](https://packagist.org/packages/awurth/slim-validation)
+
+[![Total Downloads](https://poser.pugx.org/awurth/slim-validation/downloads)](https://packagist.org/packages/awurth/slim-validation)
+[![Monthly Downloads](http://poser.pugx.org/awurth/slim-validation/d/monthly)](https://packagist.org/packages/awurth/slim-validation)
 
 A validator for PHP, using [Respect Validation](https://github.com/Respect/Validation) (**Requires PHP 8.1+**)
 
