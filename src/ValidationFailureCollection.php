@@ -35,13 +35,20 @@ final class ValidationFailureCollection implements ValidationFailureCollectionIn
 
     public function filter(callable $callback): self
     {
-        return new self(\array_filter($this->failures, $callback));
+        $failures = new self();
+        foreach ($this->failures as $index => $failure) {
+            if ($callback($failure, $index)) {
+                $failures->add($failure);
+            }
+        }
+
+        return $failures;
     }
 
     public function find(callable $callback): ?ValidationFailureInterface
     {
-        foreach ($this->failures as $failure) {
-            if ($callback($failure)) {
+        foreach ($this->failures as $index => $failure) {
+            if ($callback($failure, $index)) {
                 return $failure;
             }
         }
