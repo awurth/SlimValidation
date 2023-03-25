@@ -37,10 +37,12 @@ final class LegacyValidatorExtension extends AbstractExtension
      */
     public function __construct(private readonly StatefulValidatorInterface $validator, array $functionNames = [])
     {
-        $this->functionNames['error'] = $functionNames['error'] ?? 'error';
-        $this->functionNames['errors'] = $functionNames['errors'] ?? 'errors';
-        $this->functionNames['has_error'] = $functionNames['has_error'] ?? 'has_error';
-        $this->functionNames['has_errors'] = $functionNames['has_errors'] ?? 'has_errors';
+        $this->functionNames = [
+            'error' => $functionNames['error'] ?? 'error',
+            'errors' => $functionNames['errors'] ?? 'errors',
+            'has_error' => $functionNames['has_error'] ?? 'has_error',
+            'has_errors' => $functionNames['has_errors'] ?? 'has_errors',
+        ];
     }
 
     public function getFunctions(): array

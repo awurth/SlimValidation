@@ -31,16 +31,18 @@ final class ValidatorExtension extends AbstractExtension
      *
      * @var string[]
      */
-    protected array $functionNames;
+    private array $functionNames;
 
     /**
      * @param string[] $functionNames An array of names for Twig functions
      */
     public function __construct(private readonly StatefulValidatorInterface $validator, array $functionNames = [])
     {
-        $this->functionNames['error'] = $functionNames['error'] ?? 'error';
-        $this->functionNames['errors'] = $functionNames['errors'] ?? 'errors';
-        $this->functionNames['has_errors'] = $functionNames['has_errors'] ?? 'has_errors';
+        $this->functionNames = [
+            'error' => $functionNames['error'] ?? 'error',
+            'errors' => $functionNames['errors'] ?? 'errors',
+            'has_errors' => $functionNames['has_errors'] ?? 'has_errors',
+        ];
     }
 
     public function getFunctions(): array
