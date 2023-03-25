@@ -58,7 +58,7 @@ final class LegacyValidatorExtension extends AbstractExtension
     public function getError(string $key, int $index = 0): ?string
     {
         $failures = $this->validator->getFailures()->filter(static fn (ValidationFailureInterface $failure): bool => $failure->getProperty() === $key);
-        $failure = $failures->has($index) ? $failures->get(0) : null;
+        $failure = $failures->has($index) ? $failures->get($index) : null;
 
         return $failure?->getMessage();
     }
