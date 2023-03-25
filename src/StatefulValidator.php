@@ -15,7 +15,7 @@ namespace Awurth\Validator;
 
 use Respect\Validation\Validatable;
 
-final class StatefulValidator implements ValidatorInterface
+final class StatefulValidator implements StatefulValidatorInterface
 {
     private ValidationFailureCollectionInterface $failures;
 
