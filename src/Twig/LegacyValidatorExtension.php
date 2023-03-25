@@ -68,22 +68,22 @@ final class LegacyValidatorExtension extends AbstractExtension
     {
         $failures = null === $key
             ? $this->validator->getFailures()
-            : $this->validator->getFailures()->filter(static fn(ValidationFailureInterface $failure) => $failure->getProperty() === $key)
+            : $this->validator->getFailures()->filter(static fn (ValidationFailureInterface $failure) => $failure->getProperty() === $key)
         ;
 
         return \array_map(
-            static fn(ValidationFailureInterface $failure) => $failure->getMessage(),
+            static fn (ValidationFailureInterface $failure) => $failure->getMessage(),
             (array)$failures,
         );
     }
 
     public function hasError(string $key): bool
     {
-        return $this->validator->getFailures()->find(static fn(ValidationFailureInterface $failure) => $failure->getProperty() === $key) !== null;
+        return null !== $this->validator->getFailures()->find(static fn (ValidationFailureInterface $failure) => $failure->getProperty() === $key);
     }
 
     public function hasErrors(): bool
     {
-        return $this->validator->getFailures()->count() !== 0;
+        return 0 !== $this->validator->getFailures()->count();
     }
 }

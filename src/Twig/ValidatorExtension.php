@@ -72,6 +72,6 @@ final class ValidatorExtension extends AbstractExtension
 
     public function hasErrors(): bool
     {
-        return $this->validator->getFailures()->count() !== 0;
+        return 0 !== $this->validator->getFailures()->count();
     }
 }
