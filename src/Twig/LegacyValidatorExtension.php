@@ -75,7 +75,7 @@ final class LegacyValidatorExtension extends AbstractExtension
 
         return \array_map(
             static fn (ValidationFailureInterface $failure) => $failure->getMessage(),
-            (array)$failures,
+            \iterator_to_array($failures),
         );
     }
 
