@@ -48,10 +48,10 @@ final class LegacyValidatorExtension extends AbstractExtension
     public function getFunctions(): array
     {
         return [
-            new TwigFunction($this->functionNames['error'], [$this, 'getError']),
-            new TwigFunction($this->functionNames['errors'], [$this, 'getErrors']),
-            new TwigFunction($this->functionNames['has_error'], [$this, 'hasError']),
-            new TwigFunction($this->functionNames['has_errors'], [$this, 'hasErrors']),
+            new TwigFunction($this->functionNames['error'], $this->getError(...)),
+            new TwigFunction($this->functionNames['errors'], $this->getErrors(...)),
+            new TwigFunction($this->functionNames['has_error'], $this->hasError(...)),
+            new TwigFunction($this->functionNames['has_errors'], $this->hasErrors(...)),
         ];
     }
 

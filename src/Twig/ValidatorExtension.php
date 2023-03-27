@@ -48,9 +48,9 @@ final class ValidatorExtension extends AbstractExtension
     public function getFunctions(): array
     {
         return [
-            new TwigFunction($this->functionNames['error'], [$this, 'findFirst']),
-            new TwigFunction($this->functionNames['errors'], [$this, 'findErrors']),
-            new TwigFunction($this->functionNames['has_errors'], [$this, 'hasErrors']),
+            new TwigFunction($this->functionNames['error'], $this->findFirst(...)),
+            new TwigFunction($this->functionNames['errors'], $this->findErrors(...)),
+            new TwigFunction($this->functionNames['has_errors'], $this->hasErrors(...)),
         ];
     }
 
