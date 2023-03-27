@@ -13,6 +13,9 @@ declare(strict_types=1);
 
 namespace Awurth\Validator\Tests\Twig;
 
+use Awurth\Validator\Failure\ValidationFailure;
+use Awurth\Validator\Failure\ValidationFailureCollection;
+use Awurth\Validator\Failure\ValidationFailureCollectionInterface;
 use Awurth\Validator\StatefulValidator;
 use Awurth\Validator\Tests\NoopDataCollectorAsserter;
 use Awurth\Validator\Twig\LegacyValidatorExtension;
@@ -20,9 +23,6 @@ use Awurth\Validator\ValidatedValue;
 use Awurth\Validator\ValidatedValueCollection;
 use Awurth\Validator\ValidatedValueCollectionInterface;
 use Awurth\Validator\Validation;
-use Awurth\Validator\ValidationFailure;
-use Awurth\Validator\ValidationFailureCollection;
-use Awurth\Validator\ValidationFailureCollectionInterface;
 use PHPUnit\Framework\TestCase;
 use Respect\Validation\Validator;
 

@@ -11,7 +11,7 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Awurth\Validator;
+namespace Awurth\Validator\Failure;
 
 /**
  * Handles the creation of a validation failure.

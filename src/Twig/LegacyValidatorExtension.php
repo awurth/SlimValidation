@@ -14,8 +14,8 @@ declare(strict_types=1);
 namespace Awurth\Validator\Twig;
 
 use Awurth\Validator\Assertion\DataCollectorAsserterInterface;
+use Awurth\Validator\Failure\ValidationFailureInterface;
 use Awurth\Validator\StatefulValidatorInterface;
-use Awurth\Validator\ValidationFailureInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 

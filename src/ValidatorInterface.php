@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Awurth\Validator;
 
+use Awurth\Validator\Failure\ValidationFailureCollectionInterface;
 use Respect\Validation\Validatable;
 
 interface ValidatorInterface

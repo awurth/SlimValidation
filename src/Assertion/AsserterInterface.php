@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Awurth\Validator\Assertion;
 
-use Awurth\Validator\ValidationFailureCollectionInterface;
+use Awurth\Validator\Failure\ValidationFailureCollectionInterface;
 use Awurth\Validator\ValidationInterface;
 
 interface AsserterInterface

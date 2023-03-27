@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Awurth\Validator;
 
+use Awurth\Validator\Failure\ValidationFailureCollectionInterface;
+
 interface StatefulValidatorInterface extends ValidatorInterface
 {
     public function getFailures(): ValidationFailureCollectionInterface;

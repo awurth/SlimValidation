@@ -13,10 +13,10 @@ declare(strict_types=1);
 
 namespace Awurth\Validator\Assertion;
 
+use Awurth\Validator\Failure\ValidationFailureCollectionInterface;
 use Awurth\Validator\ValidatedValue;
 use Awurth\Validator\ValidatedValueCollection;
 use Awurth\Validator\ValidatedValueCollectionInterface;
-use Awurth\Validator\ValidationFailureCollectionInterface;
 use Awurth\Validator\ValidationInterface;
 
 final class DataCollectorAsserter implements DataCollectorAsserterInterface

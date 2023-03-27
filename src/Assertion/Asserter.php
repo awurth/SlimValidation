@@ -13,11 +13,11 @@ declare(strict_types=1);
 
 namespace Awurth\Validator\Assertion;
 
-use Awurth\Validator\ValidationFailureCollectionFactory;
-use Awurth\Validator\ValidationFailureCollectionFactoryInterface;
-use Awurth\Validator\ValidationFailureCollectionInterface;
-use Awurth\Validator\ValidationFailureFactory;
-use Awurth\Validator\ValidationFailureFactoryInterface;
+use Awurth\Validator\Failure\ValidationFailureCollectionFactory;
+use Awurth\Validator\Failure\ValidationFailureCollectionFactoryInterface;
+use Awurth\Validator\Failure\ValidationFailureCollectionInterface;
+use Awurth\Validator\Failure\ValidationFailureFactory;
+use Awurth\Validator\Failure\ValidationFailureFactoryInterface;
 use Awurth\Validator\ValidationInterface;
 use Respect\Validation\Exceptions\NestedValidationException;
 

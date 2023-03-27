@@ -14,6 +14,9 @@ declare(strict_types=1);
 namespace Awurth\Validator;
 
 use Awurth\Validator\Assertion\AsserterInterface;
+use Awurth\Validator\Failure\ValidationFailureCollectionFactory;
+use Awurth\Validator\Failure\ValidationFailureCollectionFactoryInterface;
+use Awurth\Validator\Failure\ValidationFailureCollectionInterface;
 use Respect\Validation\Validatable;
 
 final class StatefulValidator implements StatefulValidatorInterface
