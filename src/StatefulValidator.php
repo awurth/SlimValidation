@@ -26,13 +26,11 @@ final class StatefulValidator implements StatefulValidatorInterface
         $this->failures = $this->validationFailureCollectionFactory->create();
     }
 
-    public static function create(
-        ?ValidationFailureCollectionFactoryInterface $validationFailureCollectionFactory = null,
-        ?ValidatorInterface $validator = null,
-    ): self {
+    public static function create(?AsserterInterface $asserter = null): self
+    {
         return new self(
-            $validationFailureCollectionFactory ?? new ValidationFailureCollectionFactory(),
-            $validator ?? Validator::create(),
+            new ValidationFailureCollectionFactory(),
+            Validator::create($asserter),
         );
     }
 
