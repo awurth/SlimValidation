@@ -13,7 +13,13 @@ declare(strict_types=1);
 
 namespace Awurth\Validator;
 
+use Awurth\Validator\Assertion\Asserter;
+use Awurth\Validator\Assertion\AsserterInterface;
 use Awurth\Validator\Exception\InvalidPropertyOptionsException;
+use Awurth\Validator\Failure\ValidationFailureCollectionFactory;
+use Awurth\Validator\Failure\ValidationFailureCollectionFactoryInterface;
+use Awurth\Validator\Failure\ValidationFailureCollectionInterface;
+use Awurth\Validator\Failure\ValidationFailureFactory;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Respect\Validation\Validatable;
 

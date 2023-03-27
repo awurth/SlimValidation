@@ -11,7 +11,13 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Awurth\Validator;
+namespace Awurth\Validator\Assertion;
+
+use Awurth\Validator\Failure\ValidationFailureCollectionInterface;
+use Awurth\Validator\ValidatedValue;
+use Awurth\Validator\ValidatedValueCollection;
+use Awurth\Validator\ValidatedValueCollectionInterface;
+use Awurth\Validator\ValidationInterface;
 
 final class DataCollectorAsserter implements DataCollectorAsserterInterface
 {

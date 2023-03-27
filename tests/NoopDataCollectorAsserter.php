@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Awurth\Validator\Tests;
 
-use Awurth\Validator\DataCollectorAsserterInterface;
+use Awurth\Validator\Assertion\DataCollectorAsserterInterface;
+use Awurth\Validator\Failure\ValidationFailureCollection;
+use Awurth\Validator\Failure\ValidationFailureCollectionInterface;
 use Awurth\Validator\ValidatedValue;
 use Awurth\Validator\ValidatedValueCollection;
 use Awurth\Validator\ValidatedValueCollectionInterface;
-use Awurth\Validator\ValidationFailureCollection;
-use Awurth\Validator\ValidationFailureCollectionInterface;
 use Awurth\Validator\ValidationInterface;
 
 final class NoopDataCollectorAsserter implements DataCollectorAsserterInterface
