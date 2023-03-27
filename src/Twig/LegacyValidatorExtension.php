@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Awurth\Validator\Twig;
 
+use Awurth\Validator\DataCollectorAsserterInterface;
 use Awurth\Validator\StatefulValidatorInterface;
 use Awurth\Validator\ValidationFailureInterface;
 use Twig\Extension\AbstractExtension;
@@ -35,24 +36,37 @@ final class LegacyValidatorExtension extends AbstractExtension
     /**
      * @param string[] $functionNames An array of names for Twig functions
      */
-    public function __construct(private readonly StatefulValidatorInterface $validator, array $functionNames = [])
-    {
+    public function __construct(
+        private readonly StatefulValidatorInterface $validator,
+        private readonly ?DataCollectorAsserterInterface $asserter = null,
+        array $functionNames = [],
+    ) {
         $this->functionNames = [
             'error' => $functionNames['error'] ?? 'error',
             'errors' => $functionNames['errors'] ?? 'errors',
             'has_error' => $functionNames['has_error'] ?? 'has_error',
             'has_errors' => $functionNames['has_errors'] ?? 'has_errors',
         ];
+
+        if (null !== $asserter) {
+            $this->functionNames['val'] = $functionNames['val'] ?? 'val';
+        }
     }
 
     public function getFunctions(): array
     {
-        return [
+        $functions = [
             new TwigFunction($this->functionNames['error'], $this->getError(...)),
             new TwigFunction($this->functionNames['errors'], $this->getErrors(...)),
             new TwigFunction($this->functionNames['has_error'], $this->hasError(...)),
             new TwigFunction($this->functionNames['has_errors'], $this->hasErrors(...)),
         ];
+
+        if (null !== $this->asserter) {
+            $functions[] = new TwigFunction($this->functionNames['val'], $this->getValue(...));
+        }
+
+        return $functions;
     }
 
     public function getError(string $key, int $index = 0): ?string
@@ -77,6 +91,17 @@ final class LegacyValidatorExtension extends AbstractExtension
             static fn (ValidationFailureInterface $failure) => $failure->getMessage(),
             \iterator_to_array($failures),
         );
+    }
+
+    public function getValue(string $key): mixed
+    {
+        foreach ($this->asserter->getData() as $validatedValue) {
+            if ($validatedValue->getValidation()->getProperty() === $key) {
+                return $validatedValue->getValue();
+            }
+        }
+
+        return null;
     }
 
     public function hasError(string $key): bool

@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Awurth\Validator\Twig;
 
+use Awurth\Validator\DataCollectorAsserterInterface;
 use Awurth\Validator\StatefulValidatorInterface;
 use Awurth\Validator\ValidationFailureCollectionInterface;
 use Awurth\Validator\ValidationFailureInterface;
@@ -36,22 +37,35 @@ final class ValidatorExtension extends AbstractExtension
     /**
      * @param string[] $functionNames An array of names for Twig functions
      */
-    public function __construct(private readonly StatefulValidatorInterface $validator, array $functionNames = [])
-    {
+    public function __construct(
+        private readonly StatefulValidatorInterface $validator,
+        private readonly ?DataCollectorAsserterInterface $asserter = null,
+        array $functionNames = [],
+    ) {
         $this->functionNames = [
             'error' => $functionNames['error'] ?? 'error',
             'errors' => $functionNames['errors'] ?? 'errors',
             'has_errors' => $functionNames['has_errors'] ?? 'has_errors',
         ];
+
+        if (null !== $asserter) {
+            $this->functionNames['val'] = $functionNames['val'] ?? 'val';
+        }
     }
 
     public function getFunctions(): array
     {
-        return [
+        $functions = [
             new TwigFunction($this->functionNames['error'], $this->findFirst(...)),
             new TwigFunction($this->functionNames['errors'], $this->findErrors(...)),
             new TwigFunction($this->functionNames['has_errors'], $this->hasErrors(...)),
         ];
+
+        if (null !== $this->asserter) {
+            $functions[] = new TwigFunction($this->functionNames['val'], $this->findValue(...));
+        }
+
+        return $functions;
     }
 
     public function findFirst(?callable $callback = null): ?ValidationFailureInterface
@@ -75,5 +89,16 @@ final class ValidatorExtension extends AbstractExtension
     public function hasErrors(): bool
     {
         return 0 !== $this->validator->getFailures()->count();
+    }
+
+    public function findValue(callable $callback): mixed
+    {
+        foreach ($this->asserter->getData() as $index => $validatedValue) {
+            if ($callback($validatedValue, $index)) {
+                return $validatedValue->getValue();
+            }
+        }
+
+        return null;
     }
 }

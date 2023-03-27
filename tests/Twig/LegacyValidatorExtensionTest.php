@@ -14,11 +14,17 @@ declare(strict_types=1);
 namespace Awurth\Validator\Tests\Twig;
 
 use Awurth\Validator\StatefulValidator;
+use Awurth\Validator\Tests\NoopDataCollectorAsserter;
 use Awurth\Validator\Twig\LegacyValidatorExtension;
+use Awurth\Validator\ValidatedValue;
+use Awurth\Validator\ValidatedValueCollection;
+use Awurth\Validator\ValidatedValueCollectionInterface;
+use Awurth\Validator\Validation;
 use Awurth\Validator\ValidationFailure;
 use Awurth\Validator\ValidationFailureCollection;
 use Awurth\Validator\ValidationFailureCollectionInterface;
 use PHPUnit\Framework\TestCase;
+use Respect\Validation\Validator;
 
 class LegacyValidatorExtensionTest extends TestCase
 {
@@ -60,6 +66,16 @@ class LegacyValidatorExtensionTest extends TestCase
         self::assertSame(['third', 'fourth'], $extension->getErrors('third'));
     }
 
+    public function testGetValue(): void
+    {
+        $extension = self::createExtension(data: new ValidatedValueCollection([
+            new ValidatedValue(new Validation(Validator::alwaysInvalid(), 'property'), 'invalid string'),
+        ]));
+
+        self::assertSame('invalid string', $extension->getValue('property'));
+        self::assertNull($extension->getValue('prop'));
+    }
+
     public function testHasError(): void
     {
         $extension = self::createExtension(new ValidationFailureCollection([
@@ -83,11 +99,14 @@ class LegacyValidatorExtensionTest extends TestCase
         self::assertTrue($extension->hasErrors());
     }
 
-    private static function createExtension(ValidationFailureCollectionInterface $failures = new ValidationFailureCollection()): LegacyValidatorExtension
-    {
-        $validator = StatefulValidator::create();
+    private static function createExtension(
+        ValidationFailureCollectionInterface $failures = new ValidationFailureCollection(),
+        ValidatedValueCollectionInterface $data = new ValidatedValueCollection(),
+    ): LegacyValidatorExtension {
+        $asserter = new NoopDataCollectorAsserter($data);
+        $validator = StatefulValidator::create($asserter);
         $validator->getFailures()->addAll($failures);
 
-        return new LegacyValidatorExtension($validator);
+        return new LegacyValidatorExtension($validator, $asserter);
     }
 }

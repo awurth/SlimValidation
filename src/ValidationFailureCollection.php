@@ -17,6 +17,8 @@ namespace Awurth\Validator;
  * Holds a list of validation failures.
  *
  * @author Alexis Wurth <awurth.dev@gmail.com>
+ *
+ * @implements \IteratorAggregate<int, ValidationFailureInterface>
  */
 final class ValidationFailureCollection implements ValidationFailureCollectionInterface, \IteratorAggregate
 {
