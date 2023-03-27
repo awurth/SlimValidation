@@ -11,8 +11,14 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Awurth\Validator;
+namespace Awurth\Validator\Assertion;
 
+use Awurth\Validator\ValidationFailureCollectionFactory;
+use Awurth\Validator\ValidationFailureCollectionFactoryInterface;
+use Awurth\Validator\ValidationFailureCollectionInterface;
+use Awurth\Validator\ValidationFailureFactory;
+use Awurth\Validator\ValidationFailureFactoryInterface;
+use Awurth\Validator\ValidationInterface;
 use Respect\Validation\Exceptions\NestedValidationException;
 
 final class Asserter implements AsserterInterface

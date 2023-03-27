@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Awurth\Validator\Twig;
 
-use Awurth\Validator\DataCollectorAsserterInterface;
+use Awurth\Validator\Assertion\DataCollectorAsserterInterface;
 use Awurth\Validator\StatefulValidatorInterface;
 use Awurth\Validator\ValidationFailureInterface;
 use Twig\Extension\AbstractExtension;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Awurth\Validator\Tests;
 
-use Awurth\Validator\DataCollectorAsserterInterface;
+use Awurth\Validator\Assertion\DataCollectorAsserterInterface;
 use Awurth\Validator\ValidatedValue;
 use Awurth\Validator\ValidatedValueCollection;
 use Awurth\Validator\ValidatedValueCollectionInterface;

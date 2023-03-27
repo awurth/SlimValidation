@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Awurth\Validator;
 
+use Awurth\Validator\Assertion\AsserterInterface;
 use Respect\Validation\Validatable;
 
 final class StatefulValidator implements StatefulValidatorInterface

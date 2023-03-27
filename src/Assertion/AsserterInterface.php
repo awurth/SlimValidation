@@ -11,7 +11,10 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Awurth\Validator;
+namespace Awurth\Validator\Assertion;
+
+use Awurth\Validator\ValidationFailureCollectionInterface;
+use Awurth\Validator\ValidationInterface;
 
 interface AsserterInterface
 {
