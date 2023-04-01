@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Awurth\Validator\Failure;
 
+use Awurth\Validator\ValidationInterface;
+
 /**
  * Handles the creation of a validation failure.
  *
@@ -25,8 +27,7 @@ interface ValidationFailureFactoryInterface
      *
      * @param string      $message      The error message
      * @param mixed       $invalidValue The invalid value
-     * @param string|null $property     The object property, array key or request parameter
      * @param string|null $ruleName     The Respect/Validation rule name
      */
-    public function create(string $message, mixed $invalidValue, ?string $property = null, ?string $ruleName = null): ValidationFailureInterface;
+    public function create(ValidationInterface $validation, string $message, mixed $invalidValue, ?string $ruleName = null): ValidationFailureInterface;
 }

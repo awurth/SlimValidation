@@ -48,17 +48,19 @@ final class Validator implements ValidatorInterface
         );
     }
 
-    public function validate(mixed $subject, Validatable|array $rules, array $messages = []): ValidationFailureCollectionInterface
+    public function validate(mixed $subject, Validatable|array $rules, array $messages = [], mixed $context = null): ValidationFailureCollectionInterface
     {
         if ($rules instanceof Validatable) {
             return $this->asserter->assert($subject, $this->validationFactory->create([
                 'rules' => $rules,
                 'globalMessages' => $messages,
+                'context' => $context,
             ]), $messages);
         }
 
         if (!$subject instanceof Request && !\is_object($subject) && !\is_array($subject)) {
             $rules['globalMessages'] = $messages;
+            $rules['context'] = $context;
 
             return $this->asserter->assert($subject, $this->validationFactory->create($rules), $messages);
         }
@@ -76,6 +78,7 @@ final class Validator implements ValidatorInterface
             }
 
             $options['globalMessages'] = $messages;
+            $options['context'] = $context;
 
             $validation = $this->validationFactory->create($options, $property);
             $value = $this->getValue($subject, $property, $validation->getDefault());

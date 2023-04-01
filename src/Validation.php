@@ -29,6 +29,7 @@ final class Validation implements ValidationInterface
         private readonly ?string $message = null,
         private readonly array $messages = [],
         private readonly array $globalMessages = [],
+        private readonly mixed $context = null,
     ) {
     }
 
@@ -60,5 +61,10 @@ final class Validation implements ValidationInterface
     public function getGlobalMessages(): array
     {
         return $this->globalMessages;
+    }
+
+    public function getContext(): mixed
+    {
+        return $this->context;
     }
 }

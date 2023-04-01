@@ -38,9 +38,11 @@ final class StatefulValidator implements StatefulValidatorInterface
         );
     }
 
-    public function validate(mixed $subject, Validatable|array $rules, array $messages = []): ValidationFailureCollectionInterface
+    public function validate(mixed $subject, Validatable|array $rules, array $messages = [], mixed $context = null): ValidationFailureCollectionInterface
     {
-        $this->failures->addAll($this->validator->validate($subject, $rules, $messages));
+        $failures = $this->validator->validate($subject, $rules, $messages, $context);
+
+        $this->failures->addAll($failures);
 
         return $this->failures;
     }

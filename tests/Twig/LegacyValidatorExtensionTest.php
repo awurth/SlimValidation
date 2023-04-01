@@ -24,25 +24,25 @@ use Awurth\Validator\ValidatedValueCollection;
 use Awurth\Validator\ValidatedValueCollectionInterface;
 use Awurth\Validator\Validation;
 use PHPUnit\Framework\TestCase;
-use Respect\Validation\Validator;
+use Respect\Validation\Validator as V;
 
-class LegacyValidatorExtensionTest extends TestCase
+final class LegacyValidatorExtensionTest extends TestCase
 {
     public function testGetError(): void
     {
         $extension = self::createExtension(new ValidationFailureCollection([
-            new ValidationFailure('first message', null, 'first'),
-            new ValidationFailure('second message', null, 'second'),
+            new ValidationFailure(new Validation(V::alwaysInvalid(), 'first'), 'first message', null),
+            new ValidationFailure(new Validation(V::alwaysInvalid(), 'second'), 'second message', null),
         ]));
 
         self::assertSame('first message', $extension->getError('first'));
         self::assertSame('second message', $extension->getError('second'));
 
         $extension = self::createExtension(new ValidationFailureCollection([
-            new ValidationFailure('first message of first property', null, 'first'),
-            new ValidationFailure('first message of second property', null, 'second'),
-            new ValidationFailure('second message of second property', null, 'second'),
-            new ValidationFailure('second message of first property', null, 'first'),
+            new ValidationFailure(new Validation(V::alwaysInvalid(), 'first'), 'first message of first property', null),
+            new ValidationFailure(new Validation(V::alwaysInvalid(), 'second'), 'first message of second property', null),
+            new ValidationFailure(new Validation(V::alwaysInvalid(), 'second'), 'second message of second property', null),
+            new ValidationFailure(new Validation(V::alwaysInvalid(), 'first'), 'second message of first property', null),
         ]));
 
         self::assertSame('first message of first property', $extension->getError('first'));
@@ -56,10 +56,10 @@ class LegacyValidatorExtensionTest extends TestCase
     public function testGetErrors(): void
     {
         $extension = self::createExtension(new ValidationFailureCollection([
-            new ValidationFailure('first', null, 'first'),
-            new ValidationFailure('second', null, 'second'),
-            new ValidationFailure('third', null, 'third'),
-            new ValidationFailure('fourth', null, 'third'),
+            new ValidationFailure(new Validation(V::alwaysInvalid(), 'first'), 'first', null),
+            new ValidationFailure(new Validation(V::alwaysInvalid(), 'second'), 'second', null),
+            new ValidationFailure(new Validation(V::alwaysInvalid(), 'third'), 'third', null),
+            new ValidationFailure(new Validation(V::alwaysInvalid(), 'third'), 'fourth', null),
         ]));
 
         self::assertSame(['first', 'second', 'third', 'fourth'], $extension->getErrors());
@@ -69,7 +69,7 @@ class LegacyValidatorExtensionTest extends TestCase
     public function testGetValue(): void
     {
         $extension = self::createExtension(data: new ValidatedValueCollection([
-            new ValidatedValue(new Validation(Validator::alwaysInvalid(), 'property'), 'invalid string'),
+            new ValidatedValue(new Validation(V::alwaysInvalid(), 'property'), 'invalid string'),
         ]));
 
         self::assertSame('invalid string', $extension->getValue('property'));
@@ -79,7 +79,7 @@ class LegacyValidatorExtensionTest extends TestCase
     public function testHasError(): void
     {
         $extension = self::createExtension(new ValidationFailureCollection([
-            new ValidationFailure('message', null, 'property'),
+            new ValidationFailure(new Validation(V::alwaysInvalid(), 'property'), 'message', null),
         ]));
 
         self::assertTrue($extension->hasError('property'));
@@ -93,7 +93,7 @@ class LegacyValidatorExtensionTest extends TestCase
         self::assertFalse($extension->hasErrors());
 
         $extension = self::createExtension(new ValidationFailureCollection([
-            new ValidationFailure('message', null, 'property'),
+            new ValidationFailure(new Validation(V::alwaysInvalid(), 'property'), 'message', null),
         ]));
 
         self::assertTrue($extension->hasErrors());

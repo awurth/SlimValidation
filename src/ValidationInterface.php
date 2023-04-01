@@ -24,6 +24,9 @@ interface ValidationInterface
 {
     public function getRules(): Validatable;
 
+    /**
+     * Gets the object property, array key or request parameter.
+     */
     public function getProperty(): ?string;
 
     public function getDefault(): mixed;
@@ -33,4 +36,6 @@ interface ValidationInterface
     public function getMessages(): array;
 
     public function getGlobalMessages(): array;
+
+    public function getContext(): mixed;
 }

@@ -71,7 +71,7 @@ final class LegacyValidatorExtension extends AbstractExtension
 
     public function getError(string $key, int $index = 0): ?string
     {
-        $failures = $this->validator->getFailures()->filter(static fn (ValidationFailureInterface $failure): bool => $failure->getProperty() === $key);
+        $failures = $this->validator->getFailures()->filter(static fn (ValidationFailureInterface $failure): bool => $failure->getValidation()->getProperty() === $key);
         $failure = $failures->has($index) ? $failures->get($index) : null;
 
         return $failure?->getMessage();
@@ -84,7 +84,7 @@ final class LegacyValidatorExtension extends AbstractExtension
     {
         $failures = null === $key
             ? $this->validator->getFailures()
-            : $this->validator->getFailures()->filter(static fn (ValidationFailureInterface $failure) => $failure->getProperty() === $key)
+            : $this->validator->getFailures()->filter(static fn (ValidationFailureInterface $failure) => $failure->getValidation()->getProperty() === $key)
         ;
 
         return \array_map(
@@ -106,7 +106,7 @@ final class LegacyValidatorExtension extends AbstractExtension
 
     public function hasError(string $key): bool
     {
-        return null !== $this->validator->getFailures()->find(static fn (ValidationFailureInterface $failure) => $failure->getProperty() === $key);
+        return null !== $this->validator->getFailures()->find(static fn (ValidationFailureInterface $failure) => $failure->getValidation()->getProperty() === $key);
     }
 
     public function hasErrors(): bool

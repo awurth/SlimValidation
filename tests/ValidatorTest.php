@@ -21,23 +21,14 @@ use Respect\Validation\Validator as V;
 use Slim\Psr7\Factory\ServerRequestFactory;
 use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
 
-class ValidatorTest extends TestCase
+final class ValidatorTest extends TestCase
 {
-    private array $array;
-    private TestObject $object;
     private ServerRequestInterface $request;
     private Validator $validator;
 
     protected function setUp(): void
     {
         $this->request = (new ServerRequestFactory())->createServerRequest('POST', 'http://localhost?username=a_wurth&password=1234');
-
-        $this->array = [
-            'username' => 'a_wurth',
-            'password' => '1234',
-        ];
-
-        $this->object = new TestObject('private', 'protected', 'public');
 
         $this->validator = Validator::create();
     }
@@ -80,14 +71,19 @@ class ValidatorTest extends TestCase
 
     public function testArray(): void
     {
-        $errors = $this->validator->validate($this->array, [
+        $array = [
+            'username' => 'a_wurth',
+            'password' => '1234',
+        ];
+
+        $errors = $this->validator->validate($array, [
             'username' => V::notBlank(),
             'password' => V::notBlank(),
         ]);
 
         self::assertSame(0, $errors->count());
 
-        $errors = $this->validator->validate($this->array, [
+        $errors = $this->validator->validate($array, [
             'username' => V::notBlank()->length(10),
             'password' => V::notBlank()->length(10),
         ]);
@@ -97,7 +93,8 @@ class ValidatorTest extends TestCase
 
     public function testObject(): void
     {
-        $errors = $this->validator->validate($this->object, [
+        $object = new TestObject('private', 'protected', 'public');
+        $errors = $this->validator->validate($object, [
             'privateProperty' => V::notBlank(),
             'protectedProperty' => V::notBlank(),
             'publicProperty' => V::notBlank(),
@@ -127,7 +124,7 @@ class ValidatorTest extends TestCase
 
         $error = $errors->get(0);
 
-        self::assertSame('username', $error->getProperty());
+        self::assertSame('username', $error->getValidation()->getProperty());
         self::assertSame('length', $error->getRuleName());
         self::assertSame('a_wurth', $error->getInvalidValue());
         self::assertSame('"a_wurth" must have a length greater than or equal to 8', $error->getMessage());
@@ -184,9 +181,9 @@ class ValidatorTest extends TestCase
         ]);
 
         self::assertSame(2, $errors->count());
-        self::assertSame('username', $errors->get(0)->getProperty());
+        self::assertSame('username', $errors->get(0)->getValidation()->getProperty());
         self::assertSame('Too short!', $errors->get(0)->getMessage());
-        self::assertSame('password', $errors->get(1)->getProperty());
+        self::assertSame('password', $errors->get(1)->getValidation()->getProperty());
         self::assertSame('"1234" must have a length greater than or equal to 8', $errors->get(1)->getMessage());
     }
 
@@ -222,9 +219,9 @@ class ValidatorTest extends TestCase
         ]);
 
         self::assertSame(2, $errors->count());
-        self::assertSame('username', $errors->get(0)->getProperty());
+        self::assertSame('username', $errors->get(0)->getValidation()->getProperty());
         self::assertSame('Bad username.', $errors->get(0)->getMessage());
-        self::assertSame('password', $errors->get(1)->getProperty());
+        self::assertSame('password', $errors->get(1)->getValidation()->getProperty());
         self::assertSame('Too short!', $errors->get(1)->getMessage());
     }
 }
