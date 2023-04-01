@@ -48,7 +48,8 @@ final class Asserter implements AsserterInterface
         try {
             $validation->getRules()->assert($subject);
         } catch (NestedValidationException $exception) {
-            if ($message = $validation->getMessage()) {
+            $message = $validation->getMessage();
+            if (null !== $message) {
                 $failures->add(
                     $this->validationFailureFactory->create($message, $subject, $validation->getProperty())
                 );

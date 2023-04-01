@@ -60,6 +60,13 @@ class ValidatorTest extends TestCase
         ]);
     }
 
+    public function testValidateWithRulesEmptyArray(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $this->validator->validate($this->request, []);
+    }
+
     public function testRequest(): void
     {
         $errors = $this->validator->validate($this->request, ['username' => V::length(6)]);

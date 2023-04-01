@@ -17,7 +17,6 @@ use Awurth\Validator\Assertion\Asserter;
 use Awurth\Validator\Assertion\AsserterInterface;
 use Awurth\Validator\Exception\InvalidPropertyOptionsException;
 use Awurth\Validator\Failure\ValidationFailureCollectionFactory;
-use Awurth\Validator\Failure\ValidationFailureCollectionFactoryInterface;
 use Awurth\Validator\Failure\ValidationFailureCollectionInterface;
 use Awurth\Validator\Failure\ValidationFailureFactory;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -32,7 +31,6 @@ final class Validator implements ValidatorInterface
 {
     public function __construct(
         private readonly ValidationFactoryInterface $validationFactory,
-        private readonly ValidationFailureCollectionFactoryInterface $validationFailureCollectionFactory,
         private readonly AsserterInterface $asserter,
     ) {
     }
@@ -44,12 +42,9 @@ final class Validator implements ValidatorInterface
         ?AsserterInterface $asserter = null,
         array $messages = [],
     ): self {
-        $validationFailureCollectionFactory = new ValidationFailureCollectionFactory();
-
         return new self(
             new ValidationFactory(),
-            $validationFailureCollectionFactory,
-            $asserter ?? new Asserter($validationFailureCollectionFactory, new ValidationFailureFactory(), $messages),
+            $asserter ?? new Asserter(new ValidationFailureCollectionFactory(), new ValidationFailureFactory(), $messages),
         );
     }
 
@@ -63,7 +58,11 @@ final class Validator implements ValidatorInterface
             return $this->asserter->assert($subject, $this->validationFactory->create($rules), $messages);
         }
 
-        $failures = $this->validationFailureCollectionFactory->create();
+        if ([] === $rules) {
+            throw new \InvalidArgumentException('Rules cannot be empty');
+        }
+
+        $failures = null;
         foreach ($rules as $property => $options) {
             if ($options instanceof Validatable) {
                 $options = ['rules' => $options];
@@ -74,7 +73,11 @@ final class Validator implements ValidatorInterface
             $validation = $this->validationFactory->create($options, $property);
             $value = $this->getValue($subject, $property, $validation->getDefault());
 
-            $failures->addAll($this->asserter->assert($value, $validation, $messages));
+            if (null === $failures) {
+                $failures = $this->asserter->assert($value, $validation, $messages);
+            } else {
+                $failures->addAll($this->asserter->assert($value, $validation, $messages));
+            }
         }
 
         return $failures;
