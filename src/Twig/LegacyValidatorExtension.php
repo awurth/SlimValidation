@@ -71,14 +71,15 @@ final class LegacyValidatorExtension extends AbstractExtension
         return $functions;
     }
 
-    public function getError(string $key, int $index = 0, mixed $context = null): ?string
+    public function getError(string $key, $index = 0, mixed $context = null): ?string
     {
         $failures = $this->validator->getFailures()->filter(static function (ValidationFailureInterface $failure) use ($key, $context): bool {
             return $failure->getValidation()->getProperty() === $key
                 && (null === $context || $failure->getValidation()->getContext() === $context)
             ;
         });
-        $failure = $failures->has($index) ? $failures->get($index) : null;
+
+        $failure = $failures->has((int)$index) ? $failures->get((int)$index) : null;
 
         return $failure?->getMessage();
     }
