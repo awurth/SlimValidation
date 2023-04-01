@@ -31,4 +31,6 @@ interface ValidationInterface
     public function getMessage(): ?string;
 
     public function getMessages(): array;
+
+    public function getGlobalMessages(): array;
 }

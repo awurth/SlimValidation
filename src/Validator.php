@@ -51,10 +51,15 @@ final class Validator implements ValidatorInterface
     public function validate(mixed $subject, Validatable|array $rules, array $messages = []): ValidationFailureCollectionInterface
     {
         if ($rules instanceof Validatable) {
-            return $this->asserter->assert($subject, $this->validationFactory->create(['rules' => $rules]), $messages);
+            return $this->asserter->assert($subject, $this->validationFactory->create([
+                'rules' => $rules,
+                'globalMessages' => $messages,
+            ]), $messages);
         }
 
         if (!$subject instanceof Request && !\is_object($subject) && !\is_array($subject)) {
+            $rules['globalMessages'] = $messages;
+
             return $this->asserter->assert($subject, $this->validationFactory->create($rules), $messages);
         }
 
@@ -69,6 +74,8 @@ final class Validator implements ValidatorInterface
             } elseif (!\is_array($options)) {
                 throw new InvalidPropertyOptionsException(\sprintf('Expected an array or an instance of "%s", "%s" given', Validatable::class, \get_debug_type($options)));
             }
+
+            $options['globalMessages'] = $messages;
 
             $validation = $this->validationFactory->create($options, $property);
             $value = $this->getValue($subject, $property, $validation->getDefault());
