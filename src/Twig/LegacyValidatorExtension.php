@@ -71,9 +71,13 @@ final class LegacyValidatorExtension extends AbstractExtension
         return $functions;
     }
 
-    public function getError(string $key, int $index = 0): ?string
+    public function getError(string $key, int $index = 0, mixed $context = null): ?string
     {
-        $failures = $this->validator->getFailures()->filter(static fn (ValidationFailureInterface $failure): bool => $failure->getValidation()->getProperty() === $key);
+        $failures = $this->validator->getFailures()->filter(static function (ValidationFailureInterface $failure) use ($key, $context): bool {
+            return $failure->getValidation()->getProperty() === $key
+                && (null === $context || $failure->getValidation()->getContext() === $context)
+            ;
+        });
         $failure = $failures->has($index) ? $failures->get($index) : null;
 
         return $failure?->getMessage();
@@ -82,12 +86,17 @@ final class LegacyValidatorExtension extends AbstractExtension
     /**
      * @return string[]
      */
-    public function getErrors(?string $key = null): array
+    public function getErrors(?string $key = null, mixed $context = null): array
     {
-        $failures = null === $key
-            ? $this->validator->getFailures()
-            : $this->validator->getFailures()->filter(static fn (ValidationFailureInterface $failure) => $failure->getValidation()->getProperty() === $key)
-        ;
+        if (null === $key) {
+            $failures = $this->validator->getFailures();
+        } else {
+            $failures = $this->validator->getFailures()->filter(static function (ValidationFailureInterface $failure) use ($key, $context): bool {
+                return $failure->getValidation()->getProperty() === $key
+                    && (null === $context || $failure->getValidation()->getContext() === $context)
+                ;
+            });
+        }
 
         return \array_map(
             static fn (ValidationFailureInterface $failure) => $failure->getMessage(),
@@ -95,10 +104,13 @@ final class LegacyValidatorExtension extends AbstractExtension
         );
     }
 
-    public function getValue(string $key): mixed
+    public function getValue(string $key, mixed $context = null): mixed
     {
         foreach ($this->asserter->getData() as $validatedValue) {
-            if ($validatedValue->getValidation()->getProperty() === $key) {
+            if (
+                $validatedValue->getValidation()->getProperty() === $key &&
+                (null === $context || $validatedValue->getValidation()->getContext() === $context)
+            ) {
                 return $validatedValue->getValue();
             }
         }
@@ -106,9 +118,13 @@ final class LegacyValidatorExtension extends AbstractExtension
         return null;
     }
 
-    public function hasError(string $key): bool
+    public function hasError(string $key, mixed $context = null): bool
     {
-        return null !== $this->validator->getFailures()->find(static fn (ValidationFailureInterface $failure) => $failure->getValidation()->getProperty() === $key);
+        return null !== $this->validator->getFailures()->find(static function (ValidationFailureInterface $failure) use ($key, $context): bool {
+            return $failure->getValidation()->getProperty() === $key
+                && (null === $context || $failure->getValidation()->getContext() === $context)
+            ;
+        });
     }
 
     public function hasErrors(): bool
