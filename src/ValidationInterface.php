@@ -36,4 +36,6 @@ interface ValidationInterface
     public function getMessages(): array;
 
     public function getGlobalMessages(): array;
+
+    public function getContext(): mixed;
 }
