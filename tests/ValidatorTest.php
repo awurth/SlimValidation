@@ -127,7 +127,7 @@ class ValidatorTest extends TestCase
 
         $error = $errors->get(0);
 
-        self::assertSame('username', $error->getProperty());
+        self::assertSame('username', $error->getValidation()->getProperty());
         self::assertSame('length', $error->getRuleName());
         self::assertSame('a_wurth', $error->getInvalidValue());
         self::assertSame('"a_wurth" must have a length greater than or equal to 8', $error->getMessage());
@@ -184,9 +184,9 @@ class ValidatorTest extends TestCase
         ]);
 
         self::assertSame(2, $errors->count());
-        self::assertSame('username', $errors->get(0)->getProperty());
+        self::assertSame('username', $errors->get(0)->getValidation()->getProperty());
         self::assertSame('Too short!', $errors->get(0)->getMessage());
-        self::assertSame('password', $errors->get(1)->getProperty());
+        self::assertSame('password', $errors->get(1)->getValidation()->getProperty());
         self::assertSame('"1234" must have a length greater than or equal to 8', $errors->get(1)->getMessage());
     }
 
@@ -222,9 +222,9 @@ class ValidatorTest extends TestCase
         ]);
 
         self::assertSame(2, $errors->count());
-        self::assertSame('username', $errors->get(0)->getProperty());
+        self::assertSame('username', $errors->get(0)->getValidation()->getProperty());
         self::assertSame('Bad username.', $errors->get(0)->getMessage());
-        self::assertSame('password', $errors->get(1)->getProperty());
+        self::assertSame('password', $errors->get(1)->getValidation()->getProperty());
         self::assertSame('Too short!', $errors->get(1)->getMessage());
     }
 }

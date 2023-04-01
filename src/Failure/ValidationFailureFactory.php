@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Awurth\Validator\Failure;
 
+use Awurth\Validator\ValidationInterface;
+
 /**
  * Handles the creation of a validation failure.
  *
@@ -21,11 +23,11 @@ namespace Awurth\Validator\Failure;
 final class ValidationFailureFactory implements ValidationFailureFactoryInterface
 {
     public function create(
+        ValidationInterface $validation,
         string $message,
         mixed $invalidValue,
-        ?string $property = null,
         ?string $ruleName = null,
     ): ValidationFailureInterface {
-        return new ValidationFailure($message, $invalidValue, $property, $ruleName);
+        return new ValidationFailure($validation, $message, $invalidValue, $ruleName);
     }
 }

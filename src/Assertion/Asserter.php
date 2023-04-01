@@ -51,7 +51,7 @@ final class Asserter implements AsserterInterface
             $message = $validation->getMessage();
             if (null !== $message) {
                 $failures->add(
-                    $this->validationFailureFactory->create($message, $subject, $validation->getProperty())
+                    $this->validationFailureFactory->create($validation, $message, $subject)
                 );
 
                 return $failures;
@@ -60,7 +60,7 @@ final class Asserter implements AsserterInterface
             $exceptionMessages = $this->extractMessagesFromException($exception, $validation);
             foreach ($exceptionMessages as $ruleName => $message) {
                 $failures->add(
-                    $this->validationFailureFactory->create($message, $subject, $validation->getProperty(), $ruleName)
+                    $this->validationFailureFactory->create($validation, $message, $subject, $ruleName)
                 );
             }
         }

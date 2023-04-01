@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Awurth\Validator\Failure;
 
+use Awurth\Validator\ValidationInterface;
+
 /**
  * Represents a validation failure.
  *
@@ -21,11 +23,16 @@ namespace Awurth\Validator\Failure;
 final class ValidationFailure implements ValidationFailureInterface
 {
     public function __construct(
+        private readonly ValidationInterface $validation,
         private readonly string $message,
         private readonly mixed $invalidValue,
-        private readonly ?string $property = null,
         private readonly ?string $ruleName = null,
     ) {
+    }
+
+    public function getValidation(): ValidationInterface
+    {
+        return $this->validation;
     }
 
     public function getInvalidValue(): mixed
@@ -36,11 +43,6 @@ final class ValidationFailure implements ValidationFailureInterface
     public function getMessage(): string
     {
         return $this->message;
-    }
-
-    public function getProperty(): ?string
-    {
-        return $this->property;
     }
 
     public function getRuleName(): ?string

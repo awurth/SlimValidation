@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Awurth\Validator\Failure;
 
+use Awurth\Validator\ValidationInterface;
+
 /**
  * Represents a validation failure.
  *
@@ -20,6 +22,8 @@ namespace Awurth\Validator\Failure;
  */
 interface ValidationFailureInterface
 {
+    public function getValidation(): ValidationInterface;
+
     /**
      * Gets the validated data.
      */
@@ -29,11 +33,6 @@ interface ValidationFailureInterface
      * Gets the error message.
      */
     public function getMessage(): string;
-
-    /**
-     * Gets the object property, array key or request parameter.
-     */
-    public function getProperty(): ?string;
 
     /**
      * Gets the Respect/Validation rule name.
