@@ -35,6 +35,7 @@ final class ValidationFactory implements ValidationFactoryInterface
             $options['default'] ?? $default,
             $options['message'],
             $options['messages'],
+            $options['globalMessages'],
         );
     }
 
@@ -46,11 +47,13 @@ final class ValidationFactory implements ValidationFactoryInterface
                     'default' => null,
                     'message' => null,
                     'messages' => [],
+                    'globalMessages' => [],
                 ])
                 ->setRequired('rules')
                 ->setAllowedTypes('rules', Validatable::class)
                 ->setAllowedTypes('message', ['null', 'string'])
                 ->setAllowedTypes('messages', 'string[]')
+                ->setAllowedTypes('globalMessages', 'string[]')
             ;
         }
 

@@ -33,11 +33,11 @@ final class DataCollectorAsserter implements DataCollectorAsserterInterface
         return new self(Asserter::create());
     }
 
-    public function assert(mixed $subject, ValidationInterface $validation, array $messages = []): ValidationFailureCollectionInterface
+    public function assert(mixed $subject, ValidationInterface $validation): ValidationFailureCollectionInterface
     {
         $this->data->add(new ValidatedValue($validation, $subject));
 
-        return $this->asserter->assert($subject, $validation, $messages);
+        return $this->asserter->assert($subject, $validation);
     }
 
     public function getData(): ValidatedValueCollectionInterface

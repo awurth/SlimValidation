@@ -41,7 +41,7 @@ final class Asserter implements AsserterInterface
         return new self(new ValidationFailureCollectionFactory(), new ValidationFailureFactory(), $messages);
     }
 
-    public function assert(mixed $subject, ValidationInterface $validation, array $messages = []): ValidationFailureCollectionInterface
+    public function assert(mixed $subject, ValidationInterface $validation): ValidationFailureCollectionInterface
     {
         $failures = $this->validationFailureCollectionFactory->create();
 
@@ -57,7 +57,7 @@ final class Asserter implements AsserterInterface
                 return $failures;
             }
 
-            $exceptionMessages = $this->extractMessagesFromException($exception, $validation, $messages);
+            $exceptionMessages = $this->extractMessagesFromException($exception, $validation);
             foreach ($exceptionMessages as $ruleName => $message) {
                 $failures->add(
                     $this->validationFailureFactory->create($message, $subject, $validation->getProperty(), $ruleName)
@@ -69,13 +69,11 @@ final class Asserter implements AsserterInterface
     }
 
     /**
-     * @param array<string, string> $messages
-     *
      * @return array<string, string>
      */
-    private function extractMessagesFromException(NestedValidationException $exception, ValidationInterface $validation, array $messages = []): array
+    private function extractMessagesFromException(NestedValidationException $exception, ValidationInterface $validation): array
     {
-        $definedMessages = \array_replace($this->messages, $messages, $validation->getMessages());
+        $definedMessages = \array_replace($this->messages, $validation->getGlobalMessages(), $validation->getMessages());
 
         $errors = [];
         foreach ($exception->getMessages($definedMessages) as $name => $error) {

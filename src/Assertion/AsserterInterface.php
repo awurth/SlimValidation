@@ -18,8 +18,5 @@ use Awurth\Validator\ValidationInterface;
 
 interface AsserterInterface
 {
-    /**
-     * @param array<string, string> $messages
-     */
-    public function assert(mixed $subject, ValidationInterface $validation, array $messages = []): ValidationFailureCollectionInterface;
+    public function assert(mixed $subject, ValidationInterface $validation): ValidationFailureCollectionInterface;
 }
