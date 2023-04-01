@@ -26,7 +26,7 @@ use Awurth\Validator\Validation;
 use PHPUnit\Framework\TestCase;
 use Respect\Validation\Validator as V;
 
-class LegacyValidatorExtensionTest extends TestCase
+final class LegacyValidatorExtensionTest extends TestCase
 {
     public function testGetError(): void
     {

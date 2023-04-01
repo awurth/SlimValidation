@@ -21,23 +21,14 @@ use Respect\Validation\Validator as V;
 use Slim\Psr7\Factory\ServerRequestFactory;
 use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
 
-class ValidatorTest extends TestCase
+final class ValidatorTest extends TestCase
 {
-    private array $array;
-    private TestObject $object;
     private ServerRequestInterface $request;
     private Validator $validator;
 
     protected function setUp(): void
     {
         $this->request = (new ServerRequestFactory())->createServerRequest('POST', 'http://localhost?username=a_wurth&password=1234');
-
-        $this->array = [
-            'username' => 'a_wurth',
-            'password' => '1234',
-        ];
-
-        $this->object = new TestObject('private', 'protected', 'public');
 
         $this->validator = Validator::create();
     }
@@ -80,14 +71,19 @@ class ValidatorTest extends TestCase
 
     public function testArray(): void
     {
-        $errors = $this->validator->validate($this->array, [
+        $array = [
+            'username' => 'a_wurth',
+            'password' => '1234',
+        ];
+
+        $errors = $this->validator->validate($array, [
             'username' => V::notBlank(),
             'password' => V::notBlank(),
         ]);
 
         self::assertSame(0, $errors->count());
 
-        $errors = $this->validator->validate($this->array, [
+        $errors = $this->validator->validate($array, [
             'username' => V::notBlank()->length(10),
             'password' => V::notBlank()->length(10),
         ]);
@@ -97,7 +93,8 @@ class ValidatorTest extends TestCase
 
     public function testObject(): void
     {
-        $errors = $this->validator->validate($this->object, [
+        $object = new TestObject('private', 'protected', 'public');
+        $errors = $this->validator->validate($object, [
             'privateProperty' => V::notBlank(),
             'protectedProperty' => V::notBlank(),
             'publicProperty' => V::notBlank(),
