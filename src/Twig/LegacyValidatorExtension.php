@@ -23,6 +23,8 @@ use Twig\TwigFunction;
  * Validator Twig Extension.
  *
  * @author Alexis Wurth <awurth.dev@gmail.com>
+ *
+ * @deprecated since v5.0, will be removed in v6.0, use {@see ValidatorExtension} instead
  */
 final class LegacyValidatorExtension extends AbstractExtension
 {
