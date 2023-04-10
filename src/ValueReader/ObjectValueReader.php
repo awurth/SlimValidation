@@ -11,6 +11,9 @@ final class ObjectValueReader implements ValueReaderInterface
 {
     private static ?PropertyAccessor $propertyAccessor = null;
 
+    /**
+     * @param object $subject
+     */
     public function getValue(mixed $subject, string $path, mixed $default = null): mixed
     {
         return self::getPropertyAccessor()->isReadable($subject, $path)
