@@ -7,12 +7,10 @@
 [![Total Downloads](https://poser.pugx.org/awurth/slim-validation/downloads)](https://packagist.org/packages/awurth/slim-validation)
 [![Monthly Downloads](http://poser.pugx.org/awurth/slim-validation/d/monthly)](https://packagist.org/packages/awurth/slim-validation)
 
-A validator for PHP, using [Respect Validation](https://github.com/Respect/Validation) (**Requires PHP 8.1+**)
+A wrapper around the [Respect Validation](https://github.com/Respect/Validation) PHP validation library for easier error handling and display
 
-> This project was originally designed to be used with the Micro-Framework "Slim", but can now
-  be used with any [psr/http-message](https://github.com/php-fig/http-message)
-  compliant framework, or any other PHP project if you don't need 
-  request parameters validation.
+> This project was originally designed to be used with the Micro-Framework "Slim", hence the name "Slim Validation", but can now
+  be used in any other PHP project.
 
 ## Installation
 
