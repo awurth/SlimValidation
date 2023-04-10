@@ -19,6 +19,8 @@ use Awurth\Validator\Exception\InvalidPropertyOptionsException;
 use Awurth\Validator\Failure\ValidationFailureCollectionFactory;
 use Awurth\Validator\Failure\ValidationFailureCollectionInterface;
 use Awurth\Validator\Failure\ValidationFailureFactory;
+use Awurth\Validator\ValueReader\ValueReaderRegistry;
+use Awurth\Validator\ValueReader\ValueReaderRegistryInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Respect\Validation\Validatable;
 
@@ -32,6 +34,7 @@ final class Validator implements ValidatorInterface
     public function __construct(
         private readonly ValidationFactoryInterface $validationFactory,
         private readonly AsserterInterface $asserter,
+        private readonly ValueReaderRegistryInterface $valueReaderRegistry,
     ) {
     }
 
@@ -45,6 +48,7 @@ final class Validator implements ValidatorInterface
         return new self(
             new ValidationFactory(),
             $asserter ?? new Asserter(new ValidationFailureCollectionFactory(), new ValidationFailureFactory(), $messages),
+            ValueReaderRegistry::create(),
         );
     }
 
@@ -69,6 +73,8 @@ final class Validator implements ValidatorInterface
             throw new \InvalidArgumentException('Rules cannot be empty');
         }
 
+        $valueReader = $this->valueReaderRegistry->getValueReaderFor($subject);
+
         $failures = null;
         foreach ($rules as $property => $options) {
             if ($options instanceof Validatable) {
@@ -81,7 +87,7 @@ final class Validator implements ValidatorInterface
             $options['context'] = $context;
 
             $validation = $this->validationFactory->create($options, $property);
-            $value = $this->getValue($subject, $property, $validation->getDefault());
+            $value = $valueReader->getValue($subject, $property, $validation->getDefault());
 
             if (null === $failures) {
                 $failures = $this->asserter->assert($value, $validation, $messages);
@@ -91,22 +97,5 @@ final class Validator implements ValidatorInterface
         }
 
         return $failures;
-    }
-
-    private function getValue(mixed $subject, string $property, mixed $default = null): mixed
-    {
-        if (\is_array($subject)) {
-            return \array_key_exists($property, $subject) ? $subject[$property] : $default;
-        }
-
-        if ($subject instanceof Request) {
-            return RequestParameterAccessor::getValue($subject, $property, $default);
-        }
-
-        if (\is_object($subject)) {
-            return ObjectPropertyAccessor::getValue($subject, $property, $default);
-        }
-
-        throw new \InvalidArgumentException(\sprintf('The subject must be of type "array", "object" or "%s", "%s" given', Request::class, \get_class($subject)));
     }
 }
