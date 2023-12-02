@@ -13,7 +13,7 @@ return (new PhpCsFixer\Config())
         'cast_spaces' => [
             'space' => 'none',
         ],
-        'compact_nullable_typehint' => true,
+        'compact_nullable_type_declaration' => true,
         'declare_strict_types' => true,
         'native_function_invocation' => [
             'include' => ['@internal'],
@@ -21,6 +21,7 @@ return (new PhpCsFixer\Config())
         'no_superfluous_elseif' => true,
         'no_useless_else' => true,
         'no_useless_return' => true,
+        'nullable_type_declaration_for_default_null_value' => false,
         'ordered_imports' => [
             'imports_order' => [
                 'class',

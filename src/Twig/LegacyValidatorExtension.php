@@ -109,8 +109,8 @@ final class LegacyValidatorExtension extends AbstractExtension
     {
         foreach ($this->asserter->getData() as $validatedValue) {
             if (
-                $validatedValue->getValidation()->getProperty() === $key &&
-                (null === $context || $validatedValue->getValidation()->getContext() === $context)
+                $validatedValue->getValidation()->getProperty() === $key
+                && (null === $context || $validatedValue->getValidation()->getContext() === $context)
             ) {
                 return $validatedValue->getValue();
             }
