@@ -89,11 +89,12 @@ final class Validator implements ValidatorInterface
             $validation = $this->validationFactory->create($options, $property);
             $value = $valueReader->getValue($subject, $property, $validation->getDefault());
 
-            if (null === $failures) {
+            if (!$failures instanceof ValidationFailureCollectionInterface) {
                 $failures = $this->asserter->assert($value, $validation, $messages);
-            } else {
-                $failures->addAll($this->asserter->assert($value, $validation, $messages));
+                continue;
             }
+
+            $failures->addAll($this->asserter->assert($value, $validation, $messages));
         }
 
         return $failures;

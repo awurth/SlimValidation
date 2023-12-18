@@ -50,7 +50,7 @@ final class LegacyValidatorExtension extends AbstractExtension
             'has_errors' => $functionNames['has_errors'] ?? 'has_errors',
         ];
 
-        if (null !== $asserter) {
+        if ($asserter instanceof DataCollectorAsserterInterface) {
             $this->functionNames['val'] = $functionNames['val'] ?? 'val';
         }
     }
@@ -64,7 +64,7 @@ final class LegacyValidatorExtension extends AbstractExtension
             new TwigFunction($this->functionNames['has_errors'], $this->hasErrors(...)),
         ];
 
-        if (null !== $this->asserter) {
+        if ($this->asserter instanceof DataCollectorAsserterInterface) {
             $functions[] = new TwigFunction($this->functionNames['val'], $this->getValue(...));
         }
 

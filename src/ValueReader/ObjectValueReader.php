@@ -29,7 +29,7 @@ final class ObjectValueReader implements ValueReaderInterface
 
     private static function getPropertyAccessor(): PropertyAccessor
     {
-        if (null === self::$propertyAccessor) {
+        if (!self::$propertyAccessor instanceof PropertyAccessor) {
             self::$propertyAccessor = PropertyAccess::createPropertyAccessor();
         }
 
