@@ -1,5 +1,9 @@
 # Changelog
 
+## v5.0.1
+
+* Allow Symfony 7
+
 ## v5.0.0
 
 Complete rewrite
